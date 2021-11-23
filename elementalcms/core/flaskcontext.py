@@ -20,3 +20,4 @@ class FlaskContext(object):
         self.GLOBAL_DEPS_FOLDER = settings.get('GLOBAL_DEPS_FOLDER', 'workspace/global_deps')
         self.PAGES_FOLDER = settings.get('PAGES_FOLDER', 'workspace/pages')
         self.SNIPPETS_FOLDER = settings.get('SNIPPETS_FOLDER', 'workspace/snippets')
+        self.GOOGLE_SERVICE_ACCOUNT_INFO = settings.get('GOOGLE_SERVICE_ACCOUNT_INFO', {})

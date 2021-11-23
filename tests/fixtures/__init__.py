@@ -1,1 +1,2 @@
-from .settingsfixture import settings_fixture
+from .settingsfixture import debug_settings_fixture
+from .settingsfixture import prod_settings_fixture

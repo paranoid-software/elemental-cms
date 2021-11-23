@@ -5,6 +5,12 @@ from from_root import from_root
 
 
 @pytest.fixture
-def settings_fixture():
-    with open(from_root('tests/settings/testing.json')) as settings_as_json:
+def debug_settings_fixture():
+    with open(from_root('tests/settings/debug.json')) as settings_as_json:
+        return json.load(settings_as_json)
+
+
+@pytest.fixture
+def prod_settings_fixture():
+    with open(from_root('tests/settings/prod.json')) as settings_as_json:
         return json.load(settings_as_json)
