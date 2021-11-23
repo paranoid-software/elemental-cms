@@ -14,6 +14,7 @@ REQUIREMENTS = [
     'cloup>=0.12.1',
     'deepdiff>=5.6.0',
     'Flask-Babel>=2.0.0',
+    'google-cloud-storage',
 ]
 
 

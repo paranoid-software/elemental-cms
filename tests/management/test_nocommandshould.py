@@ -7,14 +7,13 @@ from elementalcms.management import cli
 
 class TestNoCommandShould:
 
-    def test_show_list_of_commands(self, settings_fixture):
+    def test_show_list_of_commands(self, debug_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
-                f.write(json.dumps(settings_fixture))
+                f.write(json.dumps(debug_settings_fixture))
             result = runner.invoke(cli, [])
-            assert 'Elemental CMS management CLI' in result.output
             assert 'Commands:' in result.output
             assert 'global-deps' in result.output
             assert 'init' in result.output
