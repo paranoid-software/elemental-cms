@@ -1,0 +1,9 @@
+.idea
+.vscode
+.venv
+messages.pot
+build
+dist
+elemental_cms.egg-info
+**/.pytest_cache
+**/__pycache__

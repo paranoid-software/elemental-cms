@@ -1,0 +1,22 @@
+class FlaskContext(object):
+
+    def __init__(self, settings: dict):
+        self.DEBUG = settings.get('DEBUG', True)
+        self.ENV = settings.get('ENV', 'development')
+        self.SECRET = settings.get('SECRET', '2+2==10')
+        self.SITE_NAME = settings.get('SITE_NAME', 'Elemental CMS')
+        self.COMPANY = settings.get('COMPANY', 'Paranoid Software')
+        self.CANONICAL_URL = settings.get('CANONICAL_URL', 'https://elementa.cms')
+        self.LANGUAGES = settings.get('LANGUAGES', ['en', 'es'])
+        self.DEFAULT_LANGUAGE = settings.get('DEFAULT_LANGUAGE', 'es')
+        self.LANGUAGE_MODE = settings.get('LANGUAGE_MODE', 'multi')
+        self.APP_NAME = settings.get('APP_NAME', 'app')
+        self.STATIC_FOLDER = settings.get('STATIC_FOLDER', 'static')
+        self.MEDIA_FOLDER = settings.get('MEDIA_FOLDER', 'media')
+        self.STATIC_BUCKET = settings.get('STATIC_BUCKET', None)
+        self.MEDIA_BUCKET = settings.get('MEDIA_BUCKET', None)
+        self.STATIC_URL = settings.get('STATIC_URL', '/static')
+        self.MEDIA_URL = settings.get('MEDIA_URL', '/media')
+        self.GLOBAL_DEPS_FOLDER = settings.get('GLOBAL_DEPS_FOLDER', 'workspace/global_deps')
+        self.PAGES_FOLDER = settings.get('PAGES_FOLDER', 'workspace/pages')
+        self.SNIPPETS_FOLDER = settings.get('SNIPPETS_FOLDER', 'workspace/snippets')

@@ -1,0 +1,6 @@
+recursive-include elementalcms/templates *
+recursive-include elementalcms/admin/templates *
+recursive-include elementalcms/presenter/templates *
+recursive-include elementalcms/static *
+recursive-include elementalcms/translations *
+recursive-exclude * *.py[co]
