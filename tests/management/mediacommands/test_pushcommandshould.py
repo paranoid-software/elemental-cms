@@ -39,6 +39,6 @@ class TestPushCommandShould:
                 f.write('Hi stranger, I am a media file.')
             #result = runner.invoke(cli, ['--no-debug', 'media', 'push', '*.*'])
             #assert 'media/push-media-test.txt pushed successfully.' in result.output
-            result = runner.invoke(cli, ['--no-debug', 'media', 'list'])
+            result = runner.invoke(cli, ['--no-debug', 'media', 'push', '--help'])
             print(result.output)
             assert 1 == 1

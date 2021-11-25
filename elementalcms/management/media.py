@@ -29,9 +29,9 @@ class Media(click.Group):
 
         You must use a searh PATTERN to identify the files to be pushed from the media folder.
 
-        \b
         Samples:
 
+        \b
         *.*
         *.txt
         *.svg
