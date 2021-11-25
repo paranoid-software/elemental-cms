@@ -18,5 +18,5 @@ class UpdateOne:
         if '_id' in page:
             del page['_id']
         page['lastModifiedAt'] = datetime.datetime.utcnow()
-        success = repo.update(_id, page, True)
+        success = repo.replace_one(_id, page, True)
         return Success(success)

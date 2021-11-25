@@ -13,7 +13,7 @@ class GetMe:
         repo = GlobalDepsRepository(self.__db_context)
         page = 0
         page_size = 100
-        result = repo.find({'name': name, 'type': _type}, page, page_size)
+        result = repo.find({'name': name, 'type': _type}, page=page, page_size=page_size)
         if result['total'] == 0:
             return NoResult()
         dep = result['items'][0]

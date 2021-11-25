@@ -1,5 +1,5 @@
 from elementalcms.persistence.repositories import SessionsRepository
-from elementalcms.services import UseCaseResult, NoResult, Success
+from elementalcms.services import UseCaseResult, Success
 from elementalcms.core import MongoDbContext
 
 

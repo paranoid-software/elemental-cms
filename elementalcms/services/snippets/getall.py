@@ -15,7 +15,7 @@ class GetAll:
         page = 0
         page_size = 50
         while True:
-            result = repo.find({}, page, page_size)
+            result = repo.find(page=page, page_size=page_size)
             total = result['total']
             if total == 0:
                 return NoResult()

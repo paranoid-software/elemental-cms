@@ -1,5 +1,5 @@
 from elementalcms.persistence.repositories import SessionsRepository
-from elementalcms.services import UseCaseResult, NoResult, Success
+from elementalcms.services import UseCaseResult, NoResult, Success, Failure
 from elementalcms.core import MongoDbContext
 
 
@@ -11,7 +11,11 @@ class UpsertMe:
 
     def execute(self, value) -> UseCaseResult:
         repo = SessionsRepository(self.__db_context)
-        result = repo.update({'sid': value['sid']}, value, True)
-        if result.modified_count <= 0:
+        find_result = repo.find({'sid': value['sid']})
+        if find_result['total'] == 0:
             return NoResult()
-        return Success(result)
+        if find_result['total'] > 1:
+            return Failure({'duplicatedSession': True})
+        current = find_result['items'][0]
+        replace_one_result = repo.replace_one(current['_id'], value, True)
+        return Success(replace_one_result)
