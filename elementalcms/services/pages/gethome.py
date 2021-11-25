@@ -14,7 +14,7 @@ class GetHome:
             repo = DraftsRepository(self.__db_context)
         else:
             repo = PagesRepository(self.__db_context)
-        result = repo.find({'isHome': True, 'language': language}, 0, 10)
+        result = repo.find({'isHome': True, 'language': language}, page=0, page_size=10)
         if result['total'] == 0:
             return NoResult()
         page = result['items'][0]

@@ -1,4 +1,4 @@
-from elementalcms.persistence.repositories import GlobalDepsRepository
+from elementalcms.persistence.repositories import MediaRepository
 from elementalcms.services import UseCaseResult, NoResult, Success
 from elementalcms.core import MongoDbContext
 
@@ -10,17 +10,17 @@ class GetAll:
         self.__db_context = db_context
 
     def execute(self) -> UseCaseResult:
-        repo = GlobalDepsRepository(self.__db_context)
-        pages = []
+        repo = MediaRepository(self.__db_context)
+        media_files = []
         page = 0
         page_size = 50
         while True:
-            result = repo.find(sort={'type': 1, 'order': 1}, page=page, page_size=page_size)
+            result = repo.find(sort={'name': 1}, page=page, page_size=page_size)
             total = result['total']
             if total == 0:
                 return NoResult()
-            pages.extend(result['items'])
-            if len(pages) >= total:
+            media_files.extend(result['items'])
+            if len(media_files) >= total:
                 break
             page += 1
-        return Success(pages)
+        return Success(media_files)

@@ -15,5 +15,5 @@ class UpdateOne:
         if '_id' in snippet:
             del snippet['_id']
         snippet['lastModifiedAt'] = datetime.datetime.utcnow()
-        success = repo.update(_id, snippet, True)
+        success = repo.replace_one(_id, snippet, True)
         return Success(success)

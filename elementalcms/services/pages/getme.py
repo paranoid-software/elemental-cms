@@ -16,7 +16,7 @@ class GetMe:
             repo = PagesRepository(self.__db_context)
         page = 0
         page_size = 100
-        result = repo.find({'name': name, 'language': language}, page, page_size)
+        result = repo.find({'name': name, 'language': language}, page=page, page_size=page_size)
         if result['total'] == 0:
             return NoResult()
         page = result['items'][0]

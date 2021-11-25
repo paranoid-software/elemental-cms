@@ -12,10 +12,10 @@ class GetMe:
     def execute(self, sid) -> UseCaseResult:
         repo = SessionsRepository(self.__db_context)
         result = repo.find({'sid': sid})
-        if result is None or len(result) == 0:
+        if result['total'] == 0:
             return NoResult()
 
-        if len(result) > 1:
+        if result['total'] > 1:
             return Failure({'duplicatedSession': True})
 
-        return Success(result[0])
+        return Success(result['items'][0])

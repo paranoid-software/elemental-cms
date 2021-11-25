@@ -14,7 +14,7 @@ class Collect:
 
     def exec(self):
         if self.context.cms_core_context.STATIC_BUCKET is None:
-            click.echo('STATIC_BICKET parameter not found on current settings.')
+            click.echo('STATIC_BUCKET parameter not found on current settings.')
             return
         client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         bucket = client.bucket(self.context.cms_core_context.STATIC_BUCKET)
@@ -29,19 +29,22 @@ class Collect:
         for r, d, f in os.walk(source_folder):
             for file in f:
                 source_file_name = f'{r}/{file}'
-                destination_blob_name = source_file_name.replace(source_folder, '')[1:]
+                destination_blob_name = source_file_name.replace(source_folder, '', 1).lstrip('/')
                 blob = bucket.blob(destination_blob_name)
                 blob.cache_control = 'private, max-age=180'
-                blob.upload_from_filename(source_file_name)
-                click.echo(f'Uploading {source_file_name} > {destination_blob_name}')
+                try:
+                    blob.upload_from_filename(source_file_name)
+                except Exception as e:
+                    print(e)
+                click.echo(f'Uploading {source_file_name} to {destination_blob_name}')
 
     def collect_app_files(self, bucket):
         source_folder = self.context.cms_core_context.STATIC_FOLDER
         for r, d, f in os.walk(source_folder):
             for file in f:
                 source_file_name = f'{r}/{file}'
-                destination_blob_name = source_file_name.replace(source_folder, '')[1:]
+                destination_blob_name = source_file_name.replace(source_folder, '', 1).lstrip('/')
                 blob = bucket.blob(destination_blob_name)
                 blob.cache_control = 'private, max-age=180'
                 blob.upload_from_filename(source_file_name)
-                click.echo(f'Uploading {source_file_name} > {destination_blob_name}')
+                click.echo(f'Uploading {source_file_name} to {destination_blob_name}')

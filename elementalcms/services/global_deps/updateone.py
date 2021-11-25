@@ -15,5 +15,5 @@ class UpdateOne:
         if '_id' in dep:
             del dep['_id']
         dep['lastModifiedAt'] = datetime.datetime.utcnow()
-        success = repo.update(_id, dep, True)
+        success = repo.replace_one(_id, dep, True)
         return Success(success)
