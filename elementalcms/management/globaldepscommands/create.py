@@ -28,7 +28,7 @@ class Create:
         spec = {
             '_id': ObjectId(),
             'order': -1,
-            'name': 'bootstrap',
+            'name': name,
             'type': _type,
             'url': '',
             'meta': {

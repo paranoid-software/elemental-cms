@@ -34,7 +34,7 @@ class GetMe:
         page = 0
         page_size = 50
         while True:
-            result = repo.find({}, page, page_size)
+            result = repo.find(sort={'type': 1, 'order': 1}, page=page, page_size=page_size)
             total = result['total']
             if total == 0:
                 return []
