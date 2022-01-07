@@ -5,6 +5,7 @@ class FlaskContext(object):
         self.ENV = settings.get('ENV', 'development')
         self.SECRET = settings.get('SECRET', '2+2==10')
         self.SITE_NAME = settings.get('SITE_NAME', 'Elemental CMS')
+        self.GOOGLE_SITE_VERIFICATION_TOKEN = settings.get('GOOGLE_SITE_VERIFICATION_TOKEN', None)
         self.COMPANY = settings.get('COMPANY', 'Paranoid Software')
         self.CANONICAL_URL = settings.get('CANONICAL_URL', 'https://elementa.cms')
         self.LANGUAGES = settings.get('LANGUAGES', ['en', 'es'])
