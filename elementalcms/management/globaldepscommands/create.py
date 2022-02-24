@@ -1,6 +1,5 @@
 import datetime
 import os
-
 import click
 from bson import ObjectId, json_util
 
@@ -18,11 +17,13 @@ class Create:
                          'module']:
             click.echo(f'{_type} type is not supported.')
             return
-        destination_path = f'{self.context.cms_core_context.GLOBAL_DEPS_FOLDER}/{_type.replace("/", "_")}'
-        if not os.path.exists(destination_path):
-            os.makedirs(destination_path)
-        spec_file_destination_path = f'{destination_path}/{name}.json'
-        if os.path.exists(spec_file_destination_path):
+        root_folder_path = self.context.cms_core_context.GLOBAL_DEPS_FOLDER
+        type_folder_name = _type.replace('/', '_')
+        folder_path = f'{root_folder_path}/{type_folder_name}'
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        spec_file_path = f'{folder_path}/{name}.json'
+        if os.path.exists(spec_file_path):
             click.echo(f'The global dependency {name} ({_type}) already exist.')
             return
         dep = {
@@ -35,7 +36,7 @@ class Create:
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }
-        spec_file = open(spec_file_destination_path, mode="w", encoding="utf-8")
+        spec_file = open(spec_file_path, mode='w', encoding='utf-8')
         spec_file.write(json_util.dumps(dep, indent=4))
         spec_file.close()
-        click.echo(f'{destination_path}/{name}.json file has been created successfully.')
+        click.echo(f'{spec_file_path} file has been created successfully.')

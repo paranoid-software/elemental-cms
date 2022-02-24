@@ -35,7 +35,7 @@ class TestPullAllCommandShould:
                                              '--all'])
                 assert_that(result.output).contains('There are no global dependencies to pull.')
 
-    def test_fetch_every_global_dependency(self, debug_settings_fixture):
+    def test_pull_every_global_dependency(self, debug_settings_fixture):
         items = [{
                     '_id': ObjectId(),
                     'order': 0,

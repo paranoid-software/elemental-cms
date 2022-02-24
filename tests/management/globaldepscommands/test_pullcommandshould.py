@@ -129,9 +129,9 @@ class TestPullCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
                 name = 'jquery-ui'
                 _type = 'text/css'
+                folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
                 type_folder_name = _type.replace('/', '_')
                 if not os.path.exists(f'{folder_path}/{type_folder_name}'):
                     os.makedirs(f'{folder_path}/{type_folder_name}')

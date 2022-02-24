@@ -25,17 +25,16 @@ class GlobalDeps(click.Group):
 
     @staticmethod
     @command(name='create', help='Create a new global dependency on your local workspace.')
-    @option('--name',
-            '-n',
+    @option('--dep',
+            '-d',
             required=True,
-            help='Gobal dependency name. It must be unique, lowercased and it can not contains special characters.')
-    @option('--dep-type',
-            '-t',
-            required=True,
-            help=f'Dependency type. It can be text/css application/javascript or module.')
+            nargs=2,
+            help='Gobal dependency name must be unique, lowercased and it can not contains special characters, '
+                 'while the type can be any of text/css application/javascript or module. '
+                 'For example create --dep jquery application/javascript')
     @pass_context
-    def create(ctx, name, dep_type):
-        Create(ctx).exec(name, dep_type)
+    def create(ctx, dep):
+        Create(ctx).exec(dep[0], dep[1])
 
     @staticmethod
     @command(name='push',
