@@ -14,10 +14,10 @@ class List:
         result = GetAll(self.context.cms_db_context).execute()
         if result.is_failure():
             if isinstance(result, NoResult):
-                click.echo('No global deps yet, create your first global dep running the [global-deps create] command.')
+                click.echo('No dependencies found. Create your first one using the [global-deps create] command.')
                 return
-            click.echo('Something went wrong and it was not possible to retreive the global deps information list.')
+            click.echo('Something went wrong and it was not possible to retrieve the global dependencies list.')
             return
 
-        for spec in result.value():
-            click.echo(f'{spec["type"]} -> {spec["name"]}')
+        for dep in result.value():
+            click.echo(f'{dep["type"]} <-> {dep["name"]}')

@@ -71,7 +71,7 @@ class GlobalDeps(click.Group):
     @pass_context
     def pull(ctx, **params):
         if params['all']:
-            click.echo('Operation not ready yet.')
+            Pull(ctx).exec('*')
             return
         Pull(ctx).exec(params['dep'])
 

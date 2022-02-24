@@ -1,0 +1,48 @@
+{
+  "application": {
+    "id": "my-elemental",
+    "name": "My Elemental",
+    "description": "Elemental CMS",
+    "tags": [
+      "python",
+      "cms",
+      "cloud-run",
+      "flask",
+      "mongodb"
+    ],
+    "httpHealthCheck": {
+      "portNumber": 80,
+      "url": "/"
+    }
+  },
+  "cmsCoreContext": {
+    "DEBUG": true,
+    "ENV": "development",
+    "SECRET": "335F3A4117AA3D87A707E2462CBA63AC559B2902",
+    "SITE_NAME": "Elemental Site",
+    "COMPANY": "Paranoid Software",
+    "CANONICAL_URL": "https://my-elemenatal.io",
+    "LANGUAGES": [
+      "en",
+      "es"
+    ],
+    "DEFAULT_LANGUAGE": "en",
+    "LANGUAGE_MODE": "multi",
+    "APP_NAME": "app",
+    "STATIC_FOLDER": "static",
+    "MEDIA_FOLDER": "media",
+    "STATIC_URL": "/static",
+    "MEDIA_URL": "/media",
+    "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
+    "PAGES_FOLDER": "workspace/pages",
+    "SNIPPETS_FOLDER": "workspace/snippets"
+  },
+  "cmsDbContext": {
+    "id": "vanilla",
+    "hostName": "192.168.1.226",
+    "portNumber": 27017,
+    "databaseName": "",
+    "username": "root",
+    "password": "pwd"
+  }
+}
