@@ -28,11 +28,12 @@ class TestCreateCommandShould:
                 f.write(json.dumps(debug_settings_fixture))
             name = 'jquery'
             _type = 'application/javascript'
-            folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+            root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
             type_folder_name = _type.replace('/', '_')
-            if not os.path.exists(f'{folder_path}/{type_folder_name}'):
-                os.makedirs(f'{folder_path}/{type_folder_name}')
-            spec_file_path = f'{folder_path}/{type_folder_name}/{name}.json'
+            folder_path = f'{root_folder_path}/{type_folder_name}'
+            if not os.path.exists(f'{folder_path}'):
+                os.makedirs(f'{folder_path}')
+            spec_file_path = f'{folder_path}/{name}.json'
             with open(spec_file_path, 'x') as s:
                 s.write('...')
             result = runner.invoke(cli, ['global-deps',
@@ -48,9 +49,10 @@ class TestCreateCommandShould:
                 f.write(json.dumps(debug_settings_fixture))
             name = 'jquery'
             _type = 'application/javascript'
-            folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+            root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
             type_folder_name = _type.replace('/', '_')
+            folder_path = f'{root_folder_path}/{type_folder_name}'
             runner.invoke(cli, ['global-deps',
                                 'create',
                                 '-d', name, _type])
-            assert_that(f'{folder_path}/{type_folder_name}/{name}.json').exists()
+            assert_that(f'{folder_path}/{name}.json').exists()

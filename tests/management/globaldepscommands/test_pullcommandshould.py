@@ -100,13 +100,13 @@ class TestPullCommandShould:
                     f.write(json.dumps(debug_settings_fixture))
                 name = 'jquery'
                 _type = 'application/javascript'
-
                 runner.invoke(cli, ['global-deps',
                                     'pull',
                                     '-d', name, _type])
-                folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+                root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
                 type_folder_name = _type.replace('/', '_')
-                assert_that(f'{folder_path}/{type_folder_name}/{name}.json').exists()
+                folder_path = f'{root_folder_path}/{type_folder_name}'
+                assert_that(f'{folder_path}/{name}.json').exists()
 
     def test_create_backup_file_for_pulled_item(self, debug_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
@@ -131,11 +131,12 @@ class TestPullCommandShould:
                 os.makedirs('settings')
                 name = 'jquery-ui'
                 _type = 'text/css'
-                folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+                root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
                 type_folder_name = _type.replace('/', '_')
-                if not os.path.exists(f'{folder_path}/{type_folder_name}'):
-                    os.makedirs(f'{folder_path}/{type_folder_name}')
-                spec_file_path = f'{folder_path}/{type_folder_name}/{name}.json'
+                folder_path = f'{root_folder_path}/{type_folder_name}'
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                spec_file_path = f'{folder_path}/{name}.json'
                 with open(spec_file_path, 'x') as s:
                     s.write('...')
                 with open('settings/debug.json', 'w') as f:
@@ -143,5 +144,5 @@ class TestPullCommandShould:
                 runner.invoke(cli, ['global-deps',
                                     'pull',
                                     '-d', name, _type])
-                backups_folder_path = f'{folder_path}/{type_folder_name}/.bak'
+                backups_folder_path = f'{folder_path}/.bak'
                 assert_that(os.listdir(backups_folder_path)).is_length(1)
