@@ -1,0 +1,114 @@
+import os
+import time
+from typing import Any
+from bson import json_util
+from dataclasses_serialization.bson import BSONSerializer
+
+from pymongo import MongoClient
+from typing import List, Optional
+
+
+class MongoDbStateData:
+    coll_name: str
+    items: Optional[List[Any]]
+
+    def __init__(self, coll_name, items):
+        self.coll_name = coll_name
+        self.items = items
+
+
+class MongoDbState:
+    db_name: str
+    data: Optional[List[MongoDbStateData]]
+
+    def __init__(self, db_name, data: Optional[List[MongoDbStateData]] = None):
+        self.db_name = db_name
+        self.data = data
+
+
+class MongoDbStateDataFromFile:
+    coll_name: str
+    path: str
+
+    def __init__(self, coll_name, path):
+        self.coll_name = coll_name
+        self.path = path
+
+
+class MongoDbStateFromFile:
+    db_name: str
+    files: Optional[List[MongoDbStateDataFromFile]]
+
+    def __init__(self, db_name, files: Optional[List[MongoDbStateDataFromFile]] = None):
+        self.db_name = db_name
+        self.files = files
+
+
+class EphemeralMongoContext:
+
+    __connection_string: str
+    __db_names: [str] = []
+
+    __state: List[MongoDbState] = []
+
+    def __init__(self,
+                 connection_string: str,
+                 initial_state_from_files: Optional[List[MongoDbStateFromFile]] = None,
+                 initial_state: Optional[List[MongoDbState]] = None):
+
+        self.__connection_string = connection_string
+
+        if (initial_state_from_files is None) == (initial_state is None):
+            raise ValueError('Exactly one of `initial_state_from_files` or `initial_state` must be provided.')
+
+        if initial_state_from_files is not None:
+
+            self.__state: List[MongoDbState] = []
+
+            for state in initial_state_from_files:
+                data: List[MongoDbStateData] = []
+                for file in state.files:
+                    file_data = []
+                    if os.path.exists(file.path):
+                        with open(file.path) as f:
+                            file_data = json_util.loads(f.read())
+                    data.append(MongoDbStateData(coll_name=file.coll_name,
+                                                 items=file_data))
+                self.__state.append(MongoDbState(db_name=state.db_name,
+                                                 data=data))
+
+            return
+
+        self.__state = [] + initial_state
+
+    def __enter__(self):
+
+        self.__db_names = {}
+        first_db_name = None
+
+        for state in self.__state:
+            db_name = f'{state.db_name}_{round(time.time() * 1000)}'
+            if first_db_name is None:
+                first_db_name = db_name
+            client = self._get_client()
+            self.__db_names[state.db_name] = db_name
+            if state.data is None:
+                continue
+            for data in state.data:
+                coll_name = data.coll_name
+                for item in data.items:
+                    if 'id' in item:
+                        item['_id'] = item['id']
+                        del item['id']
+                    client.get_database(db_name).get_collection(coll_name).insert(BSONSerializer.serialize(item))
+
+        return first_db_name if len(self.__db_names) <= 1 else self.__db_names
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        for db_name in self.__db_names:
+            client = self._get_client()
+            client.drop_database(self.__db_names[db_name])
+
+    def _get_client(self):
+        client = MongoClient(self.__connection_string)
+        return client

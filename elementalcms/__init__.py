@@ -11,10 +11,11 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.64"
+__version__ = "1.0.65"
 
 
 class Elemental:
+
     def __init__(self, app: Flask, context: ElementalContext):
 
         app.config.from_object(context.cms_core_context)
@@ -22,9 +23,9 @@ class Elemental:
         # Passing DB Context to Blueprints
         app.config['CMS_DB_CONTEXT'] = context.cms_db_context
 
-        # Support for package translations
         translations_paths = [
             'translations',
+            # Support for package translations
             f'{pathlib.Path(__file__).resolve().parent}/translations'
         ]
         app.config['BABEL_TRANSLATION_DIRECTORIES'] = ';'.join(translations_paths)
@@ -33,6 +34,8 @@ class Elemental:
         app.register_blueprint(admin)
         presenter.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
         app.register_blueprint(presenter)
+
+        # Session support using MongoDB
         app.session_interface = MongoSessionInterface(context.cms_db_context)
 
         babel = Babel(app)
@@ -71,14 +74,12 @@ class Elemental:
         def elemental_static_url_for_processor():
             def elemental_static_url_for(file_path=''):
                 return f'{context.cms_core_context.STATIC_URL}/{file_path}'
-
             return dict(elemental_static_url_for=elemental_static_url_for)
 
         @app.context_processor
         def elemental_media_url_for_processor():
             def elemental_media_url_for(file_path=''):
                 return f'{context.cms_core_context.MEDIA_URL}/{file_path}'
-
             return dict(elemental_media_url_for=elemental_media_url_for)
 
         @app.context_processor
@@ -86,8 +87,7 @@ class Elemental:
             def render_snippet(name):
                 get_me_result = GetMe(context.cms_db_context).execute(name)
                 if get_me_result.is_failure():
-                    raise Exception(f'There is no snippet under the name {name}')
+                    raise Exception(f'There are no snippets under the name {name}')
                 content = render_template_string(get_me_result.value()['content'])
                 return Markup(content)
-
             return dict(render_snippet=render_snippet)

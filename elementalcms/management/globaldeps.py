@@ -12,79 +12,77 @@ class GlobalDeps(click.Group):
         self.name = 'global-deps'
         self.add_command(self.list)
         self.add_command(self.create)
-        self.add_command(self.remove)
         self.add_command(self.push)
         self.add_command(self.pull)
+        self.add_command(self.remove)
 
     @staticmethod
     @command(name='list',
-             help='Global deps list.')
+             help='List all previously pushed global dependencies.')
     @pass_context
     def list(ctx):
         List(ctx).exec()
 
     @staticmethod
-    @command(name='create', help='Create a new global dependency on your local workspace.')
-    @option('--name',
-            '-n',
+    @command(name='create', help='Create a new global dependency on the local workspace.')
+    @option('--dep',
+            '-d',
             required=True,
-            help='Gobal dependency name. It must be unique, lowercased and it can not contains special characters.')
-    @option('--dep-type',
-            '-t',
-            required=True,
-            help=f'Dependency type. It can be text/css application/javascript or module.')
+            nargs=2,
+            help='Name and type for the gobal dep(s) to be created; name must be unique, lowercased and it can not '
+                 'contains special characters, and the type can be any of: text/css application/javascript or module. '
+                 'For example create --dep jquery application/javascript')
     @pass_context
-    def create(ctx, name, dep_type):
-        Create(ctx).exec(name, dep_type)
+    def create(ctx, dep):
+        Create(ctx).exec(dep[0], dep[1])
 
     @staticmethod
     @command(name='push',
-             help='Push global dep(s) specs into the CMS database.')
+             help='Push global dep(s) specs to the CMS database.')
     @option('--all',
             is_flag=True,
-            help='Push all global deps.')
+            help='Push all global dependencies from the local workspace.')
     @option('--dep',
             '-d',
             nargs=2,
             multiple=True,
-            help='Name and type for the global dep to be pushed. For example: push -d bootstrap text/css')
+            help='Name and type for the global dep(s) to be pushed. '
+                 'For example: push -d bootstrap text/css -d bootstrap application/javascript')
     @constraint(RequireExactly(1), ['all', 'dep'])
     @pass_context
     def push(ctx, **params):
         if params['all']:
-            click.echo('Operation not ready yet.')
+            Push(ctx).exec('*')
             return
         Push(ctx).exec(params['dep'])
 
     @staticmethod
     @command(name='pull',
-             help='Pull dep(s) specs from the CMS database.')
+             help='Pull global dep(s) specs from the CMS database.')
     @option('--all',
             is_flag=True,
-            help='Pull all global deps.')
+            help='Pull all global dependencies into the local workspace.')
     @option('--dep',
             '-d',
             nargs=2,
             multiple=True,
-            help='Name and type for the global dep to be pulled. For example: pull -d bootstrap application/javascript')
+            help='Name and type for the global dep(s) to be pulled. '
+                 'For example: pull -d bootstrap application/javascript')
     @constraint(RequireExactly(1), ['all', 'dep'])
     @pass_context
     def pull(ctx, **params):
         if params['all']:
-            click.echo('Operation not ready yet.')
+            Pull(ctx).exec('*')
             return
         Pull(ctx).exec(params['dep'])
 
     @staticmethod
-    @command(name='remove', help='Remove a global dep.')
-    @option('--name',
-            '-n',
-            required=True,
-            help='Name of the global dep to be removed.')
-    @option('--dep-type',
-            '-t',
-            required=True,
-            help=f'Type to be removed.')
+    @command(name='remove', help='Remove global dependencies from the CMS database.')
+    @option('--dep',
+            '-d',
+            nargs=2,
+            help='Name and type for the global dependency to be removed. '
+                 'For example: remove --dep bootstrap application/javascript')
     @pass_context
-    def remove(ctx, name, dep_type):
-        Remove(ctx).exec(name, dep_type)
+    def remove(ctx, dep):
+        Remove(ctx).exec(dep[0], dep[1])

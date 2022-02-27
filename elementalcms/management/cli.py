@@ -15,7 +15,7 @@ from elementalcms.services.sessions import CreateExpirationIndex
 
 
 @click.group()
-@click.option('--debug/--no-debug', default=True)
+@click.option('--debug/--no-debug', default=True, help='Debug mode by default.')
 @click.pass_context
 def cli(ctx, debug):
     """Elemental CMS management CLI"""
