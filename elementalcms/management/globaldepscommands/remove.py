@@ -18,19 +18,13 @@ class Remove:
             click.echo(f'Global dependency {name} ({_type}) does not exist.')
             return
         dep = get_me_result.value()
-        self.build_backup(dep['_id'])
-        remove_one_result = RemoveOne(self.context.cms_db_context).execute(dep['_id'])
-        if not remove_one_result.value():
-            click.echo(f'Global dependency {name} ({_type}) remove command failed.')
+        self.build_backup(dep)
+        RemoveOne(self.context.cms_db_context).execute(dep['_id'])
         click.echo(f'Global dependency {name} ({_type}) removed successfully.')
 
-    def build_backup(self, _id):
-        get_one_result = GetOne(self.context.cms_db_context).execute(_id)
-        if get_one_result.is_failure():
-            return
+    def build_backup(self, dep):
         click.echo('Building backup...')
         root_folder_path = self.context.cms_core_context.GLOBAL_DEPS_FOLDER
-        dep = get_one_result.value()
         type_folder_name = dep['type'].replace('/', '_')
         sufix = round(time.time())
         backups_folder_path = f'{root_folder_path}/{type_folder_name}/.bak'
