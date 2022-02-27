@@ -25,7 +25,7 @@ class GenericRepository(MongoDbConnectionManager):
         if not ObjectId.is_valid(_id):
             return False
         update_result = self._coll.replace_one({'_id': ObjectId(_id)}, spec, upsert=upsert)
-        return update_result.modified_count == 1
+        return update_result.raw_result['n'] == 1 or update_result.modified_count == 1
 
     def find(self, query=None, sort=None, page=0, page_size=10):
 

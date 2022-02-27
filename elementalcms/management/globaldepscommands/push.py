@@ -62,10 +62,7 @@ class Push:
                     continue
                 _id = dep['_id']
                 self.build_backup(_id)
-                update_one_result = UpdateOne(self.context.cms_db_context).execute(_id, dep)
-                if update_one_result.is_failure():
-                    click.echo('Something went wrong and it was not possible to perform the operation.')
-                    continue
+                UpdateOne(self.context.cms_db_context).execute(_id, dep)
                 click.echo(f'Global dependency {name} ({_type}) pushed successfully.')
 
     def build_backup(self, _id):
@@ -81,7 +78,7 @@ class Push:
         backups_folder_path = f'{folder_path}/.bak'
         if not os.path.exists(backups_folder_path):
             os.makedirs(backups_folder_path)
-        spec_file_destination_path = f'{backups_folder_path}/{dep["name"]}-{sufix}.json'
-        spec_file = open(spec_file_destination_path, mode='w', encoding='utf-8')
+        spec_file_path = f'{backups_folder_path}/{dep["name"]}-{sufix}.json'
+        spec_file = open(spec_file_path, mode='w', encoding='utf-8')
         spec_file.write(json_util.dumps(dep, indent=4))
         spec_file.close()
