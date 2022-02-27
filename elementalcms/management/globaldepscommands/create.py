@@ -12,6 +12,9 @@ class Create:
         self.context: ElementalContext = ctx.obj['elemental_context']
 
     def exec(self, name, _type):
+
+        # TODO: Validate naming constraints
+
         if _type not in ['application/javascript',
                          'text/css',
                          'module']:

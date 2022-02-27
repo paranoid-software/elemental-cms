@@ -78,7 +78,7 @@ class Push:
         backups_folder_path = f'{folder_path}/.bak'
         if not os.path.exists(backups_folder_path):
             os.makedirs(backups_folder_path)
-        spec_file_path = f'{backups_folder_path}/{dep["name"]}-{sufix}.json'
-        spec_file = open(spec_file_path, mode='w', encoding='utf-8')
-        spec_file.write(json_util.dumps(dep, indent=4))
-        spec_file.close()
+        spec_backup_file_path = f'{backups_folder_path}/{dep["name"]}-{sufix}.json'
+        spec_backup_file = open(spec_backup_file_path, mode='w', encoding='utf-8')
+        spec_backup_file.write(json_util.dumps(dep, indent=4))
+        spec_backup_file.close()
