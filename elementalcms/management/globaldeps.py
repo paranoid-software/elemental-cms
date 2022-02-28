@@ -1,11 +1,10 @@
-import click
-from cloup import constraint, option, command, pass_context
+from cloup import constraint, option, command, pass_context, Group
 from cloup.constraints import RequireExactly
 
 from .globaldepscommands import List, Create, Push, Pull, Remove
 
 
-class GlobalDeps(click.Group):
+class GlobalDeps(Group):
 
     def __init__(self):
         super(GlobalDeps, self).__init__()
@@ -16,15 +15,17 @@ class GlobalDeps(click.Group):
         self.add_command(self.pull)
         self.add_command(self.remove)
 
+        # TODO: Add command to find differences between local workspace and CMS database
+
     @staticmethod
     @command(name='list',
-             help='List all previously pushed global dependencies.')
+             help='List pushed global dependencies.')
     @pass_context
     def list(ctx):
         List(ctx).exec()
 
     @staticmethod
-    @command(name='create', help='Create a new global dependency on the local workspace.')
+    @command(name='create', help='Create a new global dependency spec file on the local workspace.')
     @option('--dep',
             '-d',
             required=True,
@@ -84,5 +85,5 @@ class GlobalDeps(click.Group):
             help='Name and type for the global dependency to be removed. '
                  'For example: remove --dep bootstrap application/javascript')
     @pass_context
-    def remove(ctx, dep):
-        Remove(ctx).exec(dep[0], dep[1])
+    def remove(ctx, dep) -> str:
+        return Remove(ctx).exec(dep[0], dep[1])
