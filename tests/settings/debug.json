@@ -39,10 +39,10 @@
   },
   "cmsDbContext": {
     "id": "vanilla",
-    "hostName": "192.168.1.226",
-    "portNumber": 27017,
+    "hostName": "129.80.11.131",
+    "portNumber": 30017,
     "databaseName": "",
-    "username": "root",
-    "password": "pwd"
+    "username": "sa",
+    "password": "p%40ss"
   }
 }

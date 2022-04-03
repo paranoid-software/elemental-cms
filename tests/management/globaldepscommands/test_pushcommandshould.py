@@ -39,7 +39,7 @@ class TestPushCommandShould:
         }, {
             '_id': '1',
             'order': 0,
-            'name': 'plugster-ui',
+            'name': 'calendar',
             'type': 'module',
             'url': '',
             'meta': {},
@@ -72,7 +72,7 @@ class TestPushCommandShould:
                 'createdAt': datetime.datetime.utcnow(),
                 'lastModifiedAt': datetime.datetime.utcnow()
             }))
-        with open(f'{root_folder_path}/module/unmatching-name.json', 'x') as s:
+        with open(f'{root_folder_path}/module/unmatched-name.json', 'x') as s:
             s.write(json_util.dumps({
                 '_id': ObjectId(),
                 'order': 0,
@@ -90,6 +90,7 @@ class TestPushCommandShould:
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
                 f.write(json.dumps(debug_settings_fixture))
+            # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
                                          'push',
                                          '-d', 'dep-one', 'unsupported-type'])
@@ -101,6 +102,7 @@ class TestPushCommandShould:
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
                 f.write(json.dumps(debug_settings_fixture))
+            # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
                                          'push',
                                          '-d', 'my-missing-css-dep', 'text/css'])
@@ -119,6 +121,7 @@ class TestPushCommandShould:
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
                 self.spec_files_setup(specs, debug_settings_fixture)
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'invalid', 'module'])
@@ -137,6 +140,7 @@ class TestPushCommandShould:
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
                 self.spec_files_setup(specs, debug_settings_fixture)
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'jquery', 'application/javascript'])
@@ -155,9 +159,10 @@ class TestPushCommandShould:
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
                 self.spec_files_setup(specs, debug_settings_fixture)
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
-                                             '--dep', 'plugster-ui', 'module'])
+                                             '--dep', 'calendar', 'module'])
                 assert_that(re.findall('Invalid spec _id', result.output)).is_length(1)
 
     def test_show_1_missing_name_feedback_message(self, debug_settings_fixture, specs):
@@ -173,6 +178,7 @@ class TestPushCommandShould:
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
                 self.spec_files_setup(specs, debug_settings_fixture)
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'missing-name', 'module'])
@@ -191,9 +197,10 @@ class TestPushCommandShould:
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
                 self.spec_files_setup(specs, debug_settings_fixture)
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
-                                             '--dep', 'unmatching-name', 'module'])
+                                             '--dep', 'unmatched-name', 'module'])
                 assert_that(re.findall('Invalid spec name', result.output)).is_length(1)
 
     def test_show_1_success_feedback_message(self, debug_settings_fixture, specs):
@@ -209,6 +216,7 @@ class TestPushCommandShould:
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
                 self.spec_files_setup(specs, debug_settings_fixture)
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'jquery-ui', 'text/css'])
@@ -231,11 +239,14 @@ class TestPushCommandShould:
                 self.spec_files_setup(specs, debug_settings_fixture)
                 name = 'jquery-ui'
                 _type = 'text/css'
-                root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
-                type_folder_name = _type.replace('/', '_')
-                folder_path = f'{root_folder_path}/{type_folder_name}'
-                runner.invoke(cli, ['global-deps',
-                                    'push',
-                                    '-d', name, _type])
-                backups_folder_path = f'{folder_path}/.bak'
-                assert_that(os.listdir(backups_folder_path)).is_length(1)
+                # noinspection PyTypeChecker
+                result = runner.invoke(cli,
+                                       [
+                                           'global-deps',
+                                           'push',
+                                           '-d', name, _type
+                                       ],
+                                       standalone_mode=False)
+
+                assert_that(result.return_value).is_length(1)
+                assert_that(result.return_value[0]).exists()
