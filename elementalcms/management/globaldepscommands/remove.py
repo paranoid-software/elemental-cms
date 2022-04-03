@@ -28,11 +28,11 @@ class Remove:
         click.echo('Building backup...')
         root_folder_path = self.context.cms_core_context.GLOBAL_DEPS_FOLDER
         type_folder_name = dep['type'].replace('/', '_')
-        sufix = round(time.time())
+        suffix = round(time.time())
         backups_folder_path = f'{root_folder_path}/{type_folder_name}/.bak'
         if not os.path.exists(backups_folder_path):
             os.makedirs(backups_folder_path)
-        spec_backup_file_path = f'{backups_folder_path}/{dep["name"]}-{sufix}.json'
+        spec_backup_file_path = f'{backups_folder_path}/{dep["name"]}-{suffix}.json'
         spec_backup_file = open(spec_backup_file_path, mode='w', encoding='utf-8')
         spec_backup_file.write(json_util.dumps(dep, indent=4))
         spec_backup_file.close()

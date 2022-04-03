@@ -1,6 +1,6 @@
 # elemental CMS
 
-Elemental is a Flask and MongoDB based CMS intended for developers FIRST.
+Elemental is a Flask and MongoDB based CMS intended mainly for developers.
 
 The main interaction with the tool takes place through its CLI:
 
@@ -10,7 +10,7 @@ elemental-cms
 
 ## Work in progress
 
-- Basic documentation.
+- [Documentation](https://paranoid-software.getoutline.com/share/a300ec8e-4bc6-47c0-aba0-fbe1f80f1623).
 - Global deps management module.
 - 
 
@@ -23,7 +23,7 @@ elemental-cms
 
 ## Setup
 
-Once we have our project folder created and our virtual environment on place we proceede to install Elemental CMS through pip.
+Once we have our project folder created and our virtual environment on place we proceed to install Elemental CMS using pip.
 
 ```shell
 pip install elemental-cms
@@ -138,7 +138,7 @@ In order to push a page we must use the pages push command which can be called l
 elemental-cms pages push -p home en
 ```
 
-This will send the metadata and contet to the database and create a "draft" version of the page.
+This will send the metadata and content to the database and create a "draft" version of the page.
 
 ## Publishing a page
 
@@ -148,7 +148,7 @@ Until now the new page is stored on the "drafts" repository, in order to be acce
 elemental-cms pages publish -n home -l en
 ```
 
-## Runinng the app
+## Running the app
 
 Until now, we have created a multilanguage page and successfully published it, but we are missing our application entry point.
 

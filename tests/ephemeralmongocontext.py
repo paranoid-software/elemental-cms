@@ -100,7 +100,7 @@ class EphemeralMongoContext:
                     if 'id' in item:
                         item['_id'] = item['id']
                         del item['id']
-                    client.get_database(db_name).get_collection(coll_name).insert(BSONSerializer.serialize(item))
+                    client.get_database(db_name).get_collection(coll_name).insert_one(BSONSerializer.serialize(item))
 
         return first_db_name if len(self.__db_names) <= 1 else self.__db_names
 

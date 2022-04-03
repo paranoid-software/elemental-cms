@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cloup import constraint, option, command, pass_context, Group
 from cloup.constraints import RequireExactly
 
@@ -30,7 +32,7 @@ class GlobalDeps(Group):
             '-d',
             required=True,
             nargs=2,
-            help='Name and type for the gobal dep(s) to be created; name must be unique, lowercased and it can not '
+            help='Name and type for the global dep(s) to be created; name must be unique, lowercase and it can not '
                  'contains special characters, and the type can be any of: text/css application/javascript or module. '
                  'For example create --dep jquery application/javascript')
     @pass_context
@@ -51,11 +53,10 @@ class GlobalDeps(Group):
                  'For example: push -d bootstrap text/css -d bootstrap application/javascript')
     @constraint(RequireExactly(1), ['all', 'dep'])
     @pass_context
-    def push(ctx, **params):
+    def push(ctx, **params) -> [str]:
         if params['all']:
-            Push(ctx).exec('*')
-            return
-        Push(ctx).exec(params['dep'])
+            return Push(ctx).exec('*')
+        return Push(ctx).exec(params['dep'])
 
     @staticmethod
     @command(name='pull',
@@ -71,19 +72,19 @@ class GlobalDeps(Group):
                  'For example: pull -d bootstrap application/javascript')
     @constraint(RequireExactly(1), ['all', 'dep'])
     @pass_context
-    def pull(ctx, **params):
+    def pull(ctx, **params) -> [str]:
         if params['all']:
-            Pull(ctx).exec('*')
-            return
-        Pull(ctx).exec(params['dep'])
+            return Pull(ctx).exec('*')
+        return Pull(ctx).exec(params['dep'])
 
     @staticmethod
     @command(name='remove', help='Remove global dependencies from the CMS database.')
     @option('--dep',
             '-d',
+            required=True,
             nargs=2,
             help='Name and type for the global dependency to be removed. '
                  'For example: remove --dep bootstrap application/javascript')
     @pass_context
-    def remove(ctx, dep) -> str:
+    def remove(ctx, dep) -> Optional[str]:
         return Remove(ctx).exec(dep[0], dep[1])

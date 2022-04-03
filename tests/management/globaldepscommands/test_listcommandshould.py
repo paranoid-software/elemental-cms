@@ -29,6 +29,7 @@ class TestListCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'list'])
                 assert_that(result.output).contains('There are no global dependencies to list.')
@@ -45,7 +46,7 @@ class TestListCommandShould:
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }, {
                     '_id': ObjectId(),
-                    'order': 0,
+                    'order': 1,
                     'name': 'jquery-ui',
                     'type': 'text/css',
                     'url': '',
@@ -54,8 +55,8 @@ class TestListCommandShould:
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }, {
                     '_id': ObjectId(),
-                    'order': 0,
-                    'name': 'plugster-ui',
+                    'order': 2,
+                    'name': 'datejs',
                     'type': 'model',
                     'url': '',
                     'meta': {},
@@ -76,6 +77,7 @@ class TestListCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'list'])
                 total_items = len(items)

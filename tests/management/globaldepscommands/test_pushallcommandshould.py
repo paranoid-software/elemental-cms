@@ -10,7 +10,7 @@ from elementalcms.core import MongoDbContext, FlaskContext
 from elementalcms.management import cli
 
 from tests import EphemeralMongoContext
-from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
+from tests.ephemeralmongocontext import MongoDbState
 
 
 class TestPushAllCommandShould:
@@ -27,6 +27,7 @@ class TestPushAllCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--all'])
@@ -44,8 +45,8 @@ class TestPushAllCommandShould:
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }, {
                     '_id': ObjectId(),
-                    'order': 0,
-                    'name': 'jquery-ui',
+                    'order': 1,
+                    'name': 'semantic-ui',
                     'type': 'text/css',
                     'url': '',
                     'meta': {},
@@ -53,8 +54,8 @@ class TestPushAllCommandShould:
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }, {
                     '_id': ObjectId(),
-                    'order': 0,
-                    'name': 'plugster-ui',
+                    'order': 2,
+                    'name': 'slack',
                     'type': 'module',
                     'url': '',
                     'meta': {},
@@ -83,6 +84,7 @@ class TestPushAllCommandShould:
                     spec_file_path = f'{folder_path}/{name}.json'
                     with open(spec_file_path, 'x') as s:
                         s.write(json_util.dumps(spec))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--all'])

@@ -25,12 +25,13 @@ class TestPullCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'pull',
                                              '-d', 'jquery', 'application/javascript'])
                 assert_that(result.exception).is_not_none()
 
-    def test_show_2_unsuccessfull_pull_operations_feedback_message(self, debug_settings_fixture):
+    def test_show_2_unsuccessful_pull_operations_feedback_message(self, debug_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
@@ -41,13 +42,14 @@ class TestPullCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'pull',
                                              '-d', 'dep-one', 'module',
-                                             '-d', 'dep-two', 'application/javscript'])
+                                             '-d', 'dep-two', 'application/javascript'])
                 assert_that(re.findall('does not exist', result.output)).is_length(2)
 
-    def test_show_1_successfull_pull_operation_feedback_message(self, debug_settings_fixture: dict):
+    def test_show_1_successful_pull_operation_feedback_message(self, debug_settings_fixture: dict):
         with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
@@ -70,6 +72,7 @@ class TestPullCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'pull',
                                              '-d', 'jquery', 'application/javascript'])
@@ -100,6 +103,7 @@ class TestPullCommandShould:
                     f.write(json.dumps(debug_settings_fixture))
                 name = 'jquery'
                 _type = 'application/javascript'
+                # noinspection PyTypeChecker
                 runner.invoke(cli, ['global-deps',
                                     'pull',
                                     '-d', name, _type])
@@ -128,7 +132,6 @@ class TestPullCommandShould:
             debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                os.makedirs('settings')
                 name = 'jquery-ui'
                 _type = 'text/css'
                 root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
@@ -139,10 +142,17 @@ class TestPullCommandShould:
                 spec_file_path = f'{folder_path}/{name}.json'
                 with open(spec_file_path, 'x') as s:
                     s.write('...')
+                os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
-                runner.invoke(cli, ['global-deps',
-                                    'pull',
-                                    '-d', name, _type])
-                backups_folder_path = f'{folder_path}/.bak'
-                assert_that(os.listdir(backups_folder_path)).is_length(1)
+                # noinspection PyTypeChecker
+                result = runner.invoke(cli,
+                                       [
+                                           'global-deps',
+                                           'pull',
+                                           '-d', name, _type
+                                       ],
+                                       standalone_mode=False)
+
+                assert_that(result.return_value).is_length(1)
+                assert_that(result.return_value[0]).exists()

@@ -30,6 +30,7 @@ class TestPullAllCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'pull',
                                              '--all'])
@@ -47,7 +48,7 @@ class TestPullAllCommandShould:
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }, {
                     '_id': ObjectId(),
-                    'order': 0,
+                    'order': 1,
                     'name': 'jquery-ui',
                     'type': 'text/css',
                     'url': '',
@@ -56,8 +57,8 @@ class TestPullAllCommandShould:
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }, {
                     '_id': ObjectId(),
-                    'order': 0,
-                    'name': 'plugster-ui',
+                    'order': 2,
+                    'name': 'lodash',
                     'type': 'module',
                     'url': '',
                     'meta': {},
@@ -78,6 +79,7 @@ class TestPullAllCommandShould:
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
                     f.write(json.dumps(debug_settings_fixture))
+                # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'pull',
                                              '--all'])
