@@ -16,7 +16,7 @@ class List:
             if isinstance(result, NoResult):
                 click.echo('No media files yet, create your first media file running the [media push] command.')
                 return
-            click.echo('Something went wrong and it was not possible to retreive the media information list.')
+            click.echo('Something went wrong and it was not possible to retrieve the media list.')
             return
 
         for spec in result.value():

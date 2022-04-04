@@ -25,9 +25,9 @@ class Media(click.Group):
     @argument('pattern')
     @pass_context
     def push(ctx, pattern):
-        """Push media file(s) to the media files repository.
+        """Push media file(s) into the media file's repository.
 
-        You must use a searh PATTERN to identify the files to be pushed from the media folder.
+        You must use a search PATTERN to identify the files to be pushed.
 
         Samples:
 
