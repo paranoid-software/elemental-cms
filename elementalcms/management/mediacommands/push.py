@@ -29,6 +29,7 @@ class Push:
             destination_blob_name = file.replace(media_folder, '', 1).lstrip('/')
             click.echo(f'Pushing {file} to {destination_blob_name}')
             blob = bucket.blob(destination_blob_name)
+            # TODO: Store cache control value on settings
             blob.cache_control = 'private, max-age=180'
             blob.upload_from_filename(file)
             upsert_me_result = UpsertMe(self.context.cms_db_context).execute(destination_blob_name)

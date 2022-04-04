@@ -12,10 +12,11 @@ class TestPushCommandShould:
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
                 f.write(json.dumps(debug_settings_fixture))
+            # noinspection PyTypeChecker
             result = runner.invoke(cli, ['media', 'push', '*'])
             assert 'MEDIA_BUCKET parameter not found on current settings.' in result.output
 
-    def test_exit_early_when_no_files_found_by_especified_pattern(self, prod_settings_fixture):
+    def test_exit_early_when_no_files_found_by_specified_pattern(self, prod_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
@@ -25,6 +26,7 @@ class TestPushCommandShould:
             with open('media/push-media-test.txt', 'w') as f:
                 f.write('Hi stranger, I am a media file.')
             pattern = '*.jpg'
+            # noinspection PyTypeChecker
             result = runner.invoke(cli, ['--no-debug', 'media', 'push', pattern])
             assert f'We found 0 files for the search pattern {pattern}' in result.output
 
@@ -37,8 +39,6 @@ class TestPushCommandShould:
             os.makedirs('media')
             with open('media/push-media-test.txt', 'w') as f:
                 f.write('Hi stranger, I am a media file.')
-            #result = runner.invoke(cli, ['--no-debug', 'media', 'push', '*.*'])
-            #assert 'media/push-media-test.txt pushed successfully.' in result.output
-            result = runner.invoke(cli, ['--no-debug', 'media', 'push', '--help'])
-            print(result.output)
-            assert 1 == 1
+            # noinspection PyTypeChecker
+            result = runner.invoke(cli, ['--no-debug', 'media', 'push', '*.*'])
+            assert 'media/push-media-test.txt pushed successfully.' in result.output
