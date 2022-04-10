@@ -34,10 +34,10 @@ class Push:
             blob.upload_from_filename(file)
             upsert_me_result = UpsertMe(self.context.cms_db_context).execute(destination_blob_name)
             if upsert_me_result.is_failure():
-                click.echo(f'{destination_blob_name} was pushed successfully, but no log was created.')
+                click.echo(f'{destination_blob_name} was pushed successfully, but no metadata was created.')
                 click.echo(f'Failure reason: {json.dumps(upsert_me_result.value())}')
                 continue
             if not upsert_me_result.value():
-                click.echo(f'{destination_blob_name} was pushed successfully, but no log was created.')
+                click.echo(f'{destination_blob_name} was pushed successfully, but no metadata was created.')
                 continue
             click.echo(f'{file} pushed successfully.')
