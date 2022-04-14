@@ -46,25 +46,30 @@ class List:
         client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         bucket: Bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
 
+        remote_files = []
         objects = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
-        objects_map = {}
         folders_paths = set()
-        number_of_files = 0
 
         for obj in objects:
             obj_name_parts = obj.name.split('/')
             folder_path = f'{"/".join(obj_name_parts[:-1])}/'
             folders_paths.add(folder_path)
-            if folder_path not in objects_map:
-                objects_map[folder_path] = []
             if obj.name != folder_path:
-                objects_map[folder_path].append(obj)
-                click.echo(f'{obj.name}{" * " if obj.name not in local_files else ""}')
-                number_of_files += 1
+                remote_files.append(obj.name)
 
-        if number_of_files == 0:
-            click.echo(f'\nNo media files found at {path if path is not None else "bucket"}')
-            click.echo('Files with * are not present on your local media folder.')
+        all_files = set(local_files + remote_files)
+
+        for file in sorted(all_files):
+            if file in remote_files and file in local_files:
+                click.echo(file)
+            elif file in remote_files:
+                click.echo(f'{file} * ')
+            else:
+                click.echo(f' * {file}')
+
+        if len(all_files) == 0:
+            click.echo(f'\nNo media files found at {path if path is not None else "bucket / local media folder"}')
+            click.echo('Files with * are not present on your remote or local media folder.')
             return
-        click.echo(f'\n{number_of_files} media files found at {path if path is not None else "bucket"}')
-        click.echo('Files with * are not present on your local media folder.')
+        click.echo(f'\n{len(all_files)} media files found at {path if path is not None else "bucket / local media folder"}')
+        click.echo('Files with * are not present on your remote or local media folder.')

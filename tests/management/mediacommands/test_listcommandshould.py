@@ -34,5 +34,4 @@ class TestListCommandShould:
                 f.write(json.dumps(prod_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['--no-debug', 'media', 'list', 'default/'])
-            print(result.output)
             assert 'media files found at default/' in result.output

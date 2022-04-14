@@ -1,11 +1,9 @@
 import glob
-import json
 
 import click
 from google.cloud import storage
 
 from elementalcms.core import ElementalContext
-from elementalcms.services.media import UpsertMe
 
 
 class Push:
@@ -32,12 +30,4 @@ class Push:
             # TODO: Store cache control value on settings
             blob.cache_control = 'private, max-age=180'
             blob.upload_from_filename(file)
-            upsert_me_result = UpsertMe(self.context.cms_db_context).execute(destination_blob_name)
-            if upsert_me_result.is_failure():
-                click.echo(f'{destination_blob_name} was pushed successfully, but no metadata was created.')
-                click.echo(f'Failure reason: {json.dumps(upsert_me_result.value())}')
-                continue
-            if not upsert_me_result.value():
-                click.echo(f'{destination_blob_name} was pushed successfully, but no metadata was created.')
-                continue
             click.echo(f'{file} pushed successfully.')
