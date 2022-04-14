@@ -26,7 +26,7 @@ class List:
         prefix = path
         delimiter = '/'
 
-        if path == '*':
+        if path is None:
             prefix = None
             delimiter = None
 
@@ -63,8 +63,8 @@ class List:
                 number_of_files += 1
 
         if number_of_files == 0:
-            click.echo(f'\nNo media files found at {path if path != "*" else "bucket"}')
+            click.echo(f'\nNo media files found at {path if path is not None else "bucket"}')
             click.echo('Files with * are not present on your local media folder.')
             return
-        click.echo(f'\n{number_of_files} media files found at {path if path != "*" else "bucket"}')
+        click.echo(f'\n{number_of_files} media files found at {path if path is not None else "bucket"}')
         click.echo('Files with * are not present on your local media folder.')

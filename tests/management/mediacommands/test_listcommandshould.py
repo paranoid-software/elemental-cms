@@ -23,7 +23,7 @@ class TestListCommandShould:
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(prod_settings_fixture))
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['--no-debug', 'media', 'list', '*'])
+            result = runner.invoke(cli, ['--no-debug', 'media', 'list'])
             assert 'media files found at bucket' in result.output
 
     def test_display_path_media_files_list(self, prod_settings_fixture):
