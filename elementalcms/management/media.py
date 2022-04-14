@@ -16,9 +16,10 @@ class Media(click.Group):
     @staticmethod
     @command(name='list',
              help='List media files.')
+    @argument('path')
     @pass_context
-    def list(ctx):
-        List(ctx).exec()
+    def list(ctx, path):
+        List(ctx).exec(path)
 
     @staticmethod
     @command(name='push')
