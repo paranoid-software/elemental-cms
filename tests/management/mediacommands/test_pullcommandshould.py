@@ -1,5 +1,7 @@
 import json
 import os
+
+from assertpy import assert_that
 from click.testing import CliRunner
 from elementalcms.management import cli
 
@@ -17,4 +19,4 @@ class TestPullCommandShould:
             # result = runner.invoke(cli, ['--no-debug', 'media', 'pull', '--all'])
             result = runner.invoke(cli, ['--no-debug', 'media', 'pull', '--folder', 'default/test/'])
             print(f'\n{result.output}')
-            assert 'push' in result.output
+            assert_that('media/default/test').exists()

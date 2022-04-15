@@ -40,7 +40,9 @@ class Pull:
         for file in remote_files:
             blob = bucket.blob(file)
             blob_folder = '/'.join(file.split('/')[0:-1])
-            if not os.path.exists(f'{media_folder}/{blob_folder}/'):
-                os.makedirs(blob_folder)
+            local_folder = f'{media_folder}/{blob_folder}/'
+            if not os.path.exists(local_folder):
+                os.makedirs(local_folder)
             click.echo(f'Downloading {file}')
             blob.download_to_filename(f'{media_folder}/{file}')
+            click.echo(f'{file} downloaded successfuly.')
