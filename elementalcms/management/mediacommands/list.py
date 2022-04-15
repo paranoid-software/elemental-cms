@@ -46,14 +46,12 @@ class List:
         client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         bucket: Bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
 
-        remote_files = []
         objects = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
-        folders_paths = set()
+        remote_files = []
 
         for obj in objects:
             obj_name_parts = obj.name.split('/')
             folder_path = f'{"/".join(obj_name_parts[:-1])}/'
-            folders_paths.add(folder_path)
             if obj.name != folder_path:
                 remote_files.append(obj.name)
 
