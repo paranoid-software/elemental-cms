@@ -23,7 +23,7 @@ class TestPullCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
@@ -40,7 +40,7 @@ class TestPullCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
@@ -70,7 +70,7 @@ class TestPullCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
@@ -99,7 +99,7 @@ class TestPullCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 name = 'jquery'
                 _type = 'application/javascript'
@@ -143,7 +143,7 @@ class TestPullCommandShould:
                 with open(spec_file_path, 'x') as s:
                     s.write('...')
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,

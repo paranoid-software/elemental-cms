@@ -13,7 +13,7 @@ class TestCreateCommandShould:
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
+            with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
@@ -25,7 +25,7 @@ class TestCreateCommandShould:
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
+            with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             name = 'jquery'
             _type = 'application/javascript'
@@ -47,7 +47,7 @@ class TestCreateCommandShould:
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
+            with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             name = 'jquery'
             _type = 'application/javascript'

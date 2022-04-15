@@ -16,38 +16,32 @@ from elementalcms.services.sessions import CreateExpirationIndex
 
 
 @click.group()
-@click.option('--debug/--no-debug', default=True, help='Debug mode by default.')
 @click.pass_context
-def cli(ctx: Context, debug: bool):
+def cli(ctx: Context):
     """Elemental CMS management CLI"""
     ctx.ensure_object(dict)
 
-    ctx.obj['debug'] = debug
-
     if not os.path.exists('settings'):
-        click.echo('Settings folder do not exist, you need to create a settings folder and at least a debug.json '
+        click.echo('Settings folder do not exist, you need to create a settings folder and the prod.json '
                    'settings file to start using the CLI.')
         exit(1)
 
-    if debug:
-        if not os.path.exists('settings/debug.json'):
-            click.echo('Settings file do not exist. Please create a debug settings file in order to be able to use '
-                       'the CLI.')
-            exit(1)
-    else:
-        if not os.path.exists('settings/local-gcs.json'):
-            click.echo('Settings file do not exist. Please create a production settings file in order to be able to '
-                       'use the CLI.')
+    if not os.path.exists('settings/prod.json'):
+        click.echo('Settings file do not exist. Please create a production settings file in order to be able to '
+                   'use the CLI.')
+        exit(1)
+
+    with open(f'settings/prod.json') as config_file:
+        settings = json.load(config_file)
+
+        if 'cmsCoreContext' not in settings:
+            click.echo('Incomplete settings file.')
             exit(1)
 
-    with open(f'settings/{"debug" if debug else "prod"}.json') as config_file:
-        settings = json.load(config_file)
-        if 'cmsCoreContext' not in settings:
-            click.echo('Settings file incomplete.')
-            exit(1)
         if 'cmsDbContext' not in settings:
-            click.echo('Settings file incomplete.')
+            click.echo('Incomplete settings file.')
             exit(1)
+
         cms_core_context = FlaskContext(settings['cmsCoreContext'])
         cms_db_context = MongoDbContext(settings['cmsDbContext'])
         ctx.obj['elemental_context'] = ElementalContext(cms_core_context, cms_db_context)

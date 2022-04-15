@@ -88,7 +88,7 @@ class TestPushCommandShould:
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
+            with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
@@ -100,7 +100,7 @@ class TestPushCommandShould:
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
+            with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
@@ -118,7 +118,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
@@ -137,7 +137,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
@@ -156,7 +156,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
@@ -175,7 +175,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
@@ -194,7 +194,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
@@ -213,7 +213,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
@@ -234,7 +234,7 @@ class TestPushCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 self.spec_files_setup(specs, default_settings_fixture)
                 name = 'jquery-ui'

@@ -16,7 +16,7 @@ class TestInitCommandShould:
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
+            with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             with open('.elemental', 'w') as e:
                 e.write('{}')
@@ -33,7 +33,7 @@ class TestInitCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 runner.invoke(cli, ['init'])
@@ -57,7 +57,7 @@ class TestInitCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['init'])
