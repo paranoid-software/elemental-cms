@@ -11,6 +11,7 @@ class Media(click.Group):
         super(Media, self).__init__()
         self.name = 'media'
         self.add_command(self.list)
+        self.add_command(self.pull)
         self.add_command(self.push)
 
     @staticmethod
@@ -35,7 +36,7 @@ class Media(click.Group):
                  'For example: pull -f default/')
     @constraint(RequireExactly(1), ['all', 'folder'])
     @pass_context
-    def list(ctx, **params):
+    def pull(ctx, **params):
         if params['all']:
             return Pull(ctx).exec('*')
         return Pull(ctx).exec(params['folder'])
