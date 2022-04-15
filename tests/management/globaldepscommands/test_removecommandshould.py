@@ -14,17 +14,17 @@ from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 class TestRemoveCommandShould:
 
-    def test_fail_when_dependency_does_not_exist(self, debug_settings_fixture: dict):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_fail_when_dependency_does_not_exist(self, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
+                    f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
                                        [
@@ -34,8 +34,8 @@ class TestRemoveCommandShould:
                                        ])
                 assert_that(result.output).contains('does not exist.')
 
-    def test_show_operation_success_message(self, debug_settings_fixture: dict):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_operation_success_message(self, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
@@ -51,12 +51,12 @@ class TestRemoveCommandShould:
                                                             }])
                                        ])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
+                    f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
                                        [
@@ -66,8 +66,8 @@ class TestRemoveCommandShould:
                                        ])
                 assert_that(result.output).contains('removed successfully.')
 
-    def test_crate_backup_file(self, debug_settings_fixture: dict):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_crate_backup_file(self, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
@@ -83,12 +83,12 @@ class TestRemoveCommandShould:
                                                             }])
                                        ])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
+                    f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
                                        [

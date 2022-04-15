@@ -5,6 +5,7 @@ from datetime import datetime
 from shutil import copyfile
 
 import click
+from click import Context
 
 from elementalcms import ElementalContext, __version__
 from elementalcms.core import FlaskContext, MongoDbContext
@@ -17,7 +18,7 @@ from elementalcms.services.sessions import CreateExpirationIndex
 @click.group()
 @click.option('--debug/--no-debug', default=True, help='Debug mode by default.')
 @click.pass_context
-def cli(ctx, debug):
+def cli(ctx: Context, debug: bool):
     """Elemental CMS management CLI"""
     ctx.ensure_object(dict)
 
@@ -34,7 +35,7 @@ def cli(ctx, debug):
                        'the CLI.')
             exit(1)
     else:
-        if not os.path.exists('settings/prod.json'):
+        if not os.path.exists('settings/local-gcs.json'):
             click.echo('Settings file do not exist. Please create a production settings file in order to be able to '
                        'use the CLI.')
             exit(1)

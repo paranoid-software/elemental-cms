@@ -14,8 +14,8 @@ from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 class TestListCommandShould:
 
-    def test_show_empty_repository_feedback(self, debug_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_empty_repository_feedback(self, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -23,18 +23,18 @@ class TestListCommandShould:
                                                                          items=[])
                                                     ])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
+                    f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'list'])
                 assert_that(result.output).contains('There are no global dependencies to list.')
 
-    def test_show_complete_global_dependency_list(self, debug_settings_fixture):
+    def test_display_complete_global_dependency_list(self, default_settings_fixture):
         items = [{
                     '_id': ObjectId(),
                     'order': 0,
@@ -63,7 +63,7 @@ class TestListCommandShould:
                     'createdAt': datetime.datetime.utcnow(),
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }]
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -71,12 +71,12 @@ class TestListCommandShould:
                                                                          items=items)
                                                     ])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
                 with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
+                    f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'list'])

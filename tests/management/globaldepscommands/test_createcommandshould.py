@@ -9,27 +9,27 @@ from elementalcms.management import cli
 
 class TestCreateCommandShould:
 
-    def test_fail_when_type_is_not_supported(self, debug_settings_fixture):
+    def test_fail_when_type_is_not_supported(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
-                f.write(json.dumps(debug_settings_fixture))
+                f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
                                          'create',
                                          '-d', 'dep-one', 'unsupported-type'])
             assert_that(result.output).contains('type is not supported.')
 
-    def test_fail_when_spec_file_already_exist(self, debug_settings_fixture):
+    def test_fail_when_spec_file_already_exist(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
-                f.write(json.dumps(debug_settings_fixture))
+                f.write(json.dumps(default_settings_fixture))
             name = 'jquery'
             _type = 'application/javascript'
-            root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+            root_folder_path = FlaskContext(default_settings_fixture['cmsCoreContext']).GLOBAL_DEPS_FOLDER
             type_folder_name = _type.replace('/', '_')
             folder_path = f'{root_folder_path}/{type_folder_name}'
             if not os.path.exists(f'{folder_path}'):
@@ -43,15 +43,15 @@ class TestCreateCommandShould:
                                          '-d', name, _type])
             assert_that(result.output).contains('already exist.')
 
-    def test_create_spec_file_for_new_global_dependency(self, debug_settings_fixture):
+    def test_create_spec_file_for_new_global_dependency(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
             with open('settings/debug.json', 'w') as f:
-                f.write(json.dumps(debug_settings_fixture))
+                f.write(json.dumps(default_settings_fixture))
             name = 'jquery'
             _type = 'application/javascript'
-            root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+            root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
             type_folder_name = _type.replace('/', '_')
             folder_path = f'{root_folder_path}/{type_folder_name}'
             # noinspection PyTypeChecker

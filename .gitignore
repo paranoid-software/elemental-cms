@@ -7,3 +7,4 @@ dist
 elemental_cms.egg-info
 **/.pytest_cache
 **/__pycache__
+.cloudstorage

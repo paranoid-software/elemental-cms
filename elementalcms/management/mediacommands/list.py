@@ -29,7 +29,6 @@ class List:
         if path is None:
             prefix = None
             delimiter = None
-
         elif not path[-1] == '/':
             click.echo('Remember to end your folder and/or sub-folder path with a /')
             return
@@ -43,7 +42,10 @@ class List:
             for file in files:
                 local_files.append(os.path.join(root, file).replace(f'{media_folder}/', ''))
 
-        client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
+        if self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO:
+            client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
+        else:
+            client = storage.Client()
         bucket: Bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
 
         objects = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
@@ -66,8 +68,8 @@ class List:
                 click.echo(f' * {file}')
 
         if len(all_files) == 0:
-            click.echo(f'\nNo media files found at {path if path is not None else "bucket / local media folder"}')
+            click.echo(f'\nNo media files found at {path if path is not None else "bucket"}')
             click.echo('Files with * are not present on your remote or local media folder.')
             return
-        click.echo(f'\n{len(all_files)} media files found at {path if path is not None else "bucket / local media folder"}')
+        click.echo(f'\n{len(all_files)} media files found at {path if path is not None else "bucket"}')
         click.echo('Files with * are not present on your remote or local media folder.')

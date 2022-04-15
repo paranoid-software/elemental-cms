@@ -47,7 +47,7 @@ class MongoDbStateFromFile:
 class EphemeralMongoContext:
 
     __connection_string: str
-    __db_names: [str] = []
+    __db_names: {}
 
     __state: List[MongoDbState] = []
 
