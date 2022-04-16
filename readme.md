@@ -11,15 +11,13 @@ elemental-cms
 ## Work in progress
 
 - [Documentation](https://paranoid-software.getoutline.com/share/a300ec8e-4bc6-47c0-aba0-fbe1f80f1623).
-- Global deps management module.
-- 
+- Media files management module.
+- Static files management module.
 
 ## To Do
 
-- Media and static files management module.
 - Snippets management module.
-- End user snippets online editor.
-- End user pages online editor.
+- Pages management module.
 
 ## Setup
 
@@ -53,7 +51,11 @@ Before we can issue an "init" command we must create a "settings" folder and at 
     "MEDIA_FOLDER": "media",
     "STATIC_URL": "/static",
     "MEDIA_URL": "/media",
-    "PAGES_FOLDER": "workspace/pages"
+    "STATIC_BUCKET": "static-files-bucket",
+    "MEDIA_BUCKET": "media-files-bucket",
+    "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
+    "PAGES_FOLDER": "workspace/pages",
+    "SNIPPETS_FOLDER": "workspace/snippets"
   },
   "cmsDbContext": {
     "id": "your-id",
