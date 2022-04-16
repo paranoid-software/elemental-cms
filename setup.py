@@ -8,14 +8,14 @@ LONG_DESCRIPTION = (HERE / "pypi.md").read_text()
 
 
 REQUIREMENTS = [
-    'Flask>=2.0.2',
+    'Flask==2.0.2',
     'Jina2==3.0.3',
-    'pycountry>=20.7.3',
-    'pymongo>=3.12.1',
-    'cloup>=0.12.1',
-    'deepdiff>=5.6.0',
-    'Flask-Babel>=2.0.0',
-    'google-cloud-storage',
+    'pycountry==20.7.3',
+    'pymongo==3.12.1',
+    'cloup==0.12.1',
+    'deepdiff==5.6.0',
+    'Flask-Babel==2.0.0',
+    'google-cloud-storage==2.3.0',
 ]
 
 
