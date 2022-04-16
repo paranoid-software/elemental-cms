@@ -15,25 +15,25 @@ from tests.ephemeralmongocontext import MongoDbState
 
 class TestPushAllCommandShould:
 
-    def test_show_empty_folder_feedback(self, debug_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_empty_folder_feedback(self, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--all'])
                 assert_that(result.output).contains('There are no global dependencies to push.')
 
-    def test_push_every_global_dependency(self, debug_settings_fixture):
+    def test_push_every_global_dependency(self, default_settings_fixture):
         specs = [{
                     '_id': ObjectId(),
                     'order': 0,
@@ -62,18 +62,18 @@ class TestPushAllCommandShould:
                     'createdAt': datetime.datetime.utcnow(),
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }]
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                root_folder_path = FlaskContext(debug_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
                 for spec in specs:
                     name = spec['name']
                     _type = spec['type']

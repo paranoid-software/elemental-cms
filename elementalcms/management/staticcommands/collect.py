@@ -16,7 +16,10 @@ class Collect:
         if self.context.cms_core_context.STATIC_BUCKET is None:
             click.echo('STATIC_BUCKET parameter not found on current settings.')
             return
-        client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
+        if self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO:
+            client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
+        else:
+            client = storage.Client()
         bucket = client.bucket(self.context.cms_core_context.STATIC_BUCKET)
         self.collect_platform_files(bucket)
         self.collect_app_files(bucket)

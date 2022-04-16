@@ -1,0 +1,34 @@
+{
+  "cmsCoreContext": {
+    "DEBUG": true,
+    "ENV": "development",
+    "SECRET": "my-secret",
+    "SITE_NAME": "My Elemental Site",
+    "GOOGLE_SITE_VERIFICATION_TOKEN": "my-token",
+    "COMPANY": "My Company",
+    "CANONICAL_URL": "https://my-company-elemental.stie",
+    "LANGUAGES": [
+      "en",
+      "es"
+    ],
+    "DEFAULT_LANGUAGE": "en",
+    "LANGUAGE_MODE": "multi",
+    "APP_NAME": "app",
+    "STATIC_FOLDER": "static",
+    "STATIC_URL": "/static",
+    "MEDIA_URL": "/media",
+    "STATIC_BUCKET": "static-files-bucket",
+    "MEDIA_BUCKET": "media-files-bucket",
+    "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
+    "PAGES_FOLDER": "workspace/pages",
+    "SNIPPETS_FOLDER": "workspace/snippets"
+  },
+  "cmsDbContext": {
+    "id": "vanilla-mongodb",
+    "hostName": "localhost",
+    "portNumber": 27017,
+    "databaseName": "",
+    "username": "root",
+    "password": "pwd"
+  }
+}

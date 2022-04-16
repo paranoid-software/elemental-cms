@@ -84,159 +84,159 @@ class TestPushCommandShould:
                 'lastModifiedAt': datetime.datetime.utcnow()
             }))
 
-    def test_fail_when_type_is_not_supported(self, debug_settings_fixture):
+    def test_fail_when_type_is_not_supported(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
-                f.write(json.dumps(debug_settings_fixture))
+            with open('settings/prod.json', 'w') as f:
+                f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
                                          'push',
                                          '-d', 'dep-one', 'unsupported-type'])
             assert_that(result.output).contains('type is not supported.')
 
-    def test_fail_when_spec_file_is_missing(self, debug_settings_fixture):
+    def test_fail_when_spec_file_is_missing(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
-            with open('settings/debug.json', 'w') as f:
-                f.write(json.dumps(debug_settings_fixture))
+            with open('settings/prod.json', 'w') as f:
+                f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
                                          'push',
                                          '-d', 'my-missing-css-dep', 'text/css'])
             assert_that(result.output).contains('There is no spec file for my-missing-css-dep (text/css).')
 
-    def test_show_1_invalid_spec_feedback_message(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_1_invalid_spec_feedback_message(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'invalid', 'module'])
                 assert_that(re.findall('Invalid spec', result.output)).is_length(1)
 
-    def test_show_1_missing_id_feedback_message(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_1_missing_id_feedback_message(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'jquery', 'application/javascript'])
                 assert_that(re.findall('Missing spec _id', result.output)).is_length(1)
 
-    def test_show_1_invalid_id_feedback_message(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_1_invalid_id_feedback_message(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'calendar', 'module'])
                 assert_that(re.findall('Invalid spec _id', result.output)).is_length(1)
 
-    def test_show_1_missing_name_feedback_message(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_1_missing_name_feedback_message(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'missing-name', 'module'])
                 assert_that(re.findall('Missing spec name', result.output)).is_length(1)
 
-    def test_show_1_invalid_name_feedback_message(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_1_invalid_name_feedback_message(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'unmatched-name', 'module'])
                 assert_that(re.findall('Invalid spec name', result.output)).is_length(1)
 
-    def test_show_1_success_feedback_message(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_display_1_success_feedback_message(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['global-deps',
                                              'push',
                                              '--dep', 'jquery-ui', 'text/css'])
                 assert_that(re.findall('pushed successfully', result.output)).is_length(1)
 
-    def test_create_backup_file_for_pushed_item(self, debug_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(debug_settings_fixture['cmsDbContext']).get_connection_string(),
+    def test_create_backup_file_for_pushed_item(self, default_settings_fixture, specs):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
                                                             items=[specs[1]])
                                        ])
                                    ]) as db_name:
-            debug_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/debug.json', 'w') as f:
-                    f.write(json.dumps(debug_settings_fixture))
-                self.spec_files_setup(specs, debug_settings_fixture)
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                self.spec_files_setup(specs, default_settings_fixture)
                 name = 'jquery-ui'
                 _type = 'text/css'
                 # noinspection PyTypeChecker
