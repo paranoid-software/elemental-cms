@@ -11,16 +11,6 @@ from tests.ephemeralgcscontext import GcsState
 
 class TestListCommandShould:
 
-    def test_fail_when_no_media_folder_setting_found(self, missing_media_folder_settings_fixture):
-        runner = CliRunner()
-        with runner.isolated_filesystem():
-            os.makedirs('settings')
-            with open('settings/prod.json', 'w') as f:
-                f.write(json.dumps(missing_media_folder_settings_fixture))
-            # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['media', 'list', '--all'])
-            assert_that(result.output).contains('MEDIA_FOLDER parameter not found on current settings.')
-
     def test_fail_when_no_media_bucket_setting_found(self, missing_gcs_buckets_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
