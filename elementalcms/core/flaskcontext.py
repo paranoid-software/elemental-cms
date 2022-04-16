@@ -12,7 +12,7 @@ class FlaskContext(object):
         self.DEFAULT_LANGUAGE = settings.get('DEFAULT_LANGUAGE', 'es')
         self.LANGUAGE_MODE = settings.get('LANGUAGE_MODE', 'multi')
         self.APP_NAME = settings.get('APP_NAME', 'app')
-        self.STATIC_FOLDER = settings.get('STATIC_FOLDER', 'static')
+        self.STATIC_FOLDER = settings.get('STATIC_FOLDER', None)
         self.MEDIA_FOLDER = settings.get('MEDIA_FOLDER', None)
         self.STATIC_BUCKET = settings.get('STATIC_BUCKET', None)
         self.MEDIA_BUCKET = settings.get('MEDIA_BUCKET', None)

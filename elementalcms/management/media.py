@@ -2,7 +2,7 @@ import click
 from cloup import constraint, option, command, pass_context, argument
 from cloup.constraints import RequireExactly
 
-from .mediacommands import List, Pull, Push
+from .mediacommands import List, Pull, Push, Delete
 
 
 class Media(click.Group):
@@ -13,6 +13,7 @@ class Media(click.Group):
         self.add_command(self.list)
         self.add_command(self.pull)
         self.add_command(self.push)
+        self.add_command(self.delete)
 
     @staticmethod
     @command(name='list',
@@ -69,3 +70,11 @@ class Media(click.Group):
         **/images
         """
         Push(ctx).exec(pattern)
+
+    @staticmethod
+    @command(name='delete')
+    @argument('file')
+    @pass_context
+    def delete(ctx, file):
+        """Delete especified file from GCS."""
+        Delete(ctx).exec(file)

@@ -14,6 +14,10 @@ class List:
 
     def exec(self, path):
 
+        if self.context.cms_core_context.MEDIA_FOLDER is None:
+            click.echo('MEDIA_FOLDER parameter not found on current settings.')
+            return
+
         if self.context.cms_core_context.MEDIA_BUCKET is None:
             click.echo('MEDIA_BUCKET parameter not found on current settings.')
             return
