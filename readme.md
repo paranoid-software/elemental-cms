@@ -84,7 +84,7 @@ workdir
     └───global_deps
     └───pages
     └───snippets
-│   .elemental
+└───.elemental
 ```
 
 ## Creating your first page
