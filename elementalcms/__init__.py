@@ -11,7 +11,7 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.78"
+__version__ = "1.0.79"
 
 
 class Elemental:

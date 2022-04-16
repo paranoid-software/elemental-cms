@@ -1,8 +1,8 @@
 import click
-from cloup import constraint, option, command, pass_context
+from cloup import constraint, option, command, pass_context, argument
 from cloup.constraints import RequireExactly
 
-from .staticcommands import List, Collect
+from .staticcommands import List, Collect, Delete
 
 
 class Static(click.Group):
@@ -12,6 +12,7 @@ class Static(click.Group):
         self.name = 'static'
         self.add_command(self.list)
         self.add_command(self.collect)
+        self.add_command(self.delete)
 
     @staticmethod
     @command(name='list',
@@ -38,3 +39,11 @@ class Static(click.Group):
     @pass_context
     def collect(ctx):
         Collect(ctx).exec()
+
+    @staticmethod
+    @command(name='delete')
+    @argument('file')
+    @pass_context
+    def delete(ctx, file):
+        """Delete especified file from GCS."""
+        Delete(ctx).exec(file)
