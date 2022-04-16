@@ -34,11 +34,28 @@ class Static(click.Group):
         List(ctx).exec(params['folder'][0])
 
     @staticmethod
-    @command(name='collect',
-             help='Collect static resources.')
+    @command(name='collect')
+    @argument('pattern')
+    @click.option("--ignore-internals",
+                  is_flag=True,
+                  show_default=True,
+                  default=False,
+                  help="Do not collect internal static resources.")
     @pass_context
-    def collect(ctx):
-        Collect(ctx).exec()
+    def collect(ctx, pattern, ignore_internals):
+        """Collect static resources.
+
+        You must use a search PATTERN to identify the files to be collected.
+
+        Samples (assuming static is our local static folder):
+
+        \b
+        static/*.*
+        static/*.txt
+        static/*.svg
+        static/**/images
+        """
+        Collect(ctx).exec(pattern, ignore_internals)
 
     @staticmethod
     @command(name='delete')

@@ -61,13 +61,13 @@ class Media(click.Group):
 
         You must use a search PATTERN to identify the files to be pushed.
 
-        Samples:
+        Samples (assuming media is our local media folder):
 
         \b
-        *.*
-        *.txt
-        *.svg
-        **/images
+        media/*.*
+        media/*.txt
+        media/*.svg
+        media/**/images
         """
         Push(ctx).exec(pattern)
 
