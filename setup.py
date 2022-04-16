@@ -9,7 +9,6 @@ LONG_DESCRIPTION = (HERE / "pypi.md").read_text()
 
 REQUIREMENTS = [
     'Flask==2.0.2',
-    'Jina2==3.0.3',
     'pycountry==20.7.3',
     'pymongo==3.12.1',
     'cloup==0.12.1',
