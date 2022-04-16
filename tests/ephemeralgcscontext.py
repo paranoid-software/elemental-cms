@@ -37,6 +37,8 @@ class EphemeralGcsContext:
         client = storage.Client()
 
         for state in self.__state or []:
+            if not bool(state.bucket_name and not state.bucket_name.isspace()):
+                raise Exception('Bucket name can not be empty.')
             bucket_name = f'{state.bucket_name}-{round(time.time() * 1000)}'
             if first_bucket_name is None:
                 first_bucket_name = bucket_name

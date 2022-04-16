@@ -14,11 +14,8 @@ class List:
 
     def exec(self, path):
 
-        if self.context.cms_core_context.MEDIA_FOLDER is None:
-            click.echo('MEDIA_FOLDER parameter not found on current settings.')
-            return
-
-        if self.context.cms_core_context.MEDIA_BUCKET is None:
+        if not bool(self.context.cms_core_context.MEDIA_BUCKET
+                    and not self.context.cms_core_context.MEDIA_BUCKET.isspace()):
             click.echo('MEDIA_BUCKET parameter not found on current settings.')
             return
 
@@ -44,17 +41,17 @@ class List:
             client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         else:
             client = storage.Client()
+
         bucket: Bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
-
         objects = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
-        remote_files = []
 
-        folders_paths = set()
+        folders = set()
+        remote_files = []
 
         for obj in objects:
             obj_name_parts = obj.name.split('/')
             folder_path = f'{"/".join(obj_name_parts[:-1])}/'
-            folders_paths.add(folder_path if folder_path == '/' else folder_path[:-1])
+            folders.add(folder_path if folder_path == '/' else folder_path[:-1])
             if obj.name != folder_path:
                 remote_files.append(obj.name)
 
@@ -63,7 +60,7 @@ class List:
         for root, directories, files in os.walk(media_folder):
             clean_root = root.replace(f'{media_folder}', '') or '/'
             clean_root = clean_root if clean_root == '/' else clean_root[1:]
-            if clean_root not in folders_paths:
+            if clean_root not in folders:
                 continue
             for file in files:
                 local_files.append(os.path.join(root, file).replace(f'{media_folder}/', ''))
@@ -78,8 +75,14 @@ class List:
                 click.echo(f' * {file}')
 
         if len(all_files) == 0:
-            click.echo(f'\nNo media files found at {path if path is not None else "bucket"}')
-            click.echo('Files with * are not present on your remote or local media folder.')
+            if path:
+                click.echo(f'\nNo media files found at {path}')
+            else:
+                click.echo(f'\nNo media files found')
             return
-        click.echo(f'\n{len(all_files)} media files found at {path if path is not None else "bucket"}')
-        click.echo('Files with * are not present on your remote or local media folder.')
+        if path:
+            click.echo(f'\n{len(all_files)} media files found at {path}')
+        else:
+            click.echo(f'\n{len(all_files)} media files found')
+        if local_files != remote_files:
+            click.echo('* is an indicator of missing file either on remote folder (left) or local folder (right)')

@@ -12,18 +12,27 @@ class Push:
         self.context: ElementalContext = ctx.obj['elemental_context']
 
     def exec(self, pattern):
+
         if self.context.cms_core_context.MEDIA_BUCKET is None:
             click.echo('MEDIA_BUCKET parameter not found on current settings.')
             return
+
         media_folder = self.context.cms_core_context.MEDIA_FOLDER
-        files = glob.glob(f'{media_folder}/{pattern}')
-        if len(files) == 0:
-            click.echo(f'We found 0 files for the search pattern {pattern}')
+
+        if not pattern.startswith(media_folder):
+            click.echo(f'We can only push files located at the media folder which right now is {media_folder}')
             return
+
+        files = glob.glob(pattern)
+        if len(files) == 0:
+            click.echo(f'We found 0 files for {pattern}')
+            return
+
         if self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO:
             client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         else:
             client = storage.Client()
+
         bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
         click.echo(f'Pushing {len(files)} files to {bucket.name}')
         for file in files:

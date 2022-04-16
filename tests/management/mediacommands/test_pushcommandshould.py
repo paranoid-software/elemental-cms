@@ -17,7 +17,7 @@ class TestPushCommandShould:
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(missing_gcs_buckets_settings_fixture))
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['media', 'push', '*'])
+            result = runner.invoke(cli, ['media', 'push', 'media/*'])
             assert_that(result.output).contains('MEDIA_BUCKET parameter not found on current settings.')
 
     def test_exit_early_when_no_files_found_by_specified_pattern(self, default_settings_fixture):
@@ -29,10 +29,10 @@ class TestPushCommandShould:
             os.makedirs('media')
             with open('media/push-media-test.txt', 'w') as f:
                 f.write('Hi stranger, I am a media file.')
-            pattern = '*.jpg'
+            pattern = 'media/*.jpg'
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['media', 'push', pattern])
-            assert_that(result.output).contains(f'We found 0 files for the search pattern {pattern}')
+            assert_that(result.output).contains(f'We found 0 files for {pattern}')
 
     def test_upload_media_files_to_media_bucket(self, default_settings_fixture):
         with EphemeralGcsContext(initial_state=[
@@ -48,5 +48,5 @@ class TestPushCommandShould:
                 with open('media/push-media-test.txt', 'w') as f:
                     f.write('Hi stranger, I am a media file.')
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['media', 'push', '*.*'])
+                result = runner.invoke(cli, ['media', 'push', 'media/*.*'])
                 assert_that(result.output).contains('media/push-media-test.txt pushed successfully.')

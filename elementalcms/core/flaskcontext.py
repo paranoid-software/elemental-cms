@@ -12,12 +12,12 @@ class FlaskContext(object):
         self.DEFAULT_LANGUAGE = settings.get('DEFAULT_LANGUAGE', 'es')
         self.LANGUAGE_MODE = settings.get('LANGUAGE_MODE', 'multi')
         self.APP_NAME = settings.get('APP_NAME', 'app')
-        self.STATIC_FOLDER = settings.get('STATIC_FOLDER', None)
-        self.MEDIA_FOLDER = settings.get('MEDIA_FOLDER', None)
+        self.STATIC_FOLDER = settings.get('STATIC_FOLDER', 'static').strip() or 'static'
+        self.MEDIA_FOLDER = settings.get('MEDIA_FOLDER', 'media').strip() or 'media'
         self.STATIC_BUCKET = settings.get('STATIC_BUCKET', None)
         self.MEDIA_BUCKET = settings.get('MEDIA_BUCKET', None)
-        self.STATIC_URL = settings.get('STATIC_URL', '/static')
-        self.MEDIA_URL = settings.get('MEDIA_URL', '/media')
+        self.STATIC_URL = settings.get('STATIC_URL', '/static') or '/static'
+        self.MEDIA_URL = settings.get('MEDIA_URL', '/media') or '/media'
         self.GLOBAL_DEPS_FOLDER = settings.get('GLOBAL_DEPS_FOLDER', 'workspace/global_deps')
         self.PAGES_FOLDER = settings.get('PAGES_FOLDER', 'workspace/pages')
         self.SNIPPETS_FOLDER = settings.get('SNIPPETS_FOLDER', 'workspace/snippets')
