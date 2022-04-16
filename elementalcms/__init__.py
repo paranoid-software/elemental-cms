@@ -2,7 +2,7 @@ import os
 import pathlib
 from flask import Flask, request, send_from_directory, redirect, g, render_template_string
 from flask_babel import Babel
-from jinja2 import Markup
+from markupsafe import Markup
 
 from elementalcms.core import ElementalContext
 
@@ -11,7 +11,7 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.80"
+__version__ = "1.0.81"
 
 
 class Elemental:
