@@ -17,10 +17,21 @@ class Media(click.Group):
     @staticmethod
     @command(name='list',
              help='List media files.')
-    @argument('path', required=False)
+    @option('--all',
+            is_flag=True,
+            help='Pull all media files into the local media folder.')
+    @option('--folder',
+            '-f',
+            nargs=1,
+            multiple=True,
+            help='Name of the folder to be pulled. For example: pull -f default/')
+    @constraint(RequireExactly(1), ['all', 'folder'])
     @pass_context
-    def list(ctx, path):
-        List(ctx).exec(path)
+    def list(ctx, **params):
+        if params['all']:
+            List(ctx).exec(None)
+            return
+        List(ctx).exec(params['folder'][0])
 
     @staticmethod
     @command(name='pull',
@@ -32,8 +43,7 @@ class Media(click.Group):
             '-f',
             nargs=1,
             multiple=True,
-            help='Name of the folder to be pulled. '
-                 'For example: pull -f default/')
+            help='Name of the folder to be pulled. For example: pull -f default/')
     @constraint(RequireExactly(1), ['all', 'folder'])
     @pass_context
     def pull(ctx, **params):

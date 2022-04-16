@@ -18,7 +18,7 @@ class TestListCommandShould:
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(missing_gcs_buckets_settings_fixture))
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['media', 'list'])
+            result = runner.invoke(cli, ['media', 'list', '--all'])
             assert_that(result.output).contains('MEDIA_BUCKET parameter not found on current settings.')
 
     def test_fail_when_path_argument_is_missing(self, default_settings_fixture):
@@ -28,8 +28,8 @@ class TestListCommandShould:
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['media', 'list', ''])
-            assert_that(result.output).contains('Empty string is not a valid list command argument')
+            result = runner.invoke(cli, ['media', 'list', '-f', ''])
+            assert_that(result.output).contains('Empty string is not a valid folder')
 
     def test_display_complete_media_files_list(self, default_settings_fixture):
         file_names_list = [
@@ -47,7 +47,7 @@ class TestListCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['media', 'list'])
+                result = runner.invoke(cli, ['media', 'list', '--all'])
                 [assert_that(result.output).contains(file_name) for file_name in file_names_list]
 
     def test_display_folder_files_list(self, default_settings_fixture):
@@ -70,5 +70,5 @@ class TestListCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['media', 'list', 'default/'])
+                result = runner.invoke(cli, ['media', 'list', '--folder', 'default/'])
                 [assert_that(result.output).contains(file_name) for file_name in default_folder_file_names_list]

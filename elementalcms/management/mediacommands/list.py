@@ -19,7 +19,7 @@ class List:
             return
 
         if path == '':
-            click.echo('Empty string is not a valid list command argument, specify either / for root folder or '
+            click.echo('Empty string is not a valid folder, specify either / for root folder or '
                        'folder_name/ for any folder or sub-folder path.')
             return
 
