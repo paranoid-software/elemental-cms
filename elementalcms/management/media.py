@@ -19,12 +19,12 @@ class Media(click.Group):
              help='List media files.')
     @option('--all',
             is_flag=True,
-            help='Pull all media files into the local media folder.')
+            help='List all media files.')
     @option('--folder',
             '-f',
             nargs=1,
             multiple=True,
-            help='Name of the folder to be pulled. For example: pull -f default/')
+            help='Name of the folder to be listed. For example: list -f default/')
     @constraint(RequireExactly(1), ['all', 'folder'])
     @pass_context
     def list(ctx, **params):
