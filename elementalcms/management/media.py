@@ -24,7 +24,7 @@ class Media(click.Group):
 
     @staticmethod
     @command(name='pull',
-             help='Pull media files from remote repository.')
+             help='Pull media file(s) from GCS.')
     @option('--all',
             is_flag=True,
             help='Pull all media files into the local media folder.')
@@ -42,12 +42,11 @@ class Media(click.Group):
         return Pull(ctx).exec(params['folder'])
 
     @staticmethod
-    @command(name='push',
-             help='Push local files to the remote repository.')
+    @command(name='push')
     @argument('pattern')
     @pass_context
     def push(ctx, pattern):
-        """Push media file(s) into the media file's repository.
+        """Push media file(s) to GCS.
 
         You must use a search PATTERN to identify the files to be pushed.
 
