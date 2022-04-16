@@ -1,3 +1,4 @@
+import glob
 import os
 import pathlib
 
@@ -12,17 +13,28 @@ class Collect:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self):
+    def exec(self, pattern, ignore_internals):
+
+        static_folder = self.context.cms_core_context.STATIC_FOLDER
+
+        if not pattern.startswith(static_folder):
+            click.echo(f'We can only collect files located at the static folder which right now is {static_folder}')
+            return
+
         if self.context.cms_core_context.STATIC_BUCKET is None:
             click.echo('STATIC_BUCKET parameter not found on current settings.')
             return
+
         if self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO:
             client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         else:
             client = storage.Client()
+
         bucket = client.bucket(self.context.cms_core_context.STATIC_BUCKET)
-        self.collect_platform_files(bucket)
-        self.collect_app_files(bucket)
+        if not ignore_internals:
+            self.collect_platform_files(bucket)
+        self.collect_app_files(bucket, pattern)
+
         click.echo('Collect command excecuted successfully.')
 
     @staticmethod
@@ -41,7 +53,19 @@ class Collect:
                     print(e)
                 click.echo(f'Uploading {source_file_name} to {destination_blob_name}')
 
-    def collect_app_files(self, bucket):
+    def collect_app_files(self, bucket, pattern):
+        files = glob.glob(pattern)
+        if len(files) == 0:
+            return
+        source_folder = self.context.cms_core_context.STATIC_FOLDER
+        for file in files:
+            destination_blob_name = file.replace(source_folder, '', 1).lstrip('/')
+            blob = bucket.blob(destination_blob_name)
+            blob.cache_control = 'private, max-age=180'
+            blob.upload_from_filename(file)
+            click.echo(f'Uploading {file} to {destination_blob_name}')
+
+    def collect_app_files_deprecated(self, bucket):
         source_folder = self.context.cms_core_context.STATIC_FOLDER
         for r, d, f in os.walk(source_folder):
             for file in f:
