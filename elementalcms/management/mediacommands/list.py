@@ -36,12 +36,6 @@ class List:
         if path == '/':
             prefix = ''
 
-        media_folder = self.context.cms_core_context.MEDIA_FOLDER
-        local_files = []
-        for root, directories, files in os.walk(media_folder):
-            for file in files:
-                local_files.append(os.path.join(root, file).replace(f'{media_folder}/', ''))
-
         if self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO:
             client = storage.Client.from_service_account_info(self.context.cms_core_context.GOOGLE_SERVICE_ACCOUNT_INFO)
         else:
@@ -51,12 +45,24 @@ class List:
         objects = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
         remote_files = []
 
+        folders_paths = set()
+
         for obj in objects:
             obj_name_parts = obj.name.split('/')
             folder_path = f'{"/".join(obj_name_parts[:-1])}/'
+            folders_paths.add(folder_path if folder_path == '/' else folder_path[:-1])
             if obj.name != folder_path:
                 remote_files.append(obj.name)
 
+        media_folder = self.context.cms_core_context.MEDIA_FOLDER
+        local_files = []
+        for root, directories, files in os.walk(media_folder):
+            clean_root = root.replace(f'{media_folder}', '') or '/'
+            clean_root = clean_root if clean_root == '/' else clean_root[1:]
+            if clean_root not in folders_paths:
+                continue
+            for file in files:
+                local_files.append(os.path.join(root, file).replace(f'{media_folder}/', ''))
         all_files = set(local_files + remote_files)
 
         for file in sorted(all_files):
