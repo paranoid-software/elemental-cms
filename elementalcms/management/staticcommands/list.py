@@ -14,9 +14,9 @@ class List:
 
     def exec(self, path):
 
-        if not bool(self.context.cms_core_context.MEDIA_BUCKET
-                    and not self.context.cms_core_context.MEDIA_BUCKET.isspace()):
-            click.echo('MEDIA_BUCKET parameter not found on current settings.')
+        if not bool(self.context.cms_core_context.STATIC_BUCKET
+                    and not self.context.cms_core_context.STATIC_BUCKET.isspace()):
+            click.echo('STATIC_BUCKET parameter not found on current settings.')
             return
 
         if path == '':
@@ -42,7 +42,7 @@ class List:
         else:
             client = storage.Client()
 
-        bucket: Bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
+        bucket: Bucket = client.bucket(self.context.cms_core_context.STATIC_BUCKET)
         objects = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
 
         folders = set()
@@ -55,15 +55,15 @@ class List:
             if obj.name != folder_path:
                 remote_files.append(obj.name)
 
-        media_folder = self.context.cms_core_context.MEDIA_FOLDER
+        static_folder = self.context.cms_core_context.STATIC_FOLDER
         local_files = []
-        for root, directories, files in os.walk(media_folder):
-            clean_root = root.replace(f'{media_folder}', '') or '/'
+        for root, directories, files in os.walk(static_folder):
+            clean_root = root.replace(f'{static_folder}', '') or '/'
             clean_root = clean_root if clean_root == '/' else clean_root[1:]
             if clean_root not in folders:
                 continue
             for file in files:
-                local_files.append(os.path.join(root, file).replace(f'{media_folder}/', ''))
+                local_files.append(os.path.join(root, file).replace(f'{static_folder}/', ''))
         all_files = set(local_files + remote_files)
 
         for file in sorted(all_files):
@@ -76,13 +76,13 @@ class List:
 
         if len(all_files) == 0:
             if path:
-                click.echo(f'\nNo media files found at {path}')
+                click.echo(f'\nNo static files found at {path}')
             else:
-                click.echo(f'\nNo media files found')
+                click.echo(f'\nNo static files found')
             return
         if path:
-            click.echo(f'\n{len(all_files)} media files found at {path}')
+            click.echo(f'\n{len(all_files)} static files found at {path}')
         else:
-            click.echo(f'\n{len(all_files)} media files found')
+            click.echo(f'\n{len(all_files)} static files found')
         if local_files != remote_files:
             click.echo('* is an indicator of missing files either on remote folder (left) or local folder (right)')

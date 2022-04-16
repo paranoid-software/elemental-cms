@@ -14,8 +14,8 @@ class FlaskContext(object):
         self.APP_NAME = settings.get('APP_NAME', 'app')
         self.STATIC_FOLDER = settings.get('STATIC_FOLDER', 'static').strip() or 'static'
         self.MEDIA_FOLDER = settings.get('MEDIA_FOLDER', 'media').strip() or 'media'
-        self.STATIC_BUCKET = settings.get('STATIC_BUCKET', None)
-        self.MEDIA_BUCKET = settings.get('MEDIA_BUCKET', None)
+        self.STATIC_BUCKET = settings.get('STATIC_BUCKET', '').strip() or None
+        self.MEDIA_BUCKET = settings.get('MEDIA_BUCKET', '').strip() or None
         self.STATIC_URL = settings.get('STATIC_URL', '/static') or '/static'
         self.MEDIA_URL = settings.get('MEDIA_URL', '/media') or '/media'
         self.GLOBAL_DEPS_FOLDER = settings.get('GLOBAL_DEPS_FOLDER', 'workspace/global_deps')
