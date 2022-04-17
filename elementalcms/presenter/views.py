@@ -1,5 +1,5 @@
 import pycountry
-from flask import render_template, Blueprint, request, g, current_app, redirect, url_for, abort, session, \
+from flask import render_template, Blueprint, request, g, current_app, redirect, abort, session, \
     render_template_string
 
 from elementalcms.services import UseCaseResult
@@ -11,53 +11,55 @@ presenter = Blueprint('presenter', __name__, template_folder='templates')
 
 @presenter.before_request
 def before_request():
-    if g.lang_code in current_app.config['LANGUAGES']:
-        return
-    adapter = current_app.url_map.bind('')
-    try:
-        country = pycountry.countries.get(alpha_2=request.full_path.lstrip('/').rstrip('/ ?'))
-        if country is None:
-            endpoint, args = adapter.match(f'/{current_app.config["DEFAULT_LANGUAGE"]}{request.full_path.rstrip("?")}')
-            return redirect(url_for(endpoint, **args), 301)
-        return redirect(f'/{current_app.config["DEFAULT_LANGUAGE"]}')
-    except Exception as e:
-        print(e)
+    lang_code = g.get('lang_code', None)
+    if lang_code is None:
         abort(404)
+    if lang_code in current_app.config['LANGUAGES']:
+        return
+    return redirect(request.full_path.replace(lang_code,
+                                              session.get('lang_code', current_app.config["DEFAULT_LANGUAGE"])), 301)
 
 
 @presenter.url_defaults
 def add_language_code(endpoint, values):
-    if current_app.config['LANGUAGE_MODE'] == 'single':
-        values.setdefault(current_app.config["DEFAULT_LANGUAGE"])
-        return
-    values.setdefault('lang_code', g.lang_code)
+    values.setdefault('lang_code', current_app.config["DEFAULT_LANGUAGE"])
 
 
 @presenter.url_value_preprocessor
 def pull_lang_code(endpoint, values):
-    session['lang_code'] = values.pop('lang_code', current_app.config["DEFAULT_LANGUAGE"])
-    g.lang_code = session.get('lang_code', current_app.config["DEFAULT_LANGUAGE"])
+
+    lang_code = values.get('lang_code', None)
+    if lang_code is None:
+        return
+
+    country = pycountry.languages.get(alpha_2=lang_code)
+    if country is None:
+        return
+
+    g.lang_code = lang_code
 
 
-@presenter.route('/')
-def index():
+@presenter.route('/', methods=['GET'])
+def index(lang_code: str):
     draft = request.args.get('draft')
-    result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(g.lang_code,
+    result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(lang_code,
                                                                                   draft=(draft == '1'))
     if result.is_failure():
         abort(404)
+    session['lang_code'] = lang_code
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
 
 
-@presenter.route('/<slug>/')
-def render(slug: str):
+@presenter.route('/<slug>/', methods=['GET'])
+def render(lang_code: str, slug: str):
     draft = request.args.get('draft')
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
-                                                                                g.lang_code,
+                                                                                lang_code,
                                                                                 draft=(draft == '1'))
     if result.is_failure():
         abort(404)
+    session['lang_code'] = lang_code
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
 

@@ -21,6 +21,10 @@ class GenericRepository(MongoDbConnectionManager):
         delete_one_result = self._coll.delete_one({'_id': ObjectId(_id)})
         return delete_one_result.deleted_count == 1
 
+    def insert_one(self, payload) -> str:
+        insert_result = self._coll.insert_one(payload)
+        return str(insert_result.inserted_id)
+
     def replace_one(self, _id, spec, upsert=True) -> bool:
         if not ObjectId.is_valid(_id):
             return False
