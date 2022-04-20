@@ -11,7 +11,7 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.86"
+__version__ = "1.0.87"
 
 
 class Elemental:
@@ -115,3 +115,10 @@ class Elemental:
                 content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}')
                 return Markup(content)
             return dict(render_snippet=render_snippet)
+
+        @app.context_processor
+        def lang_code_processor():
+            code = ''
+            if context.cms_core_context.LANGUAGE_MODE == 'multi':
+                code = session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
+            return dict(lang_code=code)
