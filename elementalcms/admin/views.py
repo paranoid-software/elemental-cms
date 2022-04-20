@@ -23,7 +23,7 @@ def before_request():
 
 @admin.url_defaults
 def add_language_code(endpoint, values):
-    values.setdefault('lang_code', current_app.config["DEFAULT_LANGUAGE"])
+    values.setdefault('lang_code', session.get('langCode', current_app.config["DEFAULT_LANGUAGE"]))
 
 
 @admin.url_value_preprocessor
@@ -42,11 +42,14 @@ def pull_lang_code(endpoint, values):
 
 @admin.route('/<slug>/edit/', methods=['GET'])
 def index(lang_code, slug):
+    admin_identity = session.get('adminIdentity', None)
+    if not admin_identity:
+        abort(401)
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
                                                                                 lang_code,
                                                                                 True)
     if result.is_failure():
         abort(404)
-    session['lang_code'] = lang_code
+    session['langCode'] = lang_code
     return render_template('admin/index.html',
                            page=json.loads(json_util.dumps(result.value())))
