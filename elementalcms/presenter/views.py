@@ -12,6 +12,8 @@ presenter = Blueprint('presenter', __name__, template_folder='templates')
 @presenter.before_request
 def before_request():
     lang_code = g.get('lang_code', None)
+    if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
+        return
     if lang_code is None:
         abort(404)
     if lang_code in current_app.config['LANGUAGES']:
@@ -40,8 +42,12 @@ def pull_lang_code(endpoint, values):
 
 
 @presenter.route('/', methods=['GET'])
-def index(lang_code: str):
+def index(lang_code: str = None):
     draft = request.args.get('draft')
+
+    if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
+        lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
+
     result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(lang_code,
                                                                                   draft=(draft == '1'))
     if result.is_failure():
@@ -66,8 +72,12 @@ def index(lang_code: str):
 
 
 @presenter.route('/<slug>/', methods=['GET'])
-def render(lang_code: str, slug: str):
+def render(slug: str, lang_code: str = None):
     draft = request.args.get('draft')
+
+    if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
+        lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
+
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
                                                                                 lang_code,
                                                                                 draft=(draft == '1'))
