@@ -109,6 +109,6 @@ class Elemental:
                 get_me_result = GetMe(context.cms_db_context).execute(name)
                 if get_me_result.is_failure():
                     raise Exception(f'There are no snippets under the name {name}')
-                content = render_template_string(get_me_result.value()['content'])
+                content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}')
                 return Markup(content)
             return dict(render_snippet=render_snippet)

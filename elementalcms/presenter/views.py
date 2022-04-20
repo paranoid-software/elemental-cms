@@ -1,9 +1,11 @@
+import re
 import pycountry
 from flask import render_template, Blueprint, request, g, current_app, redirect, abort, session, \
     render_template_string, url_for
 
 from elementalcms.services import UseCaseResult
 from elementalcms.services.pages import GetHome, GetMe
+from elementalcms.services.snippets import GetMany
 
 
 presenter = Blueprint('presenter', __name__, template_folder='templates')
@@ -103,9 +105,25 @@ def render(slug: str, lang_code: str = None):
 
 
 def get_page_model(page_spec):
+
     styles = get_styles(page_spec['cssDeps'])
+
     scripts = get_scripts(page_spec['jsDeps'])
     content = render_template_string(page_spec['content'], page=page_spec)
+
+    snippets_names = re.findall("<!--(.*)-->", content)
+    get_many_snippets_result = GetMany(current_app.config['CMS_DB_CONTEXT']).execute(snippets_names)
+    snippets = [] if get_many_snippets_result.is_failure() else get_many_snippets_result.value()
+
+    snippets_styles = []
+    snippets_scripts = []
+    for snippet in snippets:
+        snippets_styles += snippet['cssDeps']
+        snippets_scripts += snippet['jsDeps']
+
+    styles += get_styles(snippets_styles)
+    scripts += get_scripts(snippets_scripts)
+
     return {
         'title': page_spec['title'],
         'name': page_spec['name'],

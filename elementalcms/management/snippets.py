@@ -39,10 +39,10 @@ class Snippets(click.Group):
     @option('--all',
             is_flag=True,
             help='Push all snippets.')
-    @option('--snippet',
+    @option('--snippets',
             '-s',
             multiple=True,
-            help='Name for the spec to be pushed. For example: push -s nav-bar')
+            help='Name for the snippets to be pushed. For example: push -s nav-bar-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def push(ctx, **params):
@@ -57,10 +57,10 @@ class Snippets(click.Group):
     @option('--all',
             is_flag=True,
             help='Pull all snippets.')
-    @option('--snippet',
+    @option('--snippets',
             '-s',
             multiple=True,
-            help='Name for the snippet to be pulled. For example: pull -d bootstrap application/javascript')
+            help='Name for the snippets to be pulled. For example: pull --snippets nav-var-plugster header-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def pull(ctx, **params):
