@@ -24,6 +24,8 @@ class Create:
         spec = {
             '_id': ObjectId(),
             'name': name,
+            'cssDeps': [],
+            'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }

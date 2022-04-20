@@ -1,6 +1,6 @@
 import pycountry
 from flask import render_template, Blueprint, request, g, current_app, redirect, abort, session, \
-    render_template_string
+    render_template_string, url_for
 
 from elementalcms.services import UseCaseResult
 from elementalcms.services.pages import GetHome, GetMe
@@ -17,12 +17,12 @@ def before_request():
     if lang_code in current_app.config['LANGUAGES']:
         return
     return redirect(request.full_path.replace(lang_code,
-                                              session.get('lang_code', current_app.config["DEFAULT_LANGUAGE"])), 301)
+                                              session.get('langCode', current_app.config["DEFAULT_LANGUAGE"])), 301)
 
 
 @presenter.url_defaults
 def add_language_code(endpoint, values):
-    values.setdefault('lang_code', current_app.config["DEFAULT_LANGUAGE"])
+    values.setdefault('lang_code', session.get('langCode', current_app.config["DEFAULT_LANGUAGE"]))
 
 
 @presenter.url_value_preprocessor
@@ -46,7 +46,21 @@ def index(lang_code: str):
                                                                                   draft=(draft == '1'))
     if result.is_failure():
         abort(404)
-    session['lang_code'] = lang_code
+
+    requires_user_identity = result.value().get('requiresUserIdentity', False)
+    redirect_users_to = result.value().get('redirectUsersTo', '').strip() or None
+    has_user_identity = session.get('userIdentity', None)
+
+    if redirect_users_to and has_user_identity:
+        url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to})
+        if draft == '1':
+            url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to}, draft=1)
+        return redirect(url)
+
+    if requires_user_identity and not has_user_identity:
+        abort(401)
+
+    session['langCode'] = lang_code
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
 
@@ -59,7 +73,21 @@ def render(lang_code: str, slug: str):
                                                                                 draft=(draft == '1'))
     if result.is_failure():
         abort(404)
-    session['lang_code'] = lang_code
+
+    requires_user_identity = result.value().get('requiresUserIdentity', False)
+    redirect_users_to = result.value().get('redirectUsersTo', '').strip() or None
+    has_user_identity = session.get('userIdentity', None)
+
+    if redirect_users_to and has_user_identity:
+        url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to})
+        if draft == '1':
+            url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to}, draft=1)
+        return redirect(url)
+
+    if requires_user_identity and not has_user_identity:
+        abort(401)
+
+    session['langCode'] = lang_code
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
 

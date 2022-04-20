@@ -1,6 +1,6 @@
 import os
 import pathlib
-from flask import Flask, request, send_from_directory, redirect, g, render_template_string
+from flask import Flask, request, send_from_directory, redirect, g, render_template_string, session, url_for
 from flask_babel import Babel
 from markupsafe import Markup
 
@@ -11,7 +11,7 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.82"
+__version__ = "1.0.83"
 
 
 class Elemental:
@@ -68,19 +68,38 @@ class Elemental:
             if request.full_path == '/?':
                 if context.cms_core_context.LANGUAGE_MODE == 'single':
                     return
-                return redirect(f'/{context.cms_core_context.DEFAULT_LANGUAGE}')
+                return redirect(f'/{session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE)}')
+
+            if request.full_path == '/?draft=1':
+                if context.cms_core_context.LANGUAGE_MODE == 'single':
+                    return
+                return redirect(f'/{session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE)}?draft=1')
 
         @app.context_processor
-        def elemental_static_url_for_processor():
-            def elemental_static_url_for(file_path=''):
+        def elemental_url_for_static_processor():
+            def elemental_url_for_static(file_path=''):
                 return f'{context.cms_core_context.STATIC_URL}/{file_path}'
-            return dict(elemental_static_url_for=elemental_static_url_for)
+            return dict(elemental_url_for_static=elemental_url_for_static)
 
         @app.context_processor
-        def elemental_media_url_for_processor():
-            def elemental_media_url_for(file_path=''):
+        def elemental_url_for_media_processor():
+            def elemental_url_for_media(file_path=''):
                 return f'{context.cms_core_context.MEDIA_URL}/{file_path}'
-            return dict(elemental_media_url_for=elemental_media_url_for)
+            return dict(elemental_url_for_media=elemental_url_for_media)
+
+        @app.context_processor
+        def elemental_url_for_slug_processor():
+            def elemental_url_for_slug(lang_code=None, slug=None, **kwargs):
+                url = url_for('presenter.index',
+                              lang_code=lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE),
+                              **kwargs)
+                if slug is not None and not slug.strip():
+                    url = url_for('presenter.render',
+                                  slug=slug,
+                                  lang_code=lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE),
+                                  **kwargs)
+                return url
+            return dict(elemental_url_for_slug=elemental_url_for_slug)
 
         @app.context_processor
         def render_snippet_processor():
