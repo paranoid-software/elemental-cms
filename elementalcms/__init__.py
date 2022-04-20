@@ -11,7 +11,7 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.84"
+__version__ = "1.0.85"
 
 
 class Elemental:
@@ -91,12 +91,14 @@ class Elemental:
         def elemental_url_for_slug_processor():
             def elemental_url_for_slug(lang_code=None, slug=None, **kwargs):
                 url = url_for('presenter.index',
-                              lang_code=lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE),
+                              lang_code=None if context.cms_core_context.LANGUAGE_MODE == 'single' else
+                              (lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)),
                               **kwargs)
                 if slug is not None and slug.strip():
                     url = url_for('presenter.render',
                                   slug=slug,
-                                  lang_code=lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE),
+                                  lang_code=None if context.cms_core_context.LANGUAGE_MODE == 'single' else
+                                  (lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)),
                                   **kwargs)
                 return url
             return dict(elemental_url_for_slug=elemental_url_for_slug)
