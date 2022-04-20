@@ -43,13 +43,13 @@ class Snippets(click.Group):
             '-s',
             multiple=True,
             help='Name for the snippets to be pushed. For example: push -s nav-bar-plugster')
-    @constraint(RequireExactly(1), ['all', 'snippet'])
+    @constraint(RequireExactly(1), ['all', 'snippets'])
     @pass_context
     def push(ctx, **params):
         if params['all']:
             click.echo('Operation not ready yet.')
             return
-        Push(ctx).exec(params['snippet'])
+        Push(ctx).exec(params['snippets'])
 
     @staticmethod
     @command(name='pull',
@@ -61,13 +61,13 @@ class Snippets(click.Group):
             '-s',
             multiple=True,
             help='Name for the snippets to be pulled. For example: pull --snippets nav-var-plugster header-plugster')
-    @constraint(RequireExactly(1), ['all', 'snippet'])
+    @constraint(RequireExactly(1), ['all', 'snippets'])
     @pass_context
     def pull(ctx, **params):
         if params['all']:
             click.echo('Operation not ready yet.')
             return
-        Pull(ctx).exec(params['snippet'])
+        Pull(ctx).exec(params['snippets'])
 
     @staticmethod
     @command(name='remove', help='Remove an snippet.')

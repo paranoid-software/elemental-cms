@@ -45,9 +45,11 @@ def pull_lang_code(endpoint, values):
 
 @presenter.route('/', methods=['GET'])
 def index(lang_code: str = None):
-    draft = request.args.get('draft')
 
-    if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
+    draft = request.args.get('draft')
+    lang_mode = current_app.config['LANGUAGE_MODE']
+
+    if lang_code is None and lang_mode == 'single':
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
     result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(lang_code,
@@ -60,10 +62,23 @@ def index(lang_code: str = None):
     has_user_identity = session.get('userIdentity', None)
 
     if redirect_users_to and has_user_identity:
-        url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to})
         if draft == '1':
-            url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to}, draft=1)
-        return redirect(url)
+            if redirect_users_to == 'index':
+                return redirect(url_for('presenter.index',
+                                        lang_code=None if lang_mode == 'single' else lang_code,
+                                        draft=1),
+                                301)
+            return redirect(url_for('presenter.render',
+                                    lang_code=None if lang_mode == 'single' else lang_code,
+                                    slug=redirect_users_to,
+                                    draft=1), 301)
+        if redirect_users_to == 'index':
+            return redirect(url_for('presenter.index',
+                                    lang_code=None if lang_mode == 'single' else lang_code),
+                            301)
+        return redirect(url_for('presenter.render',
+                                lang_code=None if lang_mode == 'single' else lang_code,
+                                slug=redirect_users_to), 301)
 
     if requires_user_identity and not has_user_identity:
         abort(401)
@@ -75,9 +90,11 @@ def index(lang_code: str = None):
 
 @presenter.route('/<slug>/', methods=['GET'])
 def render(slug: str, lang_code: str = None):
-    draft = request.args.get('draft')
 
-    if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
+    draft = request.args.get('draft')
+    lang_mode = current_app.config['LANGUAGE_MODE']
+
+    if lang_code is None and lang_mode == 'single':
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
@@ -91,10 +108,21 @@ def render(slug: str, lang_code: str = None):
     has_user_identity = session.get('userIdentity', None)
 
     if redirect_users_to and has_user_identity:
-        url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to})
         if draft == '1':
-            url = url_for('presenter.render', **{'lang_code': lang_code, 'slug': redirect_users_to}, draft=1)
-        return redirect(url)
+            if redirect_users_to == 'index':
+                return redirect(url_for('presenter.index',
+                                        lang_code=None if lang_mode == 'single' else lang_code,
+                                        draft=1), 301)
+            return redirect(url_for('presenter.render',
+                                    lang_code=None if lang_mode == 'single' else lang_code,
+                                    slug=redirect_users_to,
+                                    draft=1), 301)
+        if redirect_users_to == 'index':
+            return redirect(url_for('presenter.index',
+                                    lang_code=None if lang_mode == 'single' else lang_code), 301)
+        return redirect(url_for('presenter.render',
+                                lang_code=None if lang_mode == 'single' else lang_code,
+                                slug=redirect_users_to), 301)
 
     if requires_user_identity and not has_user_identity:
         abort(401)
