@@ -45,7 +45,7 @@ class GlobalDeps(Group):
              help='Push global dep(s) specs to the CMS database.')
     @option('--all',
             is_flag=True,
-            help='Push all global dependencies from the local workspace.')
+            help='Push all global dependencies.')
     @option('--dep',
             '-d',
             nargs=2,
@@ -64,7 +64,7 @@ class GlobalDeps(Group):
              help='Pull global dep(s) specs from the CMS database.')
     @option('--all',
             is_flag=True,
-            help='Pull all global dependencies into the local workspace.')
+            help='Pull all global dependencies.')
     @option('--dep',
             '-d',
             nargs=2,
@@ -79,7 +79,7 @@ class GlobalDeps(Group):
         return Pull(ctx).exec(params['dep'])
 
     @staticmethod
-    @command(name='remove', help='Remove global dependencies from the CMS database.')
+    @command(name='remove', help='Remove a global dependency from the CMS database.')
     @option('--dep',
             '-d',
             required=True,
