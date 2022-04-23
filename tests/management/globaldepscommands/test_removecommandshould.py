@@ -32,7 +32,7 @@ class TestRemoveCommandShould:
                                            'remove',
                                            '-d', 'jquery', 'application/javascript'
                                        ])
-                assert_that(result.output).contains('does not exist.')
+                assert_that(result.output).contains('does not exist')
 
     def test_display_operation_success_message(self, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),

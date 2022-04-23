@@ -40,7 +40,7 @@ class TestPullCommandShould:
                                            MongoDbStateData(coll_name='snippets',
                                                             items=[{
                                                                 '_id': ObjectId(),
-                                                                'name': 'nav-bar-header',
+                                                                'name': 'nav-bar',
                                                                 'content': '<div></div>',
                                                                 'cssDeps': [],
                                                                 'jsDeps': [],
@@ -52,7 +52,7 @@ class TestPullCommandShould:
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                name = 'nav-bar-header'
+                name = 'nav-bar'
                 folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)

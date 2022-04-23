@@ -23,7 +23,7 @@ class Remove:
                 return
         snippet = get_me_result.value()
         if snippet is None:
-            click.echo(f'Snippet {name} does not exists.')
+            click.echo(f'Snippet {name} does not exist.')
             return
 
         self.build_backup(snippet['_id'])

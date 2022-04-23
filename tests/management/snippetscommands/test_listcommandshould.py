@@ -36,7 +36,7 @@ class TestListCommandShould:
     def test_display_complete_global_dependency_list(self, default_settings_fixture):
         items = [{
             '_id': ObjectId(),
-            'name': 'nav-bar-header',
+            'name': 'nav-bar',
             'content': '<div></div>',
             'cssDeps': [],
             'jsDeps': [],
@@ -68,4 +68,4 @@ class TestListCommandShould:
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['snippets',
                                              'list'])
-                assert_that(all(substring in result.output for substring in ['nav-bar-header', 'footer']))
+                assert_that(all(substring in result.output for substring in ['nav-bar', 'footer']))

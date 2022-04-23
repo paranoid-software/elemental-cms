@@ -39,7 +39,7 @@ class TestPullAllCommandShould:
     def test_pull_every_snippet(self, default_settings_fixture):
         items = [{
             '_id': ObjectId(),
-            'name': 'nav-bar-header',
+            'name': 'nav-bar',
             'content': '<div></div>',
             'cssDeps': [],
             'jsDeps': [],

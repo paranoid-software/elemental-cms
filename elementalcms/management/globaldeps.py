@@ -28,7 +28,7 @@ class GlobalDeps(Group):
 
     @staticmethod
     @command(name='create',
-             help='Create a new global dependency spec file on the local workspace.')
+             help='Create a new global dependency on the local workspace.')
     @option('--dep',
             '-d',
             required=True,

@@ -24,7 +24,7 @@ class Snippets(click.Group):
         List(ctx).exec()
 
     @staticmethod
-    @command(name='create', help='Create a new snippet on your local workspace.')
+    @command(name='create', help='Create a new snippet on the local workspace.')
     @option('--snippet',
             '-s',
             required=True,

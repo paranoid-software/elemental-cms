@@ -31,7 +31,7 @@ class Pull:
             get_me_result = GetMe(self.context.cms_db_context).execute(name)
             snippet = get_me_result.value()
             if snippet is None:
-                click.echo(f'Snippet {name} does not exists.')
+                click.echo(f'Snippet {name} does not exist.')
                 continue
             folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
             if not os.path.exists(folder_path):
