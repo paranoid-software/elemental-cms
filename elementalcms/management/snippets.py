@@ -25,13 +25,13 @@ class Snippets(click.Group):
 
     @staticmethod
     @command(name='create', help='Create a new snippet on your local workspace.')
-    @option('--name',
-            '-n',
+    @option('--snippet',
+            '-s',
             required=True,
             help='Snippet name. It must be unique, lowercased and it can not contains special characters.')
     @pass_context
-    def create(ctx, name):
-        Create(ctx).exec(name)
+    def create(ctx, snippet):
+        Create(ctx).exec(snippet)
 
     @staticmethod
     @command(name='push',
@@ -39,17 +39,16 @@ class Snippets(click.Group):
     @option('--all',
             is_flag=True,
             help='Push all snippets.')
-    @option('--snippets',
+    @option('--snippet',
             '-s',
             multiple=True,
             help='Name for the snippets to be pushed. For example: push -s nav-bar-plugster')
-    @constraint(RequireExactly(1), ['all', 'snippets'])
+    @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def push(ctx, **params):
         if params['all']:
-            click.echo('Operation not ready yet.')
-            return
-        Push(ctx).exec(params['snippets'])
+            return Push(ctx).exec('*')
+        Push(ctx).exec(params['snippet'])
 
     @staticmethod
     @command(name='pull',
@@ -57,22 +56,21 @@ class Snippets(click.Group):
     @option('--all',
             is_flag=True,
             help='Pull all snippets.')
-    @option('--snippets',
+    @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the snippets to be pulled. For example: pull --snippets nav-var-plugster header-plugster')
-    @constraint(RequireExactly(1), ['all', 'snippets'])
+            help='Name for the snippets to be pulled. For example: pull -s nav-var-plugster -s header-plugster')
+    @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def pull(ctx, **params):
         if params['all']:
-            click.echo('Operation not ready yet.')
-            return
-        Pull(ctx).exec(params['snippets'])
+            return Pull(ctx).exec('*')
+        return Pull(ctx).exec(params['snippet'])
 
     @staticmethod
-    @command(name='remove', help='Remove an snippet.')
-    @option('--name',
-            '-n',
+    @command(name='remove', help='Remove an snippet from the CMS database.')
+    @option('--snippet',
+            '-s',
             required=True,
             help='Name of snippet to be removed.')
     @pass_context
