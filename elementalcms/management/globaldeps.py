@@ -21,7 +21,7 @@ class GlobalDeps(Group):
 
     @staticmethod
     @command(name='list',
-             help='List pushed global dependencies.')
+             help='Display global dependencies list.')
     @pass_context
     def list(ctx):
         List(ctx).exec()

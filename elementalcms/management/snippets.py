@@ -18,7 +18,7 @@ class Snippets(click.Group):
 
     @staticmethod
     @command(name='list',
-             help='Snippets list.')
+             help='Display snippets list.')
     @pass_context
     def list(ctx):
         List(ctx).exec()
