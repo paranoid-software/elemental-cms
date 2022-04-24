@@ -14,7 +14,7 @@ class Pull:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self, snippets):
+    def exec(self, snippets) -> [Tuple]:
         if isinstance(snippets, str):
             get_all_result = GetAll(self.context.cms_db_context).execute()
             snippets_tuples = [] if get_all_result.is_failure() else [(item['name'])
@@ -64,5 +64,5 @@ class Pull:
             copyfile(spec_file_path, spec_backup_file_path)
             content_backup_file_path = f'{backups_folder_path}/{clean_file_name}-{suffix}.html'
             copyfile(content_file_path, content_backup_file_path)
-            return spec_backup_file_path, content_file_path
+            return spec_backup_file_path, content_backup_file_path
         return None

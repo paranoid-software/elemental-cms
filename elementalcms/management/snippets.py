@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import click
 from cloup import constraint, option, command, pass_context
 from cloup.constraints import RequireExactly
@@ -45,10 +47,10 @@ class Snippets(click.Group):
             help='Name for the snippets to be pushed. For example: push -s nav-bar-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
-    def push(ctx, **params):
+    def push(ctx, **params) -> [Tuple]:
         if params['all']:
             return Push(ctx).exec('*')
-        Push(ctx).exec(params['snippet'])
+        return Push(ctx).exec(params['snippet'])
 
     @staticmethod
     @command(name='pull',
@@ -62,7 +64,7 @@ class Snippets(click.Group):
             help='Name for the snippets to be pulled. For example: pull -s nav-var-plugster -s header-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
-    def pull(ctx, **params):
+    def pull(ctx, **params) -> [Tuple]:
         if params['all']:
             return Pull(ctx).exec('*')
         return Pull(ctx).exec(params['snippet'])
@@ -72,8 +74,8 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             required=True,
-            help='Name of snippet to be removed.')
+            help='Name for the snippet to be removed.')
     @pass_context
-    def remove(ctx, name):
+    def remove(ctx, snippet):
         pass
-        Remove(ctx).exec(name)
+        Remove(ctx).exec(snippet)
