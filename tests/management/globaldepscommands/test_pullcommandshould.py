@@ -35,7 +35,7 @@ class TestPullCommandShould:
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -65,7 +65,7 @@ class TestPullCommandShould:
                                                                 'lastModifiedAt': datetime.datetime.utcnow()
                                                             }])
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -94,7 +94,7 @@ class TestPullCommandShould:
                                                                 'lastModifiedAt': datetime.datetime.utcnow()
                                                             }])
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -128,7 +128,7 @@ class TestPullCommandShould:
                                                                 'lastModifiedAt': datetime.datetime.utcnow()
                                                             }])
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():

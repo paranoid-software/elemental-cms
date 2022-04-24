@@ -113,7 +113,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -132,7 +132,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -151,7 +151,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -170,7 +170,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -189,7 +189,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -208,7 +208,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -229,7 +229,7 @@ class TestPushCommandShould:
                                            MongoDbStateData(coll_name='global_deps',
                                                             items=[specs[1]])
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():

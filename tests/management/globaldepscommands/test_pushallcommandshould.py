@@ -20,7 +20,7 @@ class TestPushAllCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -66,7 +66,7 @@ class TestPushAllCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():

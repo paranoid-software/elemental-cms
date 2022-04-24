@@ -1,11 +1,14 @@
 import os
 import time
-from typing import Any
-from bson import json_util
+from typing import Any, Tuple
+from bson import json_util, ObjectId
 from dataclasses_serialization.bson import BSONSerializer
 
 from pymongo import MongoClient
 from typing import List, Optional
+
+from pymongo.collection import Collection
+from pymongo.database import Database
 
 
 class MongoDbStateData:
@@ -44,10 +47,21 @@ class MongoDbStateFromFile:
         self.files = files
 
 
+class MongoDbReader:
+    db: Database
+
+    def __init__(self, client, db_name):
+        self.db = client.get_database(db_name)
+
+    def find_one(self, coll_name, _filter):
+        return self.db.get_collection(coll_name).find_one(_filter)
+
+
 class EphemeralMongoContext:
 
     __connection_string: str
-    __db_names: {}
+    __db_names = {}
+    __readers = {}
 
     __state: List[MongoDbState] = []
 
@@ -85,13 +99,17 @@ class EphemeralMongoContext:
 
         self.__db_names = {}
         first_db_name = None
+        first_db_reader = None
 
         for state in self.__state:
             db_name = f'{state.db_name}_{round(time.time() * 1000)}'
             if first_db_name is None:
                 first_db_name = db_name
             client = self._get_client()
+            if first_db_reader is None:
+                first_db_reader = MongoDbReader(client, db_name)
             self.__db_names[state.db_name] = db_name
+            self.__readers[state.db_name] = MongoDbReader(client, db_name)
             if state.data is None:
                 continue
             for data in state.data:
@@ -102,7 +120,10 @@ class EphemeralMongoContext:
                         del item['id']
                     client.get_database(db_name).get_collection(coll_name).insert_one(BSONSerializer.serialize(item))
 
-        return first_db_name if len(self.__db_names) <= 1 else self.__db_names
+        if len(self.__db_names) <= 1:
+            return first_db_name, first_db_reader
+
+        return self.__db_names, self.__readers
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         for db_name in self.__db_names:

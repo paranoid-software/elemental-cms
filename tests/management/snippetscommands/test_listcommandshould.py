@@ -43,7 +43,7 @@ class TestListCommandShould:
                                                         MongoDbStateData(coll_name='snippets',
                                                                          items=[])
                                                     ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -63,7 +63,7 @@ class TestListCommandShould:
                                                         MongoDbStateData(coll_name='snippets',
                                                                          items=snippets)
                                                     ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():

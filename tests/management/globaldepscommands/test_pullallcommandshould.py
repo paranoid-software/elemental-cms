@@ -23,7 +23,7 @@ class TestPullAllCommandShould:
                                                         MongoDbStateData(coll_name='global_deps',
                                                                          items=[])
                                                     ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -72,7 +72,7 @@ class TestPullAllCommandShould:
                                                         MongoDbStateData(coll_name='global_deps',
                                                                          items=items)
                                                     ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
