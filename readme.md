@@ -11,13 +11,12 @@ elemental-cms
 ## Work in progress
 
 - [Documentation](https://paranoid-software.getoutline.com/share/a300ec8e-4bc6-47c0-aba0-fbe1f80f1623).
-- Media files management module.
-- Static files management module.
+- Media files management module test clasess.
+- Static files management module test clasess.
 
 ## To Do
 
-- Snippets management module.
-- Pages management module.
+- Pages management module review and refactor.
 
 ## Setup
 
