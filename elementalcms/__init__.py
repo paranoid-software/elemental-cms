@@ -11,7 +11,7 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.85"
+__version__ = "1.0.87"
 
 
 class Elemental:
@@ -68,12 +68,15 @@ class Elemental:
             if request.full_path == '/?':
                 if context.cms_core_context.LANGUAGE_MODE == 'single':
                     return
-                return redirect(f'/{session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE)}')
+                return redirect(url_for('presenter.index',
+                                        lang_code=session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE)))
 
             if request.full_path == '/?draft=1':
                 if context.cms_core_context.LANGUAGE_MODE == 'single':
                     return
-                return redirect(f'/{session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE)}?draft=1')
+                return redirect(url_for('presenter.index',
+                                        lang_code=session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE),
+                                        draft=1))
 
         @app.context_processor
         def elemental_url_for_static_processor():
@@ -109,6 +112,13 @@ class Elemental:
                 get_me_result = GetMe(context.cms_db_context).execute(name)
                 if get_me_result.is_failure():
                     raise Exception(f'There are no snippets under the name {name}')
-                content = render_template_string(get_me_result.value()['content'])
+                content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}')
                 return Markup(content)
             return dict(render_snippet=render_snippet)
+
+        @app.context_processor
+        def lang_code_processor():
+            code = ''
+            if context.cms_core_context.LANGUAGE_MODE == 'multi':
+                code = session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
+            return dict(lang_code=code)

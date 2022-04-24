@@ -13,13 +13,16 @@ class Create:
         self.context: ElementalContext = ctx.obj['elemental_context']
 
     def exec(self, name):
-        destination_folder = self.context.cms_core_context.SNIPPETS_FOLDER
-        if not os.path.exists(destination_folder):
-            os.makedirs(destination_folder)
-        spec_file_destination_path = f'{destination_folder}/{name}.json'
-        content_file_destination_path = f'{destination_folder}/{name}.html'
-        if os.path.exists(spec_file_destination_path):
-            click.echo(f'A snippet with the name "{name}" already exists.')
+
+        # TODO: Validate naming constraints
+
+        folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        spec_file_path = f'{folder_path}/{name}.json'
+        content_file_path = f'{folder_path}/{name}.html'
+        if os.path.exists(spec_file_path):
+            click.echo(f'The snippet "{name}" already exist.')
             return
         spec = {
             '_id': ObjectId(),
@@ -29,10 +32,10 @@ class Create:
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }
-        spec_file = open(spec_file_destination_path, mode="w", encoding="utf-8")
+        spec_file = open(spec_file_path, mode="w", encoding="utf-8")
         spec_file.write(json_util.dumps(spec, indent=4))
         spec_file.close()
-        content_file = open(content_file_destination_path, mode="w", encoding="utf-8")
+        content_file = open(content_file_path, mode="w", encoding="utf-8")
         content_file.write('<div>_("This a new snippet.")</div>')
         content_file.close()
-        click.echo(f'{destination_folder}/{name}.json|html files has been created successfully.')
+        click.echo(f'{folder_path}/{name}.json|html files has been created successfully.')

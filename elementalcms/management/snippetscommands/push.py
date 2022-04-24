@@ -1,5 +1,6 @@
 import time
 import os
+from typing import Tuple, Optional
 
 import click
 from bson import json_util, ObjectId
@@ -12,59 +13,80 @@ class Push:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self, names):
-        for name in names:
-            snippets_folder = self.context.cms_core_context.SNIPPETS_FOLDER
-            spec_file_path = f'{snippets_folder}/{name}.json'
-            content_file_path = f'{snippets_folder}/{name}.html'
-            if not os.path.exists(content_file_path):
-                click.echo(f'There is no content file for snippet {name}.')
+    def exec(self, snippets) -> [Tuple]:
+
+        folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
+
+        if isinstance(snippets, str):
+            snippets_tuples = []
+            for r, d, f in os.walk(folder_path):
+                for file in f:
+                    if '.json' not in file:
+                        continue
+                    snippets_tuples.append((file.split('.')[0]))
+            if len(snippets_tuples) == 0:
+                click.echo('There are no snippets to push.')
                 return
-            with open(spec_file_path) as spec_file_content:
+        else:
+            snippets_tuples = snippets
+
+        backup_paths = []
+        for element in snippets_tuples:
+            name = element
+            spec_file_path = f'{folder_path}/{name}.json'
+            content_file_path = f'{folder_path}/{name}.html'
+            if not os.path.exists(spec_file_path):
+                click.echo(f'There is no spec file for {name} snippet.')
+                return
+            if not os.path.exists(content_file_path):
+                click.echo(f'There is no content file for {name} snippet.')
+                return
+            with open(spec_file_path) as spec_file:
                 try:
-                    spec = json_util.loads(spec_file_content.read())
-                    if '_id' not in spec:
-                        click.echo(f'Spec invalid for snippet {name}.')
-                        return
-                    if not ObjectId.is_valid(spec['_id']):
-                        click.echo(f'Spec invalid for snippet {name}.')
-                        return
-                    if 'name' not in spec:
-                        click.echo(f'Spec invalid for snippet {name}.')
-                        return
-                    if spec['name'] != name:
-                        click.echo(f'Spec invalid for snippet {name}.')
-                        return
-                    with open(content_file_path) as content:
-                        spec['content'] = content.read()
-                        _id = spec['_id']
-                        self.build_backup(_id)
-                        update_me_result = UpdateOne(self.context.cms_db_context).execute(_id, spec)
-                        if update_me_result.is_failure():
-                            click.echo(f'Something went wrong and it was not possible to push snippet {name} into {self.context.cms_db_context.host_name}/{self.context.cms_db_context.database_name}.')
-                            return
-                        click.echo(f'Snippet {name} pushed successfully into {self.context.cms_db_context.host_name}/{self.context.cms_db_context.database_name}.')
+                    snippet = json_util.loads(spec_file.read())
                 except Exception as e:
                     click.echo(e)
-                    click.echo(f'Spec invalid for snippet {name}.')
+                    click.echo(f'Invalid spec for {name}.')
+                    continue
+                if '_id' not in snippet:
+                    click.echo(f'Missing spec _id for: {name}.')
+                    return
+                if not ObjectId.is_valid(snippet['_id']):
+                    click.echo(f'Invalid spec _id for: {name}.')
+                    return
+                if 'name' not in snippet:
+                    click.echo(f'Missing spec name for: {name}.')
+                    return
+                if snippet['name'] != name:
+                    click.echo(f'Invalid spec name for: {name}.')
+                    return
+                with open(content_file_path) as content_file:
+                    snippet['content'] = content_file.read()
+                    _id = snippet['_id']
+                    backup_files_paths = self.build_backups(_id)
+                    UpdateOne(self.context.cms_db_context).execute(_id, snippet)
+                    click.echo(f'Snippet {name} pushed successfully.')
+                    if backup_files_paths is not None:
+                        backup_paths.append(backup_files_paths)
+        return backup_paths
 
-    def build_backup(self, _id):
+    def build_backups(self, _id) -> Optional[Tuple]:
         get_one_result = GetOne(self.context.cms_db_context).execute(_id)
         if get_one_result.is_failure():
-            return
+            return None
         click.echo('Building backup...')
-        snippet = get_one_result.value()
-        html_content = snippet['content']
-        del snippet['content']
         backups_folder_path = f'{self.context.cms_core_context.SNIPPETS_FOLDER}/.bak'
         if not os.path.exists(backups_folder_path):
             os.makedirs(backups_folder_path)
+        snippet = get_one_result.value()
+        html_content = snippet.pop('content', '')
         sufix = round(time.time())
-        spec_file_destination_path = f'{backups_folder_path}/{snippet["name"]}-{sufix}.json'
-        spec_file = open(spec_file_destination_path, mode="w", encoding="utf-8")
-        spec_file.write(json_util.dumps(snippet, indent=4))
-        spec_file.close()
-        content_file_destination_path = f'{backups_folder_path}/{snippet["name"]}-{sufix}.html'
-        content_file = open(content_file_destination_path, mode="w", encoding="utf-8")
-        content_file.write(html_content)
-        content_file.close()
+        spec_backup_file_path = f'{backups_folder_path}/{snippet["name"]}-{sufix}.json'
+        spec_backup_file = open(spec_backup_file_path, mode="w", encoding="utf-8")
+        spec_backup_file.write(json_util.dumps(snippet, indent=4))
+        spec_backup_file.close()
+        content_backup_file_path = f'{backups_folder_path}/{snippet["name"]}-{sufix}.html'
+        content_backup_file = open(content_backup_file_path, mode="w", encoding="utf-8")
+        content_backup_file.write(html_content)
+        content_backup_file.close()
+        return spec_backup_file_path, content_backup_file_path

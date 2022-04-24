@@ -41,9 +41,9 @@ class TestCreateCommandShould:
             result = runner.invoke(cli, ['global-deps',
                                          'create',
                                          '-d', name, _type])
-            assert_that(result.output).contains('already exist.')
+            assert_that(result.output).contains('already exist')
 
-    def test_create_spec_file_for_new_global_dependency(self, default_settings_fixture):
+    def test_create_spec_file_for_the_new_global_dependency(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')

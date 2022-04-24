@@ -23,7 +23,7 @@ class Create:
         spec_file_destination_path = f'{destination_path}/{name}.json'
         content_file_destination_path = f'{destination_path}/{name}.html'
         if os.path.exists(spec_file_destination_path):
-            click.echo(f'A page with the name "{name}" in "{lang}" language already exists.')
+            click.echo(f'A page with the name "{name}" in "{lang}" language already exist.')
             return
         spec = {
             '_id': ObjectId(),

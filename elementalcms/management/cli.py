@@ -27,7 +27,7 @@ def cli(ctx: Context):
         exit(1)
 
     if not os.path.exists('settings/prod.json'):
-        click.echo('Settings file do not exist. Please create a production settings file in order to be able to '
+        click.echo('Settings file does not exist. Please create a production settings file in order to be able to '
                    'use the CLI.')
         exit(1)
 

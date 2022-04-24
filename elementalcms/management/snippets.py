@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import click
 from cloup import constraint, option, command, pass_context
 from cloup.constraints import RequireExactly
@@ -18,20 +20,20 @@ class Snippets(click.Group):
 
     @staticmethod
     @command(name='list',
-             help='Snippets list.')
+             help='Display snippets list.')
     @pass_context
     def list(ctx):
         List(ctx).exec()
 
     @staticmethod
-    @command(name='create', help='Create a new snippet on your local workspace.')
-    @option('--name',
-            '-n',
+    @command(name='create', help='Create a new snippet on the local workspace.')
+    @option('--snippet',
+            '-s',
             required=True,
             help='Snippet name. It must be unique, lowercased and it can not contains special characters.')
     @pass_context
-    def create(ctx, name):
-        Create(ctx).exec(name)
+    def create(ctx, snippet):
+        Create(ctx).exec(snippet)
 
     @staticmethod
     @command(name='push',
@@ -42,14 +44,13 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the spec to be pushed. For example: push -s nav-bar')
+            help='Name for the snippets to be pushed. For example: push -s nav-bar-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
-    def push(ctx, **params):
+    def push(ctx, **params) -> [Tuple]:
         if params['all']:
-            click.echo('Operation not ready yet.')
-            return
-        Push(ctx).exec(params['snippet'])
+            return Push(ctx).exec('*')
+        return Push(ctx).exec(params['snippet'])
 
     @staticmethod
     @command(name='pull',
@@ -60,22 +61,21 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the snippet to be pulled. For example: pull -d bootstrap application/javascript')
+            help='Name for the snippets to be pulled. For example: pull -s nav-var-plugster -s header-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
-    def pull(ctx, **params):
+    def pull(ctx, **params) -> [Tuple]:
         if params['all']:
-            click.echo('Operation not ready yet.')
-            return
-        Pull(ctx).exec(params['snippet'])
+            return Pull(ctx).exec('*')
+        return Pull(ctx).exec(params['snippet'])
 
     @staticmethod
-    @command(name='remove', help='Remove an snippet.')
-    @option('--name',
-            '-n',
+    @command(name='remove', help='Remove an snippet from the CMS database.')
+    @option('--snippet',
+            '-s',
             required=True,
-            help='Name of snippet to be removed.')
+            help='Name for the snippet to be removed.')
     @pass_context
-    def remove(ctx, name):
+    def remove(ctx, snippet):
         pass
-        Remove(ctx).exec(name)
+        Remove(ctx).exec(snippet)

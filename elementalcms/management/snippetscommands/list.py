@@ -1,7 +1,6 @@
 import click
 
 from elementalcms.core import ElementalContext
-from elementalcms.services import NoResult
 from elementalcms.services.snippets import GetAll
 
 
@@ -13,11 +12,8 @@ class List:
     def exec(self):
         result = GetAll(self.context.cms_db_context).execute()
         if result.is_failure():
-            if isinstance(result, NoResult):
-                click.echo('No snippets yet, create your first snippet running the [snippets create] command.')
-                return
-            click.echo('Something went wrong and it was not possible to retreive the snippets information list.')
+            click.echo('There are no snippets to list. Create your first one using the [snippets create] command.')
             return
 
-        for spec in result.value():
-            click.echo(f'{spec["name"]}')
+        for snippet in result.value():
+            click.echo(f'{snippet["name"]}')
