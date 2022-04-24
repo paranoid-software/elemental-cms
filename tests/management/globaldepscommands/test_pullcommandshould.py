@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 import re
-
+import pytest
 from assertpy import assert_that
 from bson import ObjectId
 from click.testing import CliRunner
@@ -15,21 +15,27 @@ from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 class TestPullCommandShould:
 
-    def test_fail_when_database_parameters_are_missing(self, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
-                                   initial_state=[
-                                       MongoDbState(db_name='elemental', data=[])
-                                   ]):
-            runner = CliRunner()
-            with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['global-deps',
-                                             'pull',
-                                             '-d', 'jquery', 'application/javascript'])
-                assert_that(result.exception).is_not_none()
+    @pytest.fixture
+    def deps(self):
+        return [{
+            '_id': ObjectId(),
+            'order': 0,
+            'name': 'jquery',
+            'type': 'application/javascript',
+            'url': '',
+            'meta': {},
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }, {
+            '_id': ObjectId(),
+            'order': 0,
+            'name': 'jquery-ui',
+            'type': 'text/css',
+            'url': '',
+            'meta': {},
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }]
 
     def test_display_2_unsuccessful_pull_operations_feedback_message(self, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
@@ -49,50 +55,12 @@ class TestPullCommandShould:
                                              '-d', 'dep-two', 'application/javascript'])
                 assert_that(re.findall('does not exist', result.output)).is_length(2)
 
-    def test_display_1_successful_pull_operation_feedback_message(self, default_settings_fixture):
+    def test_create_spec_file_for_pulled_dependencies(self, deps, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
-                                                            items=[{
-                                                                '_id': ObjectId(),
-                                                                'order': 0,
-                                                                'name': 'jquery',
-                                                                'type': 'application/javascript',
-                                                                'url': '',
-                                                                'meta': {},
-                                                                'createdAt': datetime.datetime.utcnow(),
-                                                                'lastModifiedAt': datetime.datetime.utcnow()
-                                                            }])
-                                       ])
-                                   ]) as (db_name, reader):
-            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
-            runner = CliRunner()
-            with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['global-deps',
-                                             'pull',
-                                             '-d', 'jquery', 'application/javascript'])
-                assert_that(re.findall('pulled successfully', result.output)).is_length(1)
-
-    def test_create_spec_file_for_pulled_item(self, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
-                                   initial_state=[
-                                       MongoDbState(db_name='elemental', data=[
-                                           MongoDbStateData(coll_name='global_deps',
-                                                            items=[{
-                                                                '_id': ObjectId(),
-                                                                'order': 0,
-                                                                'name': 'jquery',
-                                                                'type': 'application/javascript',
-                                                                'url': '',
-                                                                'meta': {},
-                                                                'createdAt': datetime.datetime.utcnow(),
-                                                                'lastModifiedAt': datetime.datetime.utcnow()
-                                                            }])
+                                                            items=deps)
                                        ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -107,26 +75,15 @@ class TestPullCommandShould:
                 runner.invoke(cli, ['global-deps',
                                     'pull',
                                     '-d', name, _type])
-                root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
-                type_folder_name = _type.replace('/', '_')
-                folder_path = f'{root_folder_path}/{type_folder_name}'
-                assert_that(f'{folder_path}/{name}.json').exists()
+                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
+                assert_that(f'{folder_path}/{_type.replace("/", "_")}/{name}.json').exists()
 
-    def test_create_backup_file_for_pulled_item(self, default_settings_fixture):
+    def test_create_backup_file_for_pulled_dependency(self, deps, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
-                                                            items=[{
-                                                                '_id': ObjectId(),
-                                                                'order': 0,
-                                                                'name': 'jquery-ui',
-                                                                'type': 'text/css',
-                                                                'url': '',
-                                                                'meta': {},
-                                                                'createdAt': datetime.datetime.utcnow(),
-                                                                'lastModifiedAt': datetime.datetime.utcnow()
-                                                            }])
+                                                            items=deps)
                                        ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -137,10 +94,9 @@ class TestPullCommandShould:
                 root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
                 type_folder_name = _type.replace('/', '_')
                 folder_path = f'{root_folder_path}/{type_folder_name}'
-                if not os.path.exists(folder_path):
-                    os.makedirs(folder_path)
-                spec_file_path = f'{folder_path}/{name}.json'
-                with open(spec_file_path, 'x') as s:
+                os.makedirs(folder_path)
+                spec_filepath = f'{folder_path}/{name}.json'
+                with open(spec_filepath, 'w') as s:
                     s.write('...')
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
@@ -154,5 +110,24 @@ class TestPullCommandShould:
                                        ],
                                        standalone_mode=False)
 
-                assert_that(result.return_value).is_length(1)
                 assert_that(result.return_value[0]).exists()
+
+    def test_display_1_successful_pull_operation_feedback_message(self, deps, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+                                   initial_state=[
+                                       MongoDbState(db_name='elemental', data=[
+                                           MongoDbStateData(coll_name='global_deps',
+                                                            items=deps)
+                                       ])
+                                   ]) as (db_name, reader):
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            runner = CliRunner()
+            with runner.isolated_filesystem():
+                os.makedirs('settings')
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                # noinspection PyTypeChecker
+                result = runner.invoke(cli, ['global-deps',
+                                             'pull',
+                                             '-d', 'jquery', 'application/javascript'])
+                assert_that(re.findall('pulled successfully', result.output)).is_length(1)

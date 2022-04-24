@@ -12,7 +12,7 @@ class List:
     def exec(self):
         result = GetAll(self.context.cms_db_context).execute()
         if result.is_failure():
-            click.echo('There are no global dependencies to list. Create your first one using the '
+            click.echo('There are no global dependencies to list. Create your first one by using the '
                        '[global-deps create] command.')
             return
 

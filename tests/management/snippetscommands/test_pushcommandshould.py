@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import re
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId, json_util
@@ -112,12 +111,10 @@ class TestPushCommandShould:
                         f.write('<div></div>')
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
-                                       [
-                                           'snippets',
-                                           'push',
-                                           '-s', 'footer'
-                                       ],
+                                       ['snippets',
+                                        'push',
+                                        '-s', 'footer'],
                                        standalone_mode=False)
-                assert_that(result.return_value).is_length(1)
+
                 assert_that(result.return_value[0][0]).exists()
                 assert_that(result.return_value[0][1]).exists()

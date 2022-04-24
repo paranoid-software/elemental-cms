@@ -1,8 +1,6 @@
 import datetime
 import json
 import os
-import re
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId, json_util
@@ -69,15 +67,14 @@ class TestPushAllCommandShould:
                 os.makedirs(folder_path)
                 for spec in specs:
                     name = spec['name']
-                    spec_file_path = f'{folder_path}/{name}.json'
-                    content_file_path = f'{folder_path}/{name}.html'
-                    with open(spec_file_path, 'x') as s:
+                    spec_filepath = f'{folder_path}/{name}.json'
+                    content_filepath = f'{folder_path}/{name}.html'
+                    with open(spec_filepath, 'w') as s:
                         s.write(json_util.dumps(spec))
-                    with open(content_file_path, 'x') as s:
+                    with open(content_filepath, 'w') as s:
                         s.write('<div></div>')
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
-                                             'push',
-                                             '--all'])
-                total_specs = len(specs)
-                assert_that(re.findall('pushed successfully', result.output)).is_length(total_specs)
+                runner.invoke(cli, ['snippets',
+                                    'push',
+                                    '--all'])
+                assert_that(reader.count('snippets')).is_equal_to(len(specs))

@@ -1,8 +1,6 @@
 import datetime
 import json
 import os
-import re
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId
@@ -74,10 +72,8 @@ class TestPullAllCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
-                                             'pull',
-                                             '--all'],
-                                       standalone_mode=False)
+                runner.invoke(cli, ['snippets',
+                                    'pull',
+                                    '--all'])
                 folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
                 [assert_that(f'{folder_path}/{snippet["name"]}.json').exists() for snippet in snippets]
-                assert_that(re.findall('pulled successfully', result.output)).is_length(len(snippets))

@@ -14,8 +14,6 @@ class GetMe:
         result = repo.find({'name': name}, page=0, page_size=10)
         if result['total'] == 0:
             return NoResult()
-
         if result['total'] > 1:
             return Failure({'duplicatedSnippet': True})
-
         return Success(result['items'][0])

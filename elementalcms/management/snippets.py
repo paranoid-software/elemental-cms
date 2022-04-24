@@ -18,6 +18,8 @@ class Snippets(click.Group):
         self.add_command(self.push)
         self.add_command(self.pull)
 
+        # TODO: Add command to find differences between local workspace and CMS database
+
     @staticmethod
     @command(name='list',
              help='Display snippets list.')
@@ -44,7 +46,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the snippet to be pushed. For example: push -s nav-bar-plugster')
+            help='Name for the snippet(s) to be pushed. For example: push -s nav-bar-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def push(ctx, **params) -> [Tuple]:
@@ -61,7 +63,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the snippet to be pulled. For example: pull -s header -s nav-bar')
+            help='Name for the snippet(s) to be pulled. For example: pull -s header -s nav-bar')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def pull(ctx, **params) -> [Tuple]:

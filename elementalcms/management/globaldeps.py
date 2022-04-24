@@ -28,7 +28,7 @@ class GlobalDeps(Group):
 
     @staticmethod
     @command(name='create',
-             help='Create a new global dependency on the local workspace.')
+             help='Create a new global dependency at local workspace.')
     @option('--dep',
             '-d',
             required=True,
@@ -79,7 +79,7 @@ class GlobalDeps(Group):
         return Pull(ctx).exec(params['dep'])
 
     @staticmethod
-    @command(name='remove', help='Remove a global dependency from the CMS database.')
+    @command(name='remove', help='Remove global dependency from the CMS database.')
     @option('--dep',
             '-d',
             required=True,

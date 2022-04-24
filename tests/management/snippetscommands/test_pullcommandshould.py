@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import re
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId
@@ -70,14 +69,12 @@ class TestPullCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
-                                             'pull',
-                                             '-s', 'nav-bar',
-                                             '-s', 'footer'],
-                                       standalone_mode=False)
+                runner.invoke(cli, ['snippets',
+                                    'pull',
+                                    '-s', 'nav-bar',
+                                    '-s', 'footer'])
                 folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
                 [assert_that(f'{folder_path}/{snippet["name"]}.json').exists() for snippet in snippets]
-                assert_that(re.findall('pulled successfully', result.output)).is_length(len(snippets))
 
     def test_create_backup_file_for_pulled_snippet(self, snippets, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
@@ -92,11 +89,11 @@ class TestPullCommandShould:
             with runner.isolated_filesystem():
                 folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
                 os.makedirs(folder_path)
-                spec_file_path = f'{folder_path}/nav-bar.json'
-                content_file_path = f'{folder_path}/nav-bar.html'
-                with open(spec_file_path, 'x') as s:
+                spec_filepath = f'{folder_path}/nav-bar.json'
+                content_filepath = f'{folder_path}/nav-bar.html'
+                with open(spec_filepath, 'w') as s:
                     s.write('...')
-                with open(content_file_path, 'x') as s:
+                with open(content_filepath, 'w') as s:
                     s.write('...')
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
@@ -110,11 +107,10 @@ class TestPullCommandShould:
                                        ],
                                        standalone_mode=False)
 
-                assert_that(result.return_value).is_length(1)
                 assert_that(result.return_value[0][0]).exists()
                 assert_that(result.return_value[0][1]).exists()
 
-    def test_create_backup_file_for_pulled_snippet(self, snippets, default_settings_fixture):
+    def test_display_1_successful_pull_operation_feedback_message(self, snippets, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
@@ -125,26 +121,11 @@ class TestPullCommandShould:
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-                os.makedirs(folder_path)
-                spec_file_path = f'{folder_path}/nav-bar.json'
-                content_file_path = f'{folder_path}/nav-bar.html'
-                with open(spec_file_path, 'x') as s:
-                    s.write('...')
-                with open(content_file_path, 'x') as s:
-                    s.write('...')
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli,
-                                       [
-                                           'snippets',
-                                           'pull',
-                                           '-s', 'nav-bar'
-                                       ],
-                                       standalone_mode=False)
-
-                assert_that(result.return_value).is_length(1)
-                assert_that(result.return_value[0][0]).exists()
-                assert_that(result.return_value[0][1]).exists()
+                result = runner.invoke(cli, ['snippets',
+                                             'pull',
+                                             '-s', 'footer'])
+                assert_that(re.findall('pulled successfully', result.output)).is_length(1)

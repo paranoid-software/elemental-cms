@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId
@@ -45,7 +44,7 @@ class TestRemoveCommandShould:
             runner = CliRunner()
             with runner.isolated_filesystem():
                 os.makedirs('settings')
-                with open('settings/prod.json', 'x') as f:
+                with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
@@ -96,8 +95,7 @@ class TestRemoveCommandShould:
                 # noinspection PyTypeChecker
                 runner.invoke(cli, ['snippets',
                                     'remove',
-                                    '-s', 'nav-bar']
-                              )
+                                    '-s', 'nav-bar'])
                 assert_that(reader.find_one('snippets', {'_id': snippets[0].get('_id')})).is_none()
 
     def test_create_backup_file_for_removed_snippet(self, snippets, default_settings_fixture):
@@ -116,11 +114,10 @@ class TestRemoveCommandShould:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
-                                       [
-                                           'snippets',
-                                           'remove',
-                                           '-s', 'footer'
-                                       ],
+                                       ['snippets',
+                                        'remove',
+                                        '-s', 'footer'],
                                        standalone_mode=False)
+
                 assert_that(result.return_value[0]).exists()
                 assert_that(result.return_value[1]).exists()

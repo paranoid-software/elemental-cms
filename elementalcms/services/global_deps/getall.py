@@ -11,7 +11,7 @@ class GetAll:
 
     def execute(self) -> UseCaseResult:
         repo = GlobalDepsRepository(self.__db_context)
-        pages = []
+        deps = []
         page = 0
         page_size = 50
         while True:
@@ -19,8 +19,8 @@ class GetAll:
             total = result['total']
             if total == 0:
                 return NoResult()
-            pages.extend(result['items'])
-            if len(pages) >= total:
+            deps.extend(result['items'])
+            if len(deps) >= total:
                 break
             page += 1
-        return Success(pages)
+        return Success(deps)

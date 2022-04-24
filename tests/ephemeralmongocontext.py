@@ -56,6 +56,9 @@ class MongoDbReader:
     def find_one(self, coll_name, _filter):
         return self.db.get_collection(coll_name).find_one(_filter)
 
+    def count(self, coll_name):
+        return self.db.get_collection(coll_name).estimated_document_count()
+
 
 class EphemeralMongoContext:
 

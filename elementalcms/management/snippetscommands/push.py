@@ -1,9 +1,9 @@
 import time
 import os
 from typing import Tuple, Optional
-
 import click
 from bson import json_util, ObjectId
+
 from elementalcms.core import ElementalContext
 from elementalcms.services.snippets import GetOne, UpdateOne
 
@@ -29,24 +29,23 @@ class Push:
                 return
         else:
             snippets_tuples = snippets
+            # TODO: Support file names with paths
 
-        backup_paths = []
-        for element in snippets_tuples:
-            name = element
-            spec_file_path = f'{folder_path}/{name}.json'
-            content_file_path = f'{folder_path}/{name}.html'
-            if not os.path.exists(spec_file_path):
+        backups_filepaths = []
+        for name in snippets_tuples:
+            spec_filepath = f'{folder_path}/{name}.json'
+            content_filepath = f'{folder_path}/{name}.html'
+            if not os.path.exists(spec_filepath):
                 click.echo(f'There is no spec file for {name} snippet.')
                 return
-            if not os.path.exists(content_file_path):
+            if not os.path.exists(content_filepath):
                 click.echo(f'There is no content file for {name} snippet.')
                 return
-            with open(spec_file_path) as spec_file:
+            with open(spec_filepath) as spec_file:
                 try:
                     snippet = json_util.loads(spec_file.read())
                 except Exception as e:
-                    click.echo(e)
-                    click.echo(f'Invalid spec for {name}.')
+                    click.echo(f'Invalid spec for {name} - {e}')
                     continue
                 if '_id' not in snippet:
                     click.echo(f'Missing spec _id for: {name}.')
@@ -60,15 +59,15 @@ class Push:
                 if snippet['name'] != name:
                     click.echo(f'Invalid spec name for: {name}.')
                     return
-                with open(content_file_path) as content_file:
+                with open(content_filepath) as content_file:
                     snippet['content'] = content_file.read()
                     _id = snippet['_id']
-                    backup_files_paths = self.build_backups(_id)
+                    backup_filepaths = self.build_backups(_id)
                     UpdateOne(self.context.cms_db_context).execute(_id, snippet)
                     click.echo(f'Snippet {name} pushed successfully.')
-                    if backup_files_paths is not None:
-                        backup_paths.append(backup_files_paths)
-        return backup_paths
+                    if backup_filepaths is not None:
+                        backups_filepaths.append(backup_filepaths)
+        return backups_filepaths
 
     def build_backups(self, _id) -> Optional[Tuple]:
         get_one_result = GetOne(self.context.cms_db_context).execute(_id)
@@ -81,12 +80,12 @@ class Push:
         snippet = get_one_result.value()
         html_content = snippet.pop('content', '')
         sufix = round(time.time())
-        spec_backup_file_path = f'{backups_folder_path}/{snippet["name"]}-{sufix}.json'
-        spec_backup_file = open(spec_backup_file_path, mode="w", encoding="utf-8")
+        spec_backup_filepath = f'{backups_folder_path}/{snippet["name"]}-{sufix}.json'
+        spec_backup_file = open(spec_backup_filepath, mode='w', encoding='utf-8')
         spec_backup_file.write(json_util.dumps(snippet, indent=4))
         spec_backup_file.close()
-        content_backup_file_path = f'{backups_folder_path}/{snippet["name"]}-{sufix}.html'
-        content_backup_file = open(content_backup_file_path, mode="w", encoding="utf-8")
+        content_backup_filepath = f'{backups_folder_path}/{snippet["name"]}-{sufix}.html'
+        content_backup_file = open(content_backup_filepath, mode='w', encoding='utf-8')
         content_backup_file.write(html_content)
         content_backup_file.close()
-        return spec_backup_file_path, content_backup_file_path
+        return spec_backup_filepath, content_backup_filepath

@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId
