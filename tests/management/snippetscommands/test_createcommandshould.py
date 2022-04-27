@@ -16,18 +16,17 @@ class TestCreateCommandShould:
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             folder_path = FlaskContext(default_settings_fixture['cmsCoreContext']).SNIPPETS_FOLDER
-            if not os.path.exists(folder_path):
-                os.makedirs(folder_path)
-            spec_file_path = f'{folder_path}/nav-bar.json'
-            with open(spec_file_path, 'x') as s:
+            os.makedirs(folder_path)
+            spec_filepath = f'{folder_path}/nav-bar.json'
+            with open(spec_filepath, 'w') as s:
                 s.write('...')
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['snippets',
                                          'create',
                                          '-s', 'nav-bar'])
-            assert_that(result.output).contains('already exist')
+            assert_that(result.output).contains('nav-bar snippet already exist')
 
-    def test_create_spec_file_for_the_new_snippet(self, default_settings_fixture):
+    def test_create_snippet_spec_file(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
@@ -39,3 +38,28 @@ class TestCreateCommandShould:
                                 'create',
                                 '-s', 'footer'])
             assert_that(f'{folder_path}/footer.json').exists()
+
+    def test_create_snippet_content_file(self, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            os.makedirs('settings')
+            with open('settings/prod.json', 'w') as f:
+                f.write(json.dumps(default_settings_fixture))
+            folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
+            # noinspection PyTypeChecker
+            runner.invoke(cli, ['snippets',
+                                'create',
+                                '-s', 'footer'])
+            assert_that(f'{folder_path}/footer.html').exists()
+
+    def test_display_success_feedback_message(self, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            os.makedirs('settings')
+            with open('settings/prod.json', 'w') as f:
+                f.write(json.dumps(default_settings_fixture))
+            # noinspection PyTypeChecker
+            result = runner.invoke(cli, ['snippets',
+                                         'create',
+                                         '-s', 'footer'])
+            assert_that(result.output).contains('footer.json|html files has been created successfully.')

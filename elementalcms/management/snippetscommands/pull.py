@@ -2,9 +2,9 @@ import time
 import os
 from shutil import copyfile
 from typing import Optional, Tuple
-
 import click
 from bson import json_util
+
 from elementalcms.core import ElementalContext
 from elementalcms.services.snippets import GetMe, GetAll
 
@@ -24,10 +24,10 @@ class Pull:
                 return []
         else:
             snippets_tuples = snippets
+            # TODO: Support file names with paths
 
-        backup_paths = []
-        for element in snippets_tuples:
-            name = element
+        backups_filepaths = []
+        for name in snippets_tuples:
             get_me_result = GetMe(self.context.cms_db_context).execute(name)
             snippet = get_me_result.value()
             if snippet is None:
@@ -36,33 +36,32 @@ class Pull:
             folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-            html_content = snippet['content']
-            spec_file_path = f'{folder_path}/{name}.json'
-            content_file_path = f'{folder_path}/{name}.html'
-            backup_files_paths = self.build_local_backups(folder_path, spec_file_path, content_file_path, name)
-            del snippet['content']
-            spec_file = open(spec_file_path, mode="w", encoding="utf-8")
+            spec_filepath = f'{folder_path}/{name}.json'
+            content_filepath = f'{folder_path}/{name}.html'
+            backup_filespaths = self.build_local_backups(folder_path, spec_filepath, content_filepath, name)
+            html_content = snippet.pop('content', '')
+            spec_file = open(spec_filepath, mode='w', encoding='utf-8')
             spec_file.write(json_util.dumps(snippet, indent=4))
             spec_file.close()
-            content_file = open(content_file_path, mode="w", encoding="utf-8")
+            content_file = open(content_filepath, mode='w', encoding='utf-8')
             content_file.write(html_content)
             content_file.close()
             click.echo(f'Snippet {name} pulled successfully.')
-            if backup_files_paths is not None:
-                backup_paths.append(backup_files_paths)
-        return backup_paths
+            if backup_filespaths is not None:
+                backups_filepaths.append(backup_filespaths)
+        return backups_filepaths
 
     @staticmethod
-    def build_local_backups(folder_path, spec_file_path, content_file_path, clean_file_name) -> Optional[Tuple]:
-        click.echo('Building local backup...')
+    def build_local_backups(folder_path, spec_filepath, content_filepath, clean_file_name) -> Optional[Tuple]:
+        click.echo('Building local backups...')
         suffix = round(time.time())
         backups_folder_path = f'{folder_path}/.bak'
         if not os.path.exists(backups_folder_path):
             os.makedirs(backups_folder_path)
-        if os.path.exists(spec_file_path) and os.path.exists(content_file_path):
-            spec_backup_file_path = f'{backups_folder_path}/{clean_file_name}-{suffix}.json'
-            copyfile(spec_file_path, spec_backup_file_path)
-            content_backup_file_path = f'{backups_folder_path}/{clean_file_name}-{suffix}.html'
-            copyfile(content_file_path, content_backup_file_path)
-            return spec_backup_file_path, content_backup_file_path
+        if os.path.exists(spec_filepath) and os.path.exists(content_filepath):
+            spec_backup_filepath = f'{backups_folder_path}/{clean_file_name}-{suffix}.json'
+            copyfile(spec_filepath, spec_backup_filepath)
+            content_backup_filepath = f'{backups_folder_path}/{clean_file_name}-{suffix}.html'
+            copyfile(content_filepath, content_backup_filepath)
+            return spec_backup_filepath, content_backup_filepath
         return None

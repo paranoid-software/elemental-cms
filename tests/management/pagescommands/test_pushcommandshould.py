@@ -20,19 +20,56 @@ class TestPushCommandShould:
     def specs(self):
         return [{
             '_id': ObjectId(),
-            'name': 'nav-bar',
+            'name': 'home',
+            'language': 'en',
+            'title': 'Home',
+            'description': '',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }, {
             '_id': ObjectId(),
-            'name': 'footer',
+            'name': 'home',
+            'language': 'es',
+            'title': 'Inicio',
+            'description': '',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }, {
+            '_id': ObjectId(),
+            'name': 'privacy-policy',
+            'language': 'en',
+            'title': 'Privacy policy',
+            'description': '',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
+
+    def test_fail_when_language_is_not_supported(self, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            os.makedirs('settings')
+            with open('settings/prod.json', 'w') as f:
+                f.write(json.dumps(default_settings_fixture))
+            # noinspection PyTypeChecker
+            result = runner.invoke(cli, ['pages',
+                                         'push',
+                                         '-p', 'home', 'ru'])
+            assert_that(result.output).contains('"ru" language not supported')
 
     def test_fail_when_spec_file_is_missing(self, default_settings_fixture):
         runner = CliRunner()
@@ -41,10 +78,10 @@ class TestPushCommandShould:
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['snippets',
+            result = runner.invoke(cli, ['pages',
                                          'push',
-                                         '-s', 'nav-bar'])
-            assert_that(result.output).contains('There is no spec file for nav-bar snippet.')
+                                         '-p', 'account', 'es'])
+            assert_that(result.output).contains('There is no spec file for page account (es)')
 
     def test_fail_when_content_file_is_missing(self, specs, default_settings_fixture):
         runner = CliRunner()
@@ -52,16 +89,17 @@ class TestPushCommandShould:
             os.makedirs('settings')
             with open('settings/prod.json', 'w') as f:
                 f.write(json.dumps(default_settings_fixture))
-            folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-            os.makedirs(folder_path)
+            root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).PAGES_FOLDER
             for spec in specs:
+                folder_path = f'{root_folder_path}/{spec["language"]}'
+                os.makedirs(folder_path, exist_ok=True)
                 with open(f'{folder_path}/{spec["name"]}.json', 'w') as f:
                     f.write(json_util.dumps(spec))
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['snippets',
+            result = runner.invoke(cli, ['pages',
                                          'push',
-                                         '-s', 'nav-bar'])
-            assert_that(result.output).contains('There is no content file for nav-bar snippet.')
+                                         '--page', 'home', 'en'])
+            assert_that(result.output).contains('There is no content file for page home (en)')
 
     def test_display_2_success_feedback_messages(self, default_settings_fixture, specs):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
@@ -75,24 +113,26 @@ class TestPushCommandShould:
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
-                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-                os.makedirs(folder_path)
+                root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).PAGES_FOLDER
                 for spec in specs:
+                    folder_path = f'{root_folder_path}/{spec["language"]}'
+                    os.makedirs(folder_path, exist_ok=True)
                     with open(f'{folder_path}/{spec["name"]}.json', 'w') as f:
                         f.write(json_util.dumps(spec))
                     with open(f'{folder_path}/{spec["name"]}.html', 'w') as f:
                         f.write('<div></div>')
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
+                result = runner.invoke(cli, ['pages',
                                              'push',
-                                             '-s', 'nav-bar', '-s', 'footer'])
+                                             '-p', 'home', 'en',
+                                             '-p', 'home', 'es'])
                 assert_that(re.findall('pushed successfully', result.output)).is_length(2)
 
     def test_create_backup_file_for_pushed_spec(self, specs, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
-                                           MongoDbStateData(coll_name='snippets',
+                                           MongoDbStateData(coll_name='drafts',
                                                             items=[specs[1]])
                                        ])
                                    ]) as (db_name, reader):
@@ -102,18 +142,19 @@ class TestPushCommandShould:
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
-                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-                os.makedirs(folder_path)
+                root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).PAGES_FOLDER
                 for spec in specs:
+                    folder_path = f'{root_folder_path}/{spec["language"]}'
+                    os.makedirs(folder_path, exist_ok=True)
                     with open(f'{folder_path}/{spec["name"]}.json', 'w') as f:
                         f.write(json_util.dumps(spec))
                     with open(f'{folder_path}/{spec["name"]}.html', 'w') as f:
                         f.write('<div></div>')
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
-                                       ['snippets',
+                                       ['pages',
                                         'push',
-                                        '-s', 'footer'],
+                                        '-p', 'home', 'es'],
                                        standalone_mode=False)
 
                 assert_that(result.return_value[0][0]).exists()

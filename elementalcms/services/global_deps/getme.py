@@ -1,5 +1,5 @@
 from elementalcms.persistence.repositories import GlobalDepsRepository
-from elementalcms.services import UseCaseResult, NoResult, Success
+from elementalcms.services import UseCaseResult, NoResult, Success, Failure
 from elementalcms.core import MongoDbContext
 
 
@@ -11,10 +11,9 @@ class GetMe:
 
     def execute(self, name, _type) -> UseCaseResult:
         repo = GlobalDepsRepository(self.__db_context)
-        page = 0
-        page_size = 100
-        result = repo.find({'name': name, 'type': _type}, page=page, page_size=page_size)
+        result = repo.find({'name': name, 'type': _type}, page=0, page_size=10)
         if result['total'] == 0:
             return NoResult()
-        dep = result['items'][0]
-        return Success(dep)
+        if result['total'] > 1:
+            return Failure({'duplicatedSnippet': True})
+        return Success(result['items'][0])

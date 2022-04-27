@@ -1,5 +1,6 @@
 import time
 import os
+from typing import Tuple, Optional
 
 import click
 from bson import json_util, ObjectId
@@ -12,64 +13,82 @@ class Push:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self, names_tuples):
-        for name_tuple in names_tuples:
-            name = name_tuple[0]
-            lang = name_tuple[1]
+    def exec(self, pages) -> [Tuple]:
+
+        root_folder_path = self.context.cms_core_context.PAGES_FOLDER
+
+        if isinstance(pages, str):
+            pages_tuples = []
+            for r, d, f in os.walk(root_folder_path):
+                for file in f:
+                    pages_tuples.append((file.split('.')[0], r.split('/')[-1]))
+            if len(pages_tuples) == 0:
+                click.echo('There are no pages to push.')
+                return
+        else:
+            pages_tuples = pages
+            # TODO: Support file names with paths
+
+        backups_filepaths = []
+        for page_tuple in pages_tuples:
+            name = page_tuple[0]
+            lang = page_tuple[1]
             if lang not in self.context.cms_core_context.LANGUAGES:
                 click.echo(f'"{lang}" language not supported.')
                 continue
-            pages_folder_path = self.context.cms_core_context.PAGES_FOLDER
-            spec_file_path = f'{pages_folder_path}/{lang}/{name}.json'
-            content_file_path = f'{pages_folder_path}/{lang}/{name}.html'
-            if not os.path.exists(content_file_path):
-                click.echo(f'There is no content file for page {name} in {lang} language.')
+            folder_path = f'{root_folder_path}/{lang}'
+            spec_filepath = f'{folder_path}/{name}.json'
+            content_filepath = f'{folder_path}/{name}.html'
+            if not os.path.exists(spec_filepath):
+                click.echo(f'There is no spec file for page {name} ({lang})')
                 continue
-            with open(spec_file_path) as page_spec_content:
+            if not os.path.exists(content_filepath):
+                click.echo(f'There is no content file for page {name} ({lang})')
+                continue
+            with open(spec_filepath) as spec_file:
                 try:
-                    page_spec = json_util.loads(page_spec_content.read())
-                    if '_id' not in page_spec:
-                        click.echo(f'Spec invalid for page {name} in {lang} language.')
-                        continue
-                    if not ObjectId.is_valid(page_spec['_id']):
-                        click.echo(f'Spec invalid for page {name} in {lang} language.')
-                        continue
-                    if 'name' not in page_spec:
-                        click.echo(f'Spec invalid for page {name} in {lang} language.')
-                        continue
-                    if page_spec['name'] != name:
-                        click.echo(f'Spec invalid for page {name} in {lang} language.')
-                        continue
-                    with open(content_file_path) as page_content:
-                        page_spec['content'] = page_content.read()
-                        _id = page_spec['_id']
-                        self.build_draft_backup(_id)
-                        update_me_result = UpdateOne(self.context.cms_db_context).execute(_id, page_spec, True)
-                        if update_me_result.is_failure():
-                            click.echo(f'Something went wrong and it was not possible to push page {name} into {self.context.cms_db_context.host_name}/{self.context.cms_db_context.database_name}.')
-                            continue
-                        click.echo(f'Page {name} pushed successfully into {self.context.cms_db_context.host_name}/{self.context.cms_db_context.database_name}.')
+                    page = json_util.loads(spec_file.read())
                 except Exception as e:
-                    click.echo(e)
-                    click.echo(f'Spec invalid for page {name} in {lang} language.')
+                    click.echo(f'Invalid spec for page {name} ({lang}) - {e}')
+                    continue
+                if '_id' not in page:
+                    click.echo(f'Missing spec _id for: {name} ({lang})')
+                    continue
+                if not ObjectId.is_valid(page['_id']):
+                    click.echo(f'Invalid spec _id for: {name} ({lang})')
+                    continue
+                if 'name' not in page:
+                    click.echo(f'Missing spec name for: {name} ({lang})')
+                    continue
+                if page['name'] != name:
+                    click.echo(f'Invalid spec name for: {name} ({lang})')
+                    continue
+                with open(content_filepath) as content_file:
+                    _id = page['_id']
+                    page['content'] = content_file.read()
+                    backup_filepaths = self.build_draft_backups(_id)
+                    UpdateOne(self.context.cms_db_context).execute(_id, page, True)
+                    click.echo(f'Page {name} ({lang}) pushed successfully.')
+                    if backup_filepaths is not None:
+                        backups_filepaths.append(backup_filepaths)
+        return backups_filepaths
 
-    def build_draft_backup(self, _id):
+    def build_draft_backups(self, _id) -> Optional[Tuple]:
         get_one_result = GetOne(self.context.cms_db_context).execute(_id, True)
         if get_one_result.is_failure():
-            return
-        click.echo('Building backup...')
+            return None
+        click.echo('Building backups...')
         page = get_one_result.value()
-        html_content = page['content']
-        del page['content']
         backups_folder_path = f'{self.context.cms_core_context.PAGES_FOLDER}/{page["language"]}/.bak'
-        if not os.path.exists(backups_folder_path):
-            os.makedirs(backups_folder_path)
+        os.makedirs(backups_folder_path, exist_ok=True)
+        html_content = page.pop('content', '')
         sufix = round(time.time())
-        spec_file_destination_path = f'{backups_folder_path}/{page["name"]}-draft-{sufix}.json'
-        spec_file = open(spec_file_destination_path, mode="w", encoding="utf-8")
-        spec_file.write(json_util.dumps(page, indent=4))
-        spec_file.close()
-        content_file_destination_path = f'{backups_folder_path}/{page["name"]}-draft-{sufix}.html'
-        content_file = open(content_file_destination_path, mode="w", encoding="utf-8")
-        content_file.write(html_content)
-        content_file.close()
+        spec_backup_filepath = f'{backups_folder_path}/{page["name"]}-draft-{sufix}.json'
+        spec_backup_file = open(spec_backup_filepath, mode='w', encoding='utf-8')
+        spec_backup_file.write(json_util.dumps(page, indent=4))
+        spec_backup_file.close()
+        content_backup_filepath = f'{backups_folder_path}/{page["name"]}-draft-{sufix}.html'
+        content_backup_file = open(content_backup_filepath, mode='w', encoding='utf-8')
+        content_backup_file.write(html_content)
+        content_backup_file.close()
+        return spec_backup_filepath, content_backup_filepath

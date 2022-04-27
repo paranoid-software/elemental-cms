@@ -3,37 +3,65 @@ import json
 import os
 import pytest
 from assertpy import assert_that
-from bson import ObjectId, json_util
+from bson import ObjectId
 from click.testing import CliRunner
 
 from elementalcms.core import MongoDbContext, FlaskContext
 from elementalcms.management import cli
 
 from tests import EphemeralMongoContext
-from tests.ephemeralmongocontext import MongoDbState
+from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 
 class TestPushAllCommandShould:
 
     @pytest.fixture
-    def specs(self):
+    def pages(self):
         return [{
             '_id': ObjectId(),
-            'name': 'nav-bar',
+            'name': 'home',
+            'language': 'en',
+            'title': 'Home',
+            'description': '',
+            'isHome': True,
+            'content': '<div>Home</div>',
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }, {
             '_id': ObjectId(),
-            'name': 'footer',
+            'name': 'home',
+            'language': 'es',
+            'title': 'Inicio',
+            'description': '',
+            'content': '<div>Inicio</div>',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }, {
+            '_id': ObjectId(),
+            'name': 'privacy-policy',
+            'language': 'en',
+            'title': 'Privacy policy',
+            'description': '',
+            'content': '<div>Privacy policy</div>',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
 
-    def test_display_empty_folder_feedback(self, default_settings_fixture):
+    def test_display_empty_repository_feedback(self, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
@@ -46,16 +74,19 @@ class TestPushAllCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
-                                             'push',
+                result = runner.invoke(cli, ['pages',
+                                             'pull',
                                              '--all'])
-                assert_that(result.output).contains('There are no snippets to push.')
+                assert_that(result.output).contains('There are no pages to pull.')
 
-    def test_push_current_specs(self, specs, default_settings_fixture):
+    def test_create_spec_for_pulled_pages(self, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
-                                                    data=[])
+                                                    data=[
+                                                        MongoDbStateData(coll_name='pages',
+                                                                         items=pages)
+                                                    ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
@@ -63,18 +94,9 @@ class TestPushAllCommandShould:
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
-                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-                os.makedirs(folder_path)
-                for spec in specs:
-                    name = spec['name']
-                    spec_filepath = f'{folder_path}/{name}.json'
-                    content_filepath = f'{folder_path}/{name}.html'
-                    with open(spec_filepath, 'w') as s:
-                        s.write(json_util.dumps(spec))
-                    with open(content_filepath, 'w') as s:
-                        s.write('<div></div>')
                 # noinspection PyTypeChecker
-                runner.invoke(cli, ['snippets',
-                                    'push',
+                runner.invoke(cli, ['pages',
+                                    'pull',
                                     '--all'])
-                assert_that(reader.count('snippets')).is_equal_to(len(specs))
+                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).PAGES_FOLDER
+                [assert_that(f'{folder_path}/{page["language"]}/{page["name"]}.json').exists() for page in pages]

@@ -18,6 +18,8 @@ class Snippets(click.Group):
         self.add_command(self.push)
         self.add_command(self.pull)
 
+        # TODO: Add command to find differences between local workspace and CMS database
+
     @staticmethod
     @command(name='list',
              help='Display snippets list.')
@@ -26,7 +28,7 @@ class Snippets(click.Group):
         List(ctx).exec()
 
     @staticmethod
-    @command(name='create', help='Create a new snippet on the local workspace.')
+    @command(name='create', help='Create a new snippet at local workspace.')
     @option('--snippet',
             '-s',
             required=True,
@@ -37,14 +39,14 @@ class Snippets(click.Group):
 
     @staticmethod
     @command(name='push',
-             help='Push snippet(s) specs into the CMS database.')
+             help='Push snippet(s) specs to the CMS database.')
     @option('--all',
             is_flag=True,
             help='Push all snippets.')
     @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the snippets to be pushed. For example: push -s nav-bar-plugster')
+            help='Name for the snippet(s) to be pushed. For example: push -s nav-bar-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def push(ctx, **params) -> [Tuple]:
@@ -61,7 +63,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
-            help='Name for the snippets to be pulled. For example: pull -s nav-var-plugster -s header-plugster')
+            help='Name for the snippet(s) to be pulled. For example: pull -s header -s nav-bar')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
     def pull(ctx, **params) -> [Tuple]:
@@ -70,12 +72,11 @@ class Snippets(click.Group):
         return Pull(ctx).exec(params['snippet'])
 
     @staticmethod
-    @command(name='remove', help='Remove an snippet from the CMS database.')
+    @command(name='remove', help='Remove snippet from the CMS database.')
     @option('--snippet',
             '-s',
             required=True,
-            help='Name for the snippet to be removed.')
+            help='Name for the snippet to be removed. For example: remove -s header')
     @pass_context
-    def remove(ctx, snippet):
-        pass
-        Remove(ctx).exec(snippet)
+    def remove(ctx, snippet) -> Tuple:
+        return Remove(ctx).exec(snippet)

@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import re
-
 import pytest
 from assertpy import assert_that
 from bson import ObjectId, json_util
@@ -57,12 +56,12 @@ class TestPushCommandShould:
             folder_path = f'{root_folder_path}/{type_folder_name}'
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-            spec_file_path = f'{folder_path}/{name}.json'
-            with open(spec_file_path, 'x') as s:
+            spec_filepath = f'{folder_path}/{name}.json'
+            with open(spec_filepath, 'w') as s:
                 s.write(json_util.dumps(spec))
-        with open(f'{root_folder_path}/module/invalid.json', 'x') as s:
+        with open(f'{root_folder_path}/module/invalid.json', 'w') as s:
             s.write('...')
-        with open(f'{root_folder_path}/module/missing-name.json', 'x') as s:
+        with open(f'{root_folder_path}/module/missing-name.json', 'w') as s:
             s.write(json_util.dumps({
                 '_id': ObjectId(),
                 'order': 0,
@@ -72,7 +71,7 @@ class TestPushCommandShould:
                 'createdAt': datetime.datetime.utcnow(),
                 'lastModifiedAt': datetime.datetime.utcnow()
             }))
-        with open(f'{root_folder_path}/module/unmatched-name.json', 'x') as s:
+        with open(f'{root_folder_path}/module/unmatched-name.json', 'w') as s:
             s.write(json_util.dumps({
                 '_id': ObjectId(),
                 'order': 0,
@@ -113,7 +112,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -132,7 +131,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -151,7 +150,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -170,7 +169,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -189,7 +188,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -208,7 +207,7 @@ class TestPushCommandShould:
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -222,14 +221,14 @@ class TestPushCommandShould:
                                              '--dep', 'jquery-ui', 'text/css'])
                 assert_that(re.findall('pushed successfully', result.output)).is_length(1)
 
-    def test_create_backup_file_for_pushed_item(self, default_settings_fixture, specs):
+    def test_create_backup_file_for_pushed_dependency(self, default_settings_fixture, specs):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
                                                             items=[specs[1]])
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -241,12 +240,9 @@ class TestPushCommandShould:
                 _type = 'text/css'
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
-                                       [
-                                           'global-deps',
-                                           'push',
-                                           '-d', name, _type
-                                       ],
+                                       ['global-deps',
+                                        'push',
+                                        '-d', name, _type],
                                        standalone_mode=False)
 
-                assert_that(result.return_value).is_length(1)
                 assert_that(result.return_value[0]).exists()

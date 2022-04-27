@@ -19,14 +19,39 @@ class TestPushAllCommandShould:
     def specs(self):
         return [{
             '_id': ObjectId(),
-            'name': 'nav-bar',
+            'name': 'home',
+            'language': 'en',
+            'title': 'Home',
+            'description': '',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }, {
             '_id': ObjectId(),
-            'name': 'footer',
+            'name': 'home',
+            'language': 'es',
+            'title': 'Inicio',
+            'description': '',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }, {
+            '_id': ObjectId(),
+            'name': 'privacy-policy',
+            'language': 'en',
+            'title': 'Privacy policy',
+            'description': '',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
@@ -46,10 +71,10 @@ class TestPushAllCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
+                result = runner.invoke(cli, ['pages',
                                              'push',
                                              '--all'])
-                assert_that(result.output).contains('There are no snippets to push.')
+                assert_that(result.output).contains('There are no pages to push.')
 
     def test_push_current_specs(self, specs, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
@@ -63,9 +88,10 @@ class TestPushAllCommandShould:
                 os.makedirs('settings')
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
-                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-                os.makedirs(folder_path)
+                root_folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).PAGES_FOLDER
                 for spec in specs:
+                    folder_path = f'{root_folder_path}/{spec["language"]}'
+                    os.makedirs(folder_path, exist_ok=True)
                     name = spec['name']
                     spec_filepath = f'{folder_path}/{name}.json'
                     content_filepath = f'{folder_path}/{name}.html'
@@ -74,7 +100,7 @@ class TestPushAllCommandShould:
                     with open(content_filepath, 'w') as s:
                         s.write('<div></div>')
                 # noinspection PyTypeChecker
-                runner.invoke(cli, ['snippets',
+                runner.invoke(cli, ['pages',
                                     'push',
                                     '--all'])
-                assert_that(reader.count('snippets')).is_equal_to(len(specs))
+                assert_that(reader.count('drafts')).is_equal_to(len(specs))

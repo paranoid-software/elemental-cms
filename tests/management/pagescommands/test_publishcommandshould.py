@@ -13,32 +13,77 @@ from tests import EphemeralMongoContext
 from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 
-class TestRemoveCommandShould:
+class TestPublishCommandShould:
 
     @pytest.fixture
-    def snippets(self):
+    def drafts(self):
+        return [{
+                    '_id': ObjectId(),
+                    'name': 'home',
+                    'language': 'en',
+                    'title': 'Home',
+                    'description': '',
+                    'isHome': True,
+                    'content': '<div>New Home</div>',
+                    'requiresUserIdentity': False,
+                    'redirectUsersTo': '',
+                    'cssDeps': [],
+                    'jsDeps': [],
+                    'createdAt': datetime.datetime.utcnow(),
+                    'lastModifiedAt': datetime.datetime.utcnow()
+                }]
+
+    @pytest.fixture
+    def pages(self):
         return [{
             '_id': ObjectId(),
-            'name': 'nav-bar',
-            'content': '<div></div>',
+            'name': 'home',
+            'language': 'en',
+            'title': 'Home',
+            'description': '',
+            'isHome': True,
+            'content': '<div>Home</div>',
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }, {
             '_id': ObjectId(),
-            'name': 'footer',
-            'content': '<div></div>',
+            'name': 'home',
+            'language': 'es',
+            'title': 'Inicio',
+            'description': '',
+            'content': '<div>Inicio</div>',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }, {
+            '_id': ObjectId(),
+            'name': 'privacy-policy',
+            'language': 'en',
+            'title': 'Privacy policy',
+            'description': '',
+            'content': '<div>Privacy policy</div>',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
 
-    def test_fail_when_snippet_does_not_exist(self, default_settings_fixture):
+    def test_fail_when_draft_version_is_missing(self, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
-                                       MongoDbState(db_name='elemental', data=[])
+                                       MongoDbState(db_name='elemental',
+                                                    data=[])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
@@ -47,21 +92,18 @@ class TestRemoveCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli,
-                                       [
-                                           'snippets',
-                                           'remove',
-                                           '-s', 'nav-bar'
-                                       ])
-                assert_that(result.output).contains('Snippet nav-bar does not exist')
+                result = runner.invoke(cli, ['pages',
+                                             'publish',
+                                             '--page', 'home', 'en'])
+                assert_that(result.output).contains('home (en) do not have a draft version.')
 
-    def test_display_success_feedback_message(self, snippets, default_settings_fixture):
+    def test_fail_when_page_is_already_released(self, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
-                                                        MongoDbStateData(coll_name='snippets',
-                                                                         items=snippets)
+                                                        MongoDbStateData('drafts', pages),
+                                                        MongoDbStateData('pages', pages),
                                                     ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -71,19 +113,17 @@ class TestRemoveCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
-                                             'remove',
-                                             '-s', 'nav-bar']
-                                       )
-                assert_that(result.output).contains('Snippet nav-bar removed successfully.')
+                result = runner.invoke(cli, ['pages',
+                                             'publish',
+                                             '--page', 'home', 'en'])
+                assert_that(result.output).contains('home (en) is already published.')
 
-    def test_remove_snippet_from_repository(self, snippets, default_settings_fixture):
+    def test_display_success_feedback_message(self, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
-                                                        MongoDbStateData(coll_name='snippets',
-                                                                         items=snippets)
+                                                        MongoDbStateData('drafts', pages)
                                                     ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -93,17 +133,17 @@ class TestRemoveCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                runner.invoke(cli, ['snippets',
-                                    'remove',
-                                    '-s', 'nav-bar'])
-                assert_that(reader.find_one('snippets', {'_id': snippets[0].get('_id')})).is_none()
+                result = runner.invoke(cli, ['pages',
+                                             'publish',
+                                             '--page', 'home', 'es'])
+                assert_that(result.output).contains('home (es) published successfully.')
 
-    def test_create_backup_file_for_removed_snippet(self, snippets, default_settings_fixture):
+    def test_create_backup_file_for_published_page(self, drafts, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
-                                           MongoDbStateData(coll_name='snippets',
-                                                            items=snippets)
+                                           MongoDbStateData('drafts', drafts),
+                                           MongoDbStateData('pages', pages)
                                        ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -114,9 +154,9 @@ class TestRemoveCommandShould:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
-                                       ['snippets',
-                                        'remove',
-                                        '-s', 'footer'],
+                                       ['pages',
+                                        'publish',
+                                        '-p', 'home', 'en'],
                                        standalone_mode=False)
 
                 assert_that(result.return_value[0]).exists()

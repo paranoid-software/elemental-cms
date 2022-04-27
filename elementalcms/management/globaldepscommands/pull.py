@@ -2,7 +2,6 @@ import time
 import os
 from shutil import copyfile
 from typing import Optional
-
 import click
 from bson import json_util
 
@@ -25,13 +24,14 @@ class Pull:
                 return []
         else:
             deps_tuples = deps
+            # TODO: Support file names with paths
 
         root_folder_path = self.context.cms_core_context.GLOBAL_DEPS_FOLDER
 
-        spec_backup_file_paths = []
-        for element in deps_tuples:
-            name = element[0]
-            _type = element[1]
+        backups_filepaths = []
+        for dep_tuple in deps_tuples:
+            name = dep_tuple[0]
+            _type = dep_tuple[1]
             get_me_result = GetMe(self.context.cms_db_context).execute(name, _type)
             dep = get_me_result.value()
             if dep is None:
@@ -41,25 +41,25 @@ class Pull:
             folder_path = f'{root_folder_path}/{type_folder_name}'
             if not os.path.exists(folder_path):
                 os.makedirs(folder_path)
-            spec_file_path = f'{folder_path}/{name}.json'
-            spec_backup_file_path = self.build_local_backup(folder_path, spec_file_path, name)
-            spec_file = open(spec_file_path, mode='w', encoding='utf-8')
+            spec_filepath = f'{folder_path}/{name}.json'
+            spec_backup_filepath = self.build_local_backup(folder_path, spec_filepath, name)
+            spec_file = open(spec_filepath, mode='w', encoding='utf-8')
             spec_file.write(json_util.dumps(dep, indent=4))
             spec_file.close()
             click.echo(f'Global dependency {name} ({_type}) pulled successfully.')
-            if spec_backup_file_path is not None:
-                spec_backup_file_paths.append(spec_backup_file_path)
-        return spec_backup_file_paths
+            if spec_backup_filepath is not None:
+                backups_filepaths.append(spec_backup_filepath)
+        return backups_filepaths
 
     @staticmethod
-    def build_local_backup(folder_path, spec_file_path, clean_file_name) -> Optional[str]:
+    def build_local_backup(folder_path, spec_filepath, clean_file_name) -> Optional[str]:
         click.echo('Building local backup...')
         suffix = round(time.time())
         backups_folder_path = f'{folder_path}/.bak'
         if not os.path.exists(backups_folder_path):
             os.makedirs(backups_folder_path)
-        if os.path.exists(spec_file_path):
-            spec_backup_file_path = f'{backups_folder_path}/{clean_file_name}-local-{suffix}.json'
-            copyfile(spec_file_path, spec_backup_file_path)
-            return spec_backup_file_path
+        if os.path.exists(spec_filepath):
+            spec_backup_filepath = f'{backups_folder_path}/{clean_file_name}-local-{suffix}.json'
+            copyfile(spec_filepath, spec_backup_filepath)
+            return spec_backup_filepath
         return None

@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import pytest
 from assertpy import assert_that
 from bson import ObjectId
 from click.testing import CliRunner
@@ -14,11 +15,24 @@ from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 class TestRemoveCommandShould:
 
+    @pytest.fixture
+    def deps(self):
+        return [{
+            '_id': ObjectId(),
+            'order': 0,
+            'name': 'jquery',
+            'type': 'application/javascript',
+            'url': '',
+            'meta': {},
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }]
+
     def test_fail_when_dependency_does_not_exist(self, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -34,23 +48,35 @@ class TestRemoveCommandShould:
                                        ])
                 assert_that(result.output).contains('does not exist')
 
-    def test_display_operation_success_message(self, default_settings_fixture):
+    def test_remove_dependency_from_repository(self, deps, default_settings_fixture):
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+                                   initial_state=[
+                                       MongoDbState(db_name='elemental',
+                                                    data=[
+                                                        MongoDbStateData(coll_name='global_deps',
+                                                                         items=deps)
+                                                    ])
+                                   ]) as (db_name, reader):
+            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
+            runner = CliRunner()
+            with runner.isolated_filesystem():
+                os.makedirs('settings')
+                with open('settings/prod.json', 'w') as f:
+                    f.write(json.dumps(default_settings_fixture))
+                # noinspection PyTypeChecker
+                runner.invoke(cli, ['global-deps',
+                                    'remove',
+                                    '-d', 'jquery', 'application/javascript'])
+                assert_that(reader.find_one('global_deps', {'_id': deps[0].get('_id')})).is_none()
+
+    def test_display_success_feedback_message(self, deps, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
-                                                            items=[{
-                                                                '_id': ObjectId(),
-                                                                'order': 0,
-                                                                'name': 'jquery',
-                                                                'type': 'application/javascript',
-                                                                'url': '',
-                                                                'meta': {},
-                                                                'createdAt': datetime.datetime.utcnow(),
-                                                                'lastModifiedAt': datetime.datetime.utcnow()
-                                                            }])
+                                                            items=deps)
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -59,30 +85,19 @@ class TestRemoveCommandShould:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
-                                       [
-                                           'global-deps',
-                                           'remove',
-                                           '-d', 'jquery', 'application/javascript'
-                                       ])
+                                       ['global-deps',
+                                        'remove',
+                                        '-d', 'jquery', 'application/javascript'])
                 assert_that(result.output).contains('removed successfully.')
 
-    def test_crate_backup_file(self, default_settings_fixture):
+    def test_create_backup_file_for_removed_dependency(self, deps, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
-                                                            items=[{
-                                                                '_id': ObjectId(),
-                                                                'order': 0,
-                                                                'name': 'jquery',
-                                                                'type': 'application/javascript',
-                                                                'url': '',
-                                                                'meta': {},
-                                                                'createdAt': datetime.datetime.utcnow(),
-                                                                'lastModifiedAt': datetime.datetime.utcnow()
-                                                            }])
+                                                            items=deps)
                                        ])
-                                   ]) as db_name:
+                                   ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
@@ -97,5 +112,5 @@ class TestRemoveCommandShould:
                                            '-d', 'jquery', 'application/javascript'
                                        ],
                                        standalone_mode=False)
-                assert_that(result.return_value).is_not_none()
+
                 assert_that(result.return_value).exists()

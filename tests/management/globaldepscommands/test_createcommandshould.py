@@ -32,10 +32,9 @@ class TestCreateCommandShould:
             root_folder_path = FlaskContext(default_settings_fixture['cmsCoreContext']).GLOBAL_DEPS_FOLDER
             type_folder_name = _type.replace('/', '_')
             folder_path = f'{root_folder_path}/{type_folder_name}'
-            if not os.path.exists(f'{folder_path}'):
-                os.makedirs(f'{folder_path}')
-            spec_file_path = f'{folder_path}/{name}.json'
-            with open(spec_file_path, 'x') as s:
+            os.makedirs(f'{folder_path}')
+            spec_filepath = f'{folder_path}/{name}.json'
+            with open(spec_filepath, 'w') as s:
                 s.write('...')
             # noinspection PyTypeChecker
             result = runner.invoke(cli, ['global-deps',
@@ -43,7 +42,7 @@ class TestCreateCommandShould:
                                          '-d', name, _type])
             assert_that(result.output).contains('already exist')
 
-    def test_create_spec_file_for_the_new_global_dependency(self, default_settings_fixture):
+    def test_create_global_dependency_spec_file(self, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
             os.makedirs('settings')
@@ -59,3 +58,17 @@ class TestCreateCommandShould:
                                 'create',
                                 '-d', name, _type])
             assert_that(f'{folder_path}/{name}.json').exists()
+
+    def test_display_success_feedback_message(self, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            os.makedirs('settings')
+            with open('settings/prod.json', 'w') as f:
+                f.write(json.dumps(default_settings_fixture))
+            name = 'jquery'
+            _type = 'application/javascript'
+            # noinspection PyTypeChecker
+            result = runner.invoke(cli, ['global-deps',
+                                         'create',
+                                         '-d', name, _type])
+            assert_that(result.output).contains('file has been created successfully.')
