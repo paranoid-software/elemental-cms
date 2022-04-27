@@ -13,7 +13,7 @@ from tests import EphemeralMongoContext
 from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 
-class TestPublishCommandShould:
+class TestUnpublishCommandShould:
 
     @pytest.fixture
     def drafts(self):
@@ -79,7 +79,7 @@ class TestPublishCommandShould:
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
 
-    def test_fail_when_draft_version_is_missing(self, default_settings_fixture):
+    def test_fail_when_page_is_missing(self, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
@@ -93,37 +93,16 @@ class TestPublishCommandShould:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['pages',
-                                             'publish',
+                                             'unpublish',
                                              '--page', 'home', 'en'])
-                assert_that(result.output).contains('home (en) do not have a draft version.')
-
-    def test_fail_when_page_is_already_released(self, pages, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
-                                   initial_state=[
-                                       MongoDbState(db_name='elemental',
-                                                    data=[
-                                                        MongoDbStateData('drafts', pages),
-                                                        MongoDbStateData('pages', pages),
-                                                    ])
-                                   ]) as (db_name, reader):
-            default_settings_fixture['cmsDbContext']['databaseName'] = db_name
-            runner = CliRunner()
-            with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['pages',
-                                             'publish',
-                                             '--page', 'home', 'en'])
-                assert_that(result.output).contains('home (en) is already published.')
+                assert_that(result.output).contains('home (en) is not published yet.')
 
     def test_display_success_feedback_message(self, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
-                                                        MongoDbStateData('drafts', pages)
+                                                        MongoDbStateData('pages', pages)
                                                     ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -134,11 +113,11 @@ class TestPublishCommandShould:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['pages',
-                                             'publish',
+                                             'unpublish',
                                              '--page', 'home', 'es'])
-                assert_that(result.output).contains('home (es) published successfully.')
+                assert_that(result.output).contains('home (es) unpublished successfully.')
 
-    def test_create_backup_file_for_published_page(self, drafts, pages, default_settings_fixture):
+    def test_create_backup_file_for_unpublished_page(self, drafts, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
@@ -155,7 +134,7 @@ class TestPublishCommandShould:
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli,
                                        ['pages',
-                                        'publish',
+                                        'unpublish',
                                         '-p', 'home', 'en'],
                                        standalone_mode=False)
 

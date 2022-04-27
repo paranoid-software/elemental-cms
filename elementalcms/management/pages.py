@@ -77,22 +77,19 @@ class Pages(click.Group):
 
     @staticmethod
     @command(name='unpublish',
-             help='Unpublish an especific page.')
-    @option('--name',
-            '-n',
+             help='Unpublish one especific page localized page.')
+    @option('--page',
+            '-p',
+            nargs=2,
             required=True,
-            help='Page name.')
-    @option('--lang',
-            '-l',
-            required=True,
-            help='Page language.')
+            help='Page name and language. For example: unpublish -p sign-in en')
     @pass_context
-    def unpublish(ctx, name, lang):
-        Unpublish(ctx).exec(name, lang)
+    def unpublish(ctx, page) -> [Tuple]:
+        return Unpublish(ctx).exec(page)
 
     @staticmethod
     @command(name='pull',
-             help='Pull page(s) specs and contents from the CMS database.')
+             help='Pull page(s) spec(s) and content(s) from the CMS database.')
     @option('--all',
             is_flag=True,
             help='Pull all pages.')
@@ -104,13 +101,12 @@ class Pages(click.Group):
     @constraint(RequireExactly(1), ['all', 'page'])
     @option('--drafts',
             is_flag=True,
-            help='Use this option to pull the pages draft version.')
+            help='Use this option to pull the page(s) draft version.')
     @pass_context
-    def pull(ctx, **params):
+    def pull(ctx, **params) -> [Tuple]:
         if params['all']:
-            click.echo('Operation not ready yet.')
-            return
-        Pull(ctx).exec(params['page'], params['drafts'])
+            return Pull(ctx).exec('*', params['drafts'])
+        return Pull(ctx).exec(params['page'], params['drafts'])
 
     @staticmethod
     @command(name='remove', help='Remove an unpublished page. This command removes the page draft version; if you '

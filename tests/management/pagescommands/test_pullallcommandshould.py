@@ -13,35 +13,50 @@ from tests import EphemeralMongoContext
 from tests.ephemeralmongocontext import MongoDbState, MongoDbStateData
 
 
-class TestPullAllCommandShould:
+class TestPushAllCommandShould:
 
     @pytest.fixture
-    def deps(self):
+    def pages(self):
         return [{
             '_id': ObjectId(),
-            'order': 0,
-            'name': 'jquery',
-            'type': 'application/javascript',
-            'url': '',
-            'meta': {},
+            'name': 'home',
+            'language': 'en',
+            'title': 'Home',
+            'description': '',
+            'isHome': True,
+            'content': '<div>Home</div>',
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }, {
             '_id': ObjectId(),
-            'order': 1,
-            'name': 'jquery-ui',
-            'type': 'text/css',
-            'url': '',
-            'meta': {},
+            'name': 'home',
+            'language': 'es',
+            'title': 'Inicio',
+            'description': '',
+            'content': '<div>Inicio</div>',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }, {
             '_id': ObjectId(),
-            'order': 2,
-            'name': 'lodash',
-            'type': 'module',
-            'url': '',
-            'meta': {},
+            'name': 'privacy-policy',
+            'language': 'en',
+            'title': 'Privacy policy',
+            'description': '',
+            'content': '<div>Privacy policy</div>',
+            'isHome': True,
+            'requiresUserIdentity': False,
+            'redirectUsersTo': '',
+            'cssDeps': [],
+            'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
@@ -59,18 +74,18 @@ class TestPullAllCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['global-deps',
+                result = runner.invoke(cli, ['pages',
                                              'pull',
                                              '--all'])
-                assert_that(result.output).contains('There are no global dependencies to pull.')
+                assert_that(result.output).contains('There are no pages to pull.')
 
-    def test_create_spec_for_pulled_dependencies(self, deps, default_settings_fixture):
+    def test_create_spec_for_pulled_pages(self, pages, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
-                                                        MongoDbStateData(coll_name='global_deps',
-                                                                         items=deps)
+                                                        MongoDbStateData(coll_name='pages',
+                                                                         items=pages)
                                                     ])
                                    ]) as (db_name, reader):
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
@@ -80,8 +95,8 @@ class TestPullAllCommandShould:
                 with open('settings/prod.json', 'w') as f:
                     f.write(json.dumps(default_settings_fixture))
                 # noinspection PyTypeChecker
-                runner.invoke(cli, ['global-deps',
+                runner.invoke(cli, ['pages',
                                     'pull',
                                     '--all'])
-                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).GLOBAL_DEPS_FOLDER
-                [assert_that(f'{folder_path}/{d["type"].replace("/", "_")}/{d["name"]}.json').exists() for d in deps]
+                folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).PAGES_FOLDER
+                [assert_that(f'{folder_path}/{page["language"]}/{page["name"]}.json').exists() for page in pages]
