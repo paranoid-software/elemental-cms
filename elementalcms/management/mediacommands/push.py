@@ -39,7 +39,7 @@ class Push:
             destination_blob_name = file.replace(media_folder, '', 1).lstrip('/')
             click.echo(f'Pushing {file} to {destination_blob_name}')
             blob = bucket.blob(destination_blob_name)
-            # TODO: Get cache control value from settings
+            # TODO: Read media files cache control value from settings
             blob.cache_control = 'private, max-age=180'
             blob.upload_from_filename(file)
             click.echo(f'{file} pushed successfully.')

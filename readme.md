@@ -13,10 +13,11 @@ elemental-cms
 - [Documentation](https://paranoid-software.getoutline.com/share/a300ec8e-4bc6-47c0-aba0-fbe1f80f1623).
 - Media files management module test clasess.
 - Static files management module test clasess.
+- Pages management module review and refactor.
 
 ## To Do
 
-- Pages management module review and refactor.
+- TBD
 
 ## Setup
 
@@ -91,7 +92,7 @@ workdir
 To create a new page we start by issuing the pages CLI command like this:
 
 ```shell
-elemental-cms pages create -n home -l en
+elemental-cms pages create -p home en
 ```
 
 This will create the page content file and the page spec file under the workspace/pages/en directory.
@@ -146,7 +147,7 @@ This will send the metadata and content to the database and create a "draft" ver
 Until now the new page is stored on the "drafts" repository, in order to be accessible through the web application we must publish the page by running the following command:
 
 ```shell
-elemental-cms pages publish -n home -l en
+elemental-cms pages publish -p home en
 ```
 
 ## Running the app

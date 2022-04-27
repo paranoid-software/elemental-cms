@@ -15,5 +15,7 @@ class List:
             click.echo('There are no snippets to list. Create your first one by using the [snippets create] command.')
             return
 
+        # TODO: Add repos difference indicators
+
         for snippet in result.value():
             click.echo(f'{snippet["name"]}')

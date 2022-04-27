@@ -73,10 +73,9 @@ class Push:
         get_one_result = GetOne(self.context.cms_db_context).execute(_id)
         if get_one_result.is_failure():
             return None
-        click.echo('Building backup...')
+        click.echo('Building backups...')
         backups_folder_path = f'{self.context.cms_core_context.SNIPPETS_FOLDER}/.bak'
-        if not os.path.exists(backups_folder_path):
-            os.makedirs(backups_folder_path)
+        os.makedirs(backups_folder_path, exist_ok=True)
         snippet = get_one_result.value()
         html_content = snippet.pop('content', '')
         sufix = round(time.time())

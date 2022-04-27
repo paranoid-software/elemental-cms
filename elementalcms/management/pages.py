@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import click
 from cloup import constraint, option, command, pass_context
 from cloup.constraints import RequireExactly
@@ -18,49 +20,34 @@ class Pages(click.Group):
         self.add_command(self.publish)
         self.add_command(self.unpublish)
 
+        # TODO: Add command to find differences between local workspace and CMS database
+
     @staticmethod
     @command(name='list',
-             help='Pages list.')
+             help='Display pages list.')
     @option('--drafts',
             is_flag=True,
-            help='List the pages whit a draft version (false by default).')
+            help='Display the draft pages list (false by default).')
     @pass_context
     def list(ctx, drafts):
         List(ctx).exec(drafts)
 
     @staticmethod
     @command(name='create', help='Create a new page on your local workspace.')
-    @option('--name',
-            '-n',
+    @option('--page',
+            '-p',
+            nargs=2,
             required=True,
-            help='Page name. It must be unique, lowercased and it can not contains special characters.')
-    @option('--lang',
-            '-l',
-            required=True,
-            help=f'Page language. It must be specified even if the multi language mode is deactivated.')
+            help='Name and language for the page to be created. Name must be unique, lowercased and it can not '
+                 'contains special characters but - or _. For example: create -p home en')
     @pass_context
-    def create(ctx, name, lang):
-        Create(ctx).exec(name, lang)
-
-    @staticmethod
-    @command(name='remove', help='Remove an unpublished page. This command removes the page draft version; if you '
-                                 'want to remove the page published version you must use the pages unpublish command.')
-    @option('--name',
-            '-n',
-            required=True,
-            help='Name of the page to be removed.')
-    @option('--lang',
-            '-l',
-            required=True,
-            help=f'Language version to be removed.')
-    @pass_context
-    def remove(ctx, name, lang):
-        Remove(ctx).exec(name, lang)
+    def create(ctx, page):
+        Create(ctx).exec(page)
 
     @staticmethod
     @command(name='push',
-             help='Push page(s) specs and contents into the CMS database. All pushed pages have the draft collection '
-                  'as its destination.')
+             help='Push page(s) spec(s) and content(s) to the CMS database. '
+                  'All pushed pages are stored initially at the draft collection.')
     @option('--all',
             is_flag=True,
             help='Push all pages.')
@@ -71,26 +58,22 @@ class Pages(click.Group):
             help='Name and language for the page to be pushed. For example: push -p home en -p home es')
     @constraint(RequireExactly(1), ['all', 'page'])
     @pass_context
-    def push(ctx, **params):
+    def push(ctx, **params) -> [Tuple]:
         if params['all']:
-            click.echo('Operation not ready yet.')
-            return
-        Push(ctx).exec(params['page'])
+            return Push(ctx).exec('*')
+        return Push(ctx).exec(params['page'])
 
     @staticmethod
     @command(name='publish',
-             help='Publish an especific page.')
-    @option('--name',
-            '-n',
+             help='Publish one especific localized page.')
+    @option('--page',
+            '-p',
+            nargs=2,
             required=True,
-            help='Page name.')
-    @option('--lang',
-            '-l',
-            required=True,
-            help='Page language.')
+            help='Page name and language. For example: publish -p home es')
     @pass_context
-    def publish(ctx, name, lang):
-        Publish(ctx).exec(name, lang)
+    def publish(ctx, page) -> [Tuple]:
+        return Publish(ctx).exec(page)
 
     @staticmethod
     @command(name='unpublish',
@@ -128,3 +111,18 @@ class Pages(click.Group):
             click.echo('Operation not ready yet.')
             return
         Pull(ctx).exec(params['page'], params['drafts'])
+
+    @staticmethod
+    @command(name='remove', help='Remove an unpublished page. This command removes the page draft version; if you '
+                                 'want to remove the page published version you must use the pages unpublish command.')
+    @option('--name',
+            '-n',
+            required=True,
+            help='Name of the page to be removed.')
+    @option('--lang',
+            '-l',
+            required=True,
+            help=f'Language version to be removed.')
+    @pass_context
+    def remove(ctx, name, lang):
+        Remove(ctx).exec(name, lang)

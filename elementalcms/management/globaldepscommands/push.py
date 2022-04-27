@@ -81,8 +81,7 @@ class Push:
         folder_path = f'{root_folder_path}/{type_folder_name}'
         suffix = round(time.time())
         backups_folder_path = f'{folder_path}/.bak'
-        if not os.path.exists(backups_folder_path):
-            os.makedirs(backups_folder_path)
+        os.makedirs(backups_folder_path, exist_ok=True)
         spec_backup_filepath = f'{backups_folder_path}/{dep["name"]}-{suffix}.json'
         spec_backup_file = open(spec_backup_filepath, mode='w', encoding='utf-8')
         spec_backup_file.write(json_util.dumps(dep, indent=4))
