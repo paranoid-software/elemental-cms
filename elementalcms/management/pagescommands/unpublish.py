@@ -36,7 +36,7 @@ class Unpublish:
         click.echo(f'{name} ({lang}) unpublished successfully.')
         return self.build_page_backup(page)
 
-    def build_page_backup(self, page) -> Optional[Tuple]:
+    def build_page_backup(self, page) -> Tuple:
         click.echo('Building backups...')
         backups_folder_path = f'{self.context.cms_core_context.PAGES_FOLDER}/{page["language"]}/.bak'
         os.makedirs(backups_folder_path, exist_ok=True)

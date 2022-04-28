@@ -22,7 +22,7 @@ class Publish:
         draft = get_draft_result.value()
 
         if draft is None:
-            click.echo(f'{name} ({lang}) do not have a draft version.')
+            click.echo(f'{name} ({lang}) does not have a draft version.')
             return
 
         get_page_result = GetMe(self.context.cms_db_context).execute(name, lang, False, False)

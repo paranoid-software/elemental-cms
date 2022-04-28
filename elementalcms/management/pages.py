@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import click
 from cloup import constraint, option, command, pass_context
@@ -109,16 +109,13 @@ class Pages(click.Group):
         return Pull(ctx).exec(params['page'], params['drafts'])
 
     @staticmethod
-    @command(name='remove', help='Remove an unpublished page. This command removes the page draft version; if you '
+    @command(name='remove', help='Remove unpublished pages. This command removes the page draft version; if you '
                                  'want to remove the page published version you must use the pages unpublish command.')
-    @option('--name',
-            '-n',
+    @option('--page',
+            '-p',
+            nargs=2,
             required=True,
-            help='Name of the page to be removed.')
-    @option('--lang',
-            '-l',
-            required=True,
-            help=f'Language version to be removed.')
+            help='Name and language for the page to be pulled. For example: remove -p home es')
     @pass_context
-    def remove(ctx, name, lang):
-        Remove(ctx).exec(name, lang)
+    def remove(ctx, page) -> Optional[Tuple]:
+        return Remove(ctx).exec(page)
