@@ -21,7 +21,7 @@ def before_request():
     if lang_code in current_app.config['LANGUAGES']:
         return
     return redirect(request.full_path.replace(lang_code,
-                                              session.get('langCode', current_app.config["DEFAULT_LANGUAGE"])), 301)
+                                              session.get('langCode', current_app.config["DEFAULT_LANGUAGE"])))
 
 
 @presenter.url_defaults
@@ -71,14 +71,14 @@ def index(lang_code: str = None):
             return redirect(url_for('presenter.render',
                                     lang_code=None if lang_mode == 'single' else lang_code,
                                     slug=redirect_users_to,
-                                    draft=1), 301)
+                                    draft=1))
         if redirect_users_to == 'index':
             return redirect(url_for('presenter.index',
                                     lang_code=None if lang_mode == 'single' else lang_code),
                             301)
         return redirect(url_for('presenter.render',
                                 lang_code=None if lang_mode == 'single' else lang_code,
-                                slug=redirect_users_to), 301)
+                                slug=redirect_users_to))
 
     if requires_user_identity and not has_user_identity:
         abort(401)
@@ -112,17 +112,17 @@ def render(slug: str, lang_code: str = None):
             if redirect_users_to == 'index':
                 return redirect(url_for('presenter.index',
                                         lang_code=None if lang_mode == 'single' else lang_code,
-                                        draft=1), 301)
+                                        draft=1))
             return redirect(url_for('presenter.render',
                                     lang_code=None if lang_mode == 'single' else lang_code,
                                     slug=redirect_users_to,
-                                    draft=1), 301)
+                                    draft=1))
         if redirect_users_to == 'index':
             return redirect(url_for('presenter.index',
-                                    lang_code=None if lang_mode == 'single' else lang_code), 301)
+                                    lang_code=None if lang_mode == 'single' else lang_code))
         return redirect(url_for('presenter.render',
                                 lang_code=None if lang_mode == 'single' else lang_code,
-                                slug=redirect_users_to), 301)
+                                slug=redirect_users_to))
 
     if requires_user_identity and not has_user_identity:
         abort(401)
