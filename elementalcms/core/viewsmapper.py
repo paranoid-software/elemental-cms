@@ -10,7 +10,7 @@ class ViewsMapper:
     def __init__(self, api: Flask):
         self.__app = api
 
-    def register_actions(self, *controllers) -> []:
+    def register_actions(self, controllers) -> []:
         registered_views = []
         for controller in controllers:
             predicate = inspect.ismethod
