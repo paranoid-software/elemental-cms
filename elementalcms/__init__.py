@@ -4,14 +4,15 @@ from flask import Flask, request, send_from_directory, redirect, g, render_templ
 from flask_babel import Babel
 from markupsafe import Markup
 
-from elementalcms.identity import identity
 from elementalcms.core import ElementalContext
 from elementalcms.extensions import ElementalExtension, ActionsMapper
 
-from elementalcms.admin.views import admin
 from elementalcms.persistence import MongoSessionInterface
-from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
+
+from elementalcms.admin import admin
+from elementalcms.presenter import presenter
+from elementalcms.identity import identity
 
 __version__ = "1.0.89"
 
