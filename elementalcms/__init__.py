@@ -5,7 +5,8 @@ from flask_babel import Babel
 from markupsafe import Markup
 
 from elementalcms.identity import identity
-from elementalcms.core import ElementalContext, ViewsMapper
+from elementalcms.core import ElementalContext
+from elementalcms.extensions import ElementalExtension, ActionsMapper
 
 from elementalcms.admin.views import admin
 from elementalcms.persistence import MongoSessionInterface
@@ -17,7 +18,7 @@ __version__ = "1.0.89"
 
 class Elemental:
 
-    def __init__(self, app: Flask, context: ElementalContext, controllers=[]):
+    def __init__(self, app: Flask, context: ElementalContext, app_extensions: [ElementalExtension] = None):
 
         app.config.from_object(context.cms_core_context)
 
@@ -38,7 +39,8 @@ class Elemental:
 
         app.register_blueprint(identity)
 
-        ViewsMapper(app).register_actions(controllers)
+        for extension in app_extensions or []:
+            ActionsMapper(app).register_actions(extension.get_controllers())
 
         # Session support using MongoDB
         app.session_interface = MongoSessionInterface(context.cms_db_context)

@@ -3,7 +3,7 @@ import inspect
 from flask import Flask
 
 
-class ViewsMapper:
+class ActionsMapper:
 
     __app: Flask
 
