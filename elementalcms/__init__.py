@@ -5,18 +5,21 @@ from flask_babel import Babel
 from markupsafe import Markup
 
 from elementalcms.core import ElementalContext
+from elementalcms.extends import Applet, ActionsMapper
 
-from elementalcms.admin.views import admin
 from elementalcms.persistence import MongoSessionInterface
-from elementalcms.presenter.views import presenter
 from elementalcms.services.snippets import GetMe
 
-__version__ = "1.0.87"
+from elementalcms.admin import admin
+from elementalcms.presenter import presenter
+from elementalcms.identity import identity
+
+__version__ = "1.0.90"
 
 
 class Elemental:
 
-    def __init__(self, app: Flask, context: ElementalContext):
+    def __init__(self, app: Flask, context: ElementalContext, applets: [Applet] = None):
 
         app.config.from_object(context.cms_core_context)
 
@@ -34,6 +37,11 @@ class Elemental:
         app.register_blueprint(admin)
         presenter.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
         app.register_blueprint(presenter)
+
+        app.register_blueprint(identity)
+
+        for applet in applets or []:
+            ActionsMapper(app).register_actions(applet.get_controllers())
 
         # Session support using MongoDB
         app.session_interface = MongoSessionInterface(context.cms_db_context)

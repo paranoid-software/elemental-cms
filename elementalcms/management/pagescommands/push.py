@@ -20,7 +20,11 @@ class Push:
         if isinstance(pages, str):
             pages_tuples = []
             for r, d, f in os.walk(root_folder_path):
+                if '.bak' in r:
+                    continue
                 for file in f:
+                    if '.json' not in file:
+                        continue
                     pages_tuples.append((file.split('.')[0], r.split('/')[-1]))
             if len(pages_tuples) == 0:
                 click.echo('There are no pages to push.')

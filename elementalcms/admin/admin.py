@@ -20,7 +20,7 @@ def before_request():
     if lang_code in current_app.config['LANGUAGES']:
         return
     return redirect(request.full_path.replace(lang_code,
-                                              session.get('lang_code', current_app.config["DEFAULT_LANGUAGE"])), 301)
+                                              session.get('lang_code', current_app.config["DEFAULT_LANGUAGE"])))
 
 
 @admin.url_defaults
