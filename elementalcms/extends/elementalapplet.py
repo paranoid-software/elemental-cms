@@ -1,7 +1,7 @@
-from elementalcms.extensions import ElementalController
+from elementalcms.extends import ElementalController
 
 
-class ElementalExtension:
+class ElementalApplet:
 
     __controllers: [ElementalController] = []
 

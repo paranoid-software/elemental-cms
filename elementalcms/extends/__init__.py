@@ -1,3 +1,3 @@
 from .elementalcontroller import ElementalController
-from .elementalextension import ElementalExtension
+from .elementalapplet import ElementalApplet
 from .actionsmapper import ActionsMapper

@@ -5,7 +5,7 @@ from flask_babel import Babel
 from markupsafe import Markup
 
 from elementalcms.core import ElementalContext
-from elementalcms.extensions import ElementalExtension, ActionsMapper
+from elementalcms.extends import ElementalApplet, ActionsMapper
 
 from elementalcms.persistence import MongoSessionInterface
 from elementalcms.services.snippets import GetMe
@@ -19,7 +19,7 @@ __version__ = "1.0.89"
 
 class Elemental:
 
-    def __init__(self, app: Flask, context: ElementalContext, app_extensions: [ElementalExtension] = None):
+    def __init__(self, app: Flask, context: ElementalContext, app_extensions: [ElementalApplet] = None):
 
         app.config.from_object(context.cms_core_context)
 
