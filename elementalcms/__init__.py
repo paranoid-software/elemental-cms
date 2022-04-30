@@ -14,7 +14,7 @@ from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 from elementalcms.identity import identity
 
-__version__ = "1.0.90"
+__version__ = "1.0.91"
 
 
 class Elemental:
@@ -63,14 +63,14 @@ class Elemental:
                     path_parts = path.strip('?').split('/')
                     folders = '/'.join(path_parts[0:len(path_parts) - 1])
                     local_path = os.path.join(app.root_path, folders.lstrip('/'))
-                    return send_from_directory(local_path, path_parts[-1])
+                    return send_from_directory(local_path, path_parts[-1], max_age=360)
                 return redirect(f'{context.cms_core_context.MEDIA_URL}{path.replace("/media", "")}')
 
             if 'static' in path:
                 if context.cms_core_context.DEBUG and ('static/admin' in path or 'static/presenter' in path):
                     path_parts = path.strip('?').split('/')
                     local_path = pathlib.Path(__file__).resolve().parent
-                    return send_from_directory(local_path, '/'.join(path_parts[1:]))
+                    return send_from_directory(local_path, '/'.join(path_parts[1:]), max_age=360)
                 return
 
             if request.full_path == '/?':
