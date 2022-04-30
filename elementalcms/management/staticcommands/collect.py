@@ -64,14 +64,3 @@ class Collect:
             blob.cache_control = 'private, max-age=180'
             blob.upload_from_filename(file)
             click.echo(f'Uploading {file} to {destination_blob_name}')
-
-    def collect_app_files_deprecated(self, bucket):
-        source_folder = self.context.cms_core_context.STATIC_FOLDER
-        for r, d, f in os.walk(source_folder):
-            for file in f:
-                source_file_name = f'{r}/{file}'
-                destination_blob_name = source_file_name.replace(source_folder, '', 1).lstrip('/')
-                blob = bucket.blob(destination_blob_name)
-                blob.cache_control = 'private, max-age=180'
-                blob.upload_from_filename(source_file_name)
-                click.echo(f'Uploading {source_file_name} to {destination_blob_name}')

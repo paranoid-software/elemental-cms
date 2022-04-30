@@ -20,7 +20,11 @@ class Push:
         if isinstance(deps, str):
             deps_tuples = []
             for r, d, f in os.walk(root_folder_path):
+                if '.bak' in r:
+                    continue
                 for file in f:
+                    if '.json' not in file:
+                        continue
                     deps_tuples.append((file.split('.')[0], r.split('/')[-1].replace('_', '/')))
             if len(deps_tuples) == 0:
                 click.echo('There are no global dependencies to push.')

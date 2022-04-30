@@ -20,6 +20,8 @@ class Push:
         if isinstance(snippets, str):
             snippets_tuples = []
             for r, d, f in os.walk(folder_path):
+                if '.bak' in r:
+                    continue
                 for file in f:
                     if '.json' not in file:
                         continue
