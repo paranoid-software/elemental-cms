@@ -4,7 +4,7 @@ from flask import Flask, request, send_from_directory, redirect, g, render_templ
 from flask_babel import Babel
 from markupsafe import Markup
 
-from elementalcms.auth import auth
+from elementalcms.identity import identity
 from elementalcms.core import ElementalContext, ViewsMapper
 
 from elementalcms.admin.views import admin
@@ -36,7 +36,7 @@ class Elemental:
         presenter.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
         app.register_blueprint(presenter)
 
-        app.register_blueprint(auth)
+        app.register_blueprint(identity)
 
         ViewsMapper(app).register_actions(controllers)
 

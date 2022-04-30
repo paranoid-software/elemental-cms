@@ -4,10 +4,10 @@ from http import HTTPStatus
 
 from flask import Blueprint, session, request, Response
 
-auth = Blueprint('auth', __name__)
+identity = Blueprint('identity', __name__)
 
 
-@auth.app_context_processor
+@identity.app_context_processor
 def gateway_token_processor():
     if 'gatewayToken' not in session:
         session['gatewayToken'] = secrets.token_hex(nbytes=16)
@@ -29,16 +29,16 @@ def gateway_token_required(f):
     return wrapper
 
 
-@auth.route('/identity/', methods=['POST'])
+@identity.route('/identity/', methods=['POST'])
 @gateway_token_required
-def add_user_identity():
+def set_user_identity():
     if not request.data:
         return Response(status=HTTPStatus.BAD_REQUEST)
     session['userIdentity'] = request.json
     return {}, HTTPStatus.CREATED
 
 
-@auth.route('/identity/', methods=['DELETE'])
+@identity.route('/identity/', methods=['DELETE'])
 @gateway_token_required
 def remove_user_identity():
     if 'userIdentity' in session:
