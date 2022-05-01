@@ -1,6 +1,4 @@
 import datetime
-import json
-import os
 import pytest
 from assertpy import assert_that
 from bson import ObjectId, json_util
@@ -9,7 +7,7 @@ from click.testing import CliRunner
 from elementalcms.core import MongoDbContext, FlaskContext
 from elementalcms.management import cli
 
-from tests import EphemeralMongoContext
+from tests import EphemeralMongoContext, EphemeralElementalFileSystem
 from tests.ephemeralmongocontext import MongoDbState
 
 
@@ -33,7 +31,7 @@ class TestPushAllCommandShould:
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
 
-    def test_display_empty_folder_feedback(self, default_settings_fixture):
+    def test_display_empty_folder_feedback(self, default_elemental_fixture, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
@@ -42,16 +40,14 @@ class TestPushAllCommandShould:
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['snippets',
-                                             'push',
-                                             '--all'])
-                assert_that(result.output).contains('There are no snippets to push.')
+                with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                    # noinspection PyTypeChecker
+                    result = runner.invoke(cli, ['snippets',
+                                                 'push',
+                                                 '--all'])
+                    assert_that(result.output).contains('There are no snippets to push.')
 
-    def test_push_current_specs(self, specs, default_settings_fixture):
+    def test_push_current_specs(self, default_elemental_fixture, default_settings_fixture, specs):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
@@ -60,21 +56,15 @@ class TestPushAllCommandShould:
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
                 folder_path = FlaskContext(default_settings_fixture["cmsCoreContext"]).SNIPPETS_FOLDER
-                os.makedirs(folder_path)
+                files_specs = []
                 for spec in specs:
                     name = spec['name']
-                    spec_filepath = f'{folder_path}/{name}.json'
-                    content_filepath = f'{folder_path}/{name}.html'
-                    with open(spec_filepath, 'w') as s:
-                        s.write(json_util.dumps(spec))
-                    with open(content_filepath, 'w') as s:
-                        s.write('<div></div>')
-                # noinspection PyTypeChecker
-                runner.invoke(cli, ['snippets',
-                                    'push',
-                                    '--all'])
-                assert_that(reader.count('snippets')).is_equal_to(len(specs))
+                    files_specs.extend([(f'{folder_path}/{name}.json', json_util.dumps(spec)),
+                                        (f'{folder_path}/{name}.html', '<div></div>')])
+                with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture, files_specs):
+                    # noinspection PyTypeChecker
+                    runner.invoke(cli, ['snippets',
+                                        'push',
+                                        '--all'])
+                    assert_that(reader.count('snippets')).is_equal_to(len(specs))
