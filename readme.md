@@ -29,7 +29,7 @@ pip install elemental-cms
 
 The CLI includes an "init" command which will create a basic structure on the working directory.
 
-Before we can issue an "init" command we must create a "settings" folder and at least a settings file under the name debug.json with the following information:
+Before we can issue an "init" command we must create a config file and a "settings" folder with the following information:
 
 ```json
 {
@@ -68,13 +68,19 @@ Before we can issue an "init" command we must create a "settings" folder and at 
 }
 ```
 
-After initialization, you will end with the following basic folder structure:
+After we create our config file under the name we prefer like for example default.json, we can issue the init command as shown below: 
+
+```shell
+elemental-cms init -c settings/default.json
+```
+
+Executing this command will create and update our .elemental metadata file setting the "configFilePath" property to "settings/default.json", and will update the folder structure which will ends like this:
 
 ```lang-none
 workdir
 └───media    
 └───settings
-    └───debug.json
+    └───default.json
 └───static
     └───app
 └───templates

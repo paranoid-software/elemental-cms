@@ -21,29 +21,38 @@ def cli(ctx: Context):
     """Elemental CMS management CLI"""
     ctx.ensure_object(dict)
 
-    if not os.path.exists('settings'):
-        click.echo('Settings folder do not exist, you need to create a settings folder and the prod.json '
-                   'settings file to start using the CLI.')
+    if ctx.invoked_subcommand in ['version', 'init']:
+        return
+
+    if not os.path.exists('.elemental'):
+        click.echo('It appears the CMS is not initialized, please run init command.')
         exit(1)
 
-    if not os.path.exists('settings/prod.json'):
-        click.echo('Settings file does not exist. Please create a production settings file in order to be able to '
-                   'use the CLI.')
+    with open('.elemental') as init_file_content:
+        init_metadata = json.load(init_file_content)
+        if 'configFilePath' not in init_metadata:
+            click.echo('Initialization meta appears to be wrong, please run init command again.')
+            return
+
+    config_file_path = os.environ.get('CONFIG_FILE_PATH', init_metadata['configFilePath'])
+
+    if not os.path.exists(config_file_path):
+        click.echo(f'Init meta reference {config_file_path} file which does not exist.')
         exit(1)
 
-    with open(f'settings/prod.json') as config_file:
-        settings = json.load(config_file)
+    with open(config_file_path) as config_file_content:
+        config_file = json.load(config_file_content)
 
-        if 'cmsCoreContext' not in settings:
-            click.echo('Incomplete settings file.')
+        if 'cmsCoreContext' not in config_file:
+            click.echo('Incomplete settings file. cmsCoreContext section is missing.')
             exit(1)
 
-        if 'cmsDbContext' not in settings:
-            click.echo('Incomplete settings file.')
+        if 'cmsDbContext' not in config_file:
+            click.echo('Incomplete settings file. cmsDbContext section is missing.')
             exit(1)
 
-        cms_core_context = FlaskContext(settings['cmsCoreContext'])
-        cms_db_context = MongoDbContext(settings['cmsDbContext'])
+        cms_core_context = FlaskContext(config_file['cmsCoreContext'])
+        cms_db_context = MongoDbContext(config_file['cmsDbContext'])
         ctx.obj['elemental_context'] = ElementalContext(cms_core_context, cms_db_context)
 
 
@@ -53,50 +62,69 @@ def version():
 
 
 @cli.command('init')
-@click.pass_context
-def init(ctx):
+@click.option('--with-config-file',
+              '-c',
+              'config_file_path',
+              nargs=1,
+              required=True,
+              help='Path for the config file that will be used to create the context for every following '
+                   'command.')
+def init(config_file_path):
 
-    if os.path.exists('.elemental'):
-        click.echo('Elemental CMS has been already initialized.')
+    if not os.path.exists(config_file_path):
+        click.echo(f'{config_file_path} does not exist.')
         return
 
-    context: ElementalContext = ctx.obj['elemental_context']
+    init_metadata = {
+        'configFilePath': config_file_path
+    }
+
+    with open(config_file_path) as config_file_content:
+        config_file = json.load(config_file_content)
+
+        if 'cmsCoreContext' not in config_file:
+            click.echo('Incomplete settings file. cmsCoreContext section is missing.')
+            exit(1)
+
+        if 'cmsDbContext' not in config_file:
+            click.echo('Incomplete settings file. cmsDbContext section is missing.')
+            exit(1)
+
+        cms_core_context = FlaskContext(config_file['cmsCoreContext'])
+        cms_db_context = MongoDbContext(config_file['cmsDbContext'])
+
+    context: ElementalContext = ElementalContext(cms_core_context, cms_db_context)
+
     db_name = MongoDbConnectionManager.get_db_name(context.cms_db_context)
     if db_name is None:
-        click.echo('The database context has something wrong.')
+        click.echo('The database context has some problems, check your config file and or mongo server state.')
         return
 
     click.echo(f'Initializing Elemental CMS for db {db_name}...')
 
     CreateExpirationIndex(context.cms_db_context).execute()
 
-    for path in ['media',
-                 'static',
-                 f'static/{context.cms_core_context.APP_NAME}',
+    for path in [context.cms_core_context.MEDIA_FOLDER,
+                 context.cms_core_context.STATIC_FOLDER,
+                 os.path.join(context.cms_core_context.STATIC_FOLDER, context.cms_core_context.APP_NAME),
                  'templates',
                  'translations',
-                 'workspace',
-                 'workspace/global_deps',
-                 'workspace/snippets',
-                 'workspace/pages']:
-        create_folder(path)
+                 context.cms_core_context.GLOBAL_DEPS_FOLDER.replace('/', os.path.sep),
+                 context.cms_core_context.SNIPPETS_FOLDER.replace('/', os.path.sep),
+                 context.cms_core_context.PAGES_FOLDER.replace('/', os.path.sep)]:
+        os.makedirs(path, exist_ok=True)
 
     lib_root_path = pathlib.Path(__file__).resolve().parent
     path_parts = str(lib_root_path).split(os.sep)
     lib_path = os.sep.join(path_parts[1:-1])
-    if not os.path.exists('templates/base.html'):
-        copyfile(f'/{lib_path}/templates/base.html', 'templates/base.html')
-    init_file = open('.elemental', mode="w", encoding="utf-8")
-    init_file.write(json.dumps({
-        'time': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    }, indent=4))
+    if not os.path.exists(os.path.join('templates', 'base.html')):
+        copyfile(os.path.join(os.path.sep, lib_path, 'templates', 'base.html'),
+                 os.path.join('templates', 'base.html'))
+    init_metadata['lastUpdateTime'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    init_file = open('.elemental', mode='w', encoding='utf-8')
+    init_file.write(json.dumps(init_metadata, indent=4))
     init_file.close()
     click.echo('Initialization completed...')
-
-
-def create_folder(path):
-    if not os.path.exists(path):
-        os.mkdir(path)
 
 
 cli.add_command(GlobalDeps())

@@ -14,7 +14,7 @@ from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 from elementalcms.identity import identity
 
-__version__ = "1.0.92"
+__version__ = "1.0.93"
 
 
 class Elemental:
@@ -95,17 +95,17 @@ class Elemental:
 
         @app.context_processor
         def elemental_url_for_slug_processor():
-            def elemental_url_for_slug(lang_code=None, slug=None, **kwargs):
+            def elemental_url_for_slug(lang_code=None, slug=None):
                 url = url_for('presenter.index',
                               lang_code=None if context.cms_core_context.LANGUAGE_MODE == 'single' else
                               (lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)),
-                              **kwargs)
+                              draft=None if 'draft' not in request.args else '1')
                 if slug is not None and slug.strip():
                     url = url_for('presenter.render',
                                   slug=slug,
                                   lang_code=None if context.cms_core_context.LANGUAGE_MODE == 'single' else
                                   (lang_code or session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)),
-                                  **kwargs)
+                                  draft=None if 'draft' not in request.args else '1')
                 return url
             return dict(elemental_url_for_slug=elemental_url_for_slug)
 

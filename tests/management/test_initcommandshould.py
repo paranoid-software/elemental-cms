@@ -1,4 +1,3 @@
-import json
 import os
 
 from assertpy import assert_that
@@ -6,25 +5,21 @@ from click.testing import CliRunner
 
 from elementalcms.core import MongoDbContext
 from elementalcms.management import cli
-from tests import EphemeralMongoContext
+from tests import EphemeralMongoContext, EphemeralElementalFileSystem
 from tests.ephemeralmongocontext import MongoDbState
 
 
 class TestInitCommandShould:
 
-    def test_exit_early_when_project_is_already_initialized(self, default_settings_fixture):
+    def test_fail_when_config_file_does_not_exist(self):
         runner = CliRunner()
+        # noinspection PyTypeChecker
         with runner.isolated_filesystem():
-            os.makedirs('settings')
-            with open('settings/prod.json', 'w') as f:
-                f.write(json.dumps(default_settings_fixture))
-            with open('.elemental', 'w') as e:
-                e.write('{}')
             # noinspection PyTypeChecker
-            result = runner.invoke(cli, ['init'])
-            assert_that(result.output).contains('Elemental CMS has been already initialized.')
+            result = runner.invoke(cli, ['init', '-c', 'settings/default.json'])
+            assert_that(result.output).contains('settings/default.json does not exist.')
 
-    def test_create_default_folder_structure(self, default_settings_fixture):
+    def test_create_default_folder_structure(self, default_elemental_fixture, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
@@ -32,23 +27,20 @@ class TestInitCommandShould:
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                # noinspection PyTypeChecker
-                runner.invoke(cli, ['init'])
-                app_name = default_settings_fixture['cmsCoreContext']['APP_NAME']
-                [assert_that(folder).exists() for folder in ['media',
-                                                             'static',
-                                                             f'static/{app_name}',
-                                                             'templates',
-                                                             'workspace',
-                                                             'workspace/global_deps',
-                                                             'workspace/snippets',
-                                                             'workspace/pages',
-                                                             '.elemental']]
+                with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                    # noinspection PyTypeChecker
+                    runner.invoke(cli, ['init', '-c', 'settings/default.json'])
+                    [assert_that(folder).exists() for folder in ['media',
+                                                                 'static',
+                                                                 os.path.join('static', 'app'),
+                                                                 'templates',
+                                                                 'workspace',
+                                                                 os.path.join('workspace', 'global_deps'),
+                                                                 os.path.join('workspace', 'snippets'),
+                                                                 os.path.join('workspace', 'pages'),
+                                                                 '.elemental']]
 
-    def test_display_success_feedback(self, default_settings_fixture):
+    def test_display_success_feedback(self, default_elemental_fixture, default_settings_fixture):
         with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
@@ -56,9 +48,7 @@ class TestInitCommandShould:
             default_settings_fixture['cmsDbContext']['databaseName'] = db_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                # noinspection PyTypeChecker
-                result = runner.invoke(cli, ['init'])
-                assert_that(result.output).contains('Initialization completed...')
+                with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                    # noinspection PyTypeChecker
+                    result = runner.invoke(cli, ['init', '--with-config-file', 'settings/default.json'])
+                    assert_that(result.output).contains('Initialization completed...')

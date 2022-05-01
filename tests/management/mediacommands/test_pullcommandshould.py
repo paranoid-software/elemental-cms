@@ -4,13 +4,13 @@ import os
 from assertpy import assert_that
 from click.testing import CliRunner
 from elementalcms.management import cli
-from tests import EphemeralGcsContext
+from tests import EphemeralGcsContext, EphemeralElementalFileSystem
 from tests.ephemeralgcscontext import GcsState
 
 
 class TestPullCommandShould:
 
-    def test_create_local_media_files(self, default_settings_fixture):
+    def test_create_local_media_files(self, default_elemental_fixture, default_settings_fixture):
         file_names_list = [
             'default/my-json-file.json',
             'default/image.jpg'
@@ -22,10 +22,8 @@ class TestPullCommandShould:
             default_settings_fixture['cmsCoreContext']['MEDIA_BUCKET'] = bucket_name
             runner = CliRunner()
             with runner.isolated_filesystem():
-                os.makedirs('settings')
-                with open('settings/prod.json', 'w') as f:
-                    f.write(json.dumps(default_settings_fixture))
-                os.makedirs('media')
-                # noinspection PyTypeChecker
-                runner.invoke(cli, ['media', 'pull', '--all'])
-                [assert_that(f'media/{file_name}').exists() for file_name in file_names_list]
+                with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                    # noinspection PyTypeChecker
+                    runner.invoke(cli, ['media', 'pull', '--all'])
+                    media_folder = default_settings_fixture["cmsCoreContext"]["MEDIA_FOLDER"]
+                    [assert_that(os.path.join(media_folder, file_name)).exists() for file_name in file_names_list]
