@@ -1,5 +1,5 @@
 import glob
-
+import os
 import click
 from google.cloud import storage
 
@@ -23,7 +23,7 @@ class Push:
             click.echo('MEDIA_BUCKET parameter not found on current settings.')
             return
 
-        files = glob.glob(pattern)
+        files = glob.glob(pattern, recursive=True)
         if len(files) == 0:
             click.echo(f'We found 0 files for {pattern}')
             return
@@ -36,6 +36,8 @@ class Push:
         bucket = client.bucket(self.context.cms_core_context.MEDIA_BUCKET)
         click.echo(f'Pushing {len(files)} files to {bucket.name}')
         for file in files:
+            if not os.path.isfile(file):
+                continue
             destination_blob_name = file.replace(media_folder, '', 1).lstrip('/')
             click.echo(f'Pushing {file} to {destination_blob_name}')
             blob = bucket.blob(destination_blob_name)
