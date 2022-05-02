@@ -26,5 +26,5 @@ class TestCollectCommandShould:
                     ('static/collect-test.txt', 'Hi stranger, I am a static file.')
                 ]):
                     # noinspection PyTypeChecker
-                    result = runner.invoke(cli, ['static', 'collect', 'static/*.jpg', '--ignore-internals'])
+                    result = runner.invoke(cli, ['static', 'collect', 'static/*', '--ignore-internals'])
                     assert_that(result.output).contains('Collect command excecuted successfully.')

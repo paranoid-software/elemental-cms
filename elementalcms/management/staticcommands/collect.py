@@ -1,6 +1,6 @@
-import glob
 import os
 import pathlib
+from glob import glob
 
 import click
 from google.cloud import storage
@@ -54,11 +54,13 @@ class Collect:
                 click.echo(f'Uploading {source_file_name} to {destination_blob_name}')
 
     def collect_app_files(self, bucket, pattern):
-        files = glob.glob(pattern)
+        files = glob(pattern, recursive=True)
         if len(files) == 0:
             return
         source_folder = self.context.cms_core_context.STATIC_FOLDER
         for file in files:
+            if not os.path.isfile(file):
+                continue
             destination_blob_name = file.replace(source_folder, '', 1).lstrip('/')
             blob = bucket.blob(destination_blob_name)
             blob.cache_control = 'private, max-age=180'
