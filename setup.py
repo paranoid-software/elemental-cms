@@ -54,6 +54,9 @@ setuptools.setup(
     install_requires=REQUIREMENTS,
     include_package_data=True,
     python_requires='>=3.6',
-    entry_points={'console_scripts': ['elemental-cms=elementalcms.management:cli']}
-    # scripts=['elementalcms/bin/elemental-cms', 'elementalcms/bin/elemental-cms.bat'],
+    entry_points={
+        'console_scripts': [
+            'elemental-cms=elementalcms.management:cli'
+        ]
+    }
 )
