@@ -14,7 +14,7 @@ from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 from elementalcms.identity import identity
 
-__version__ = "1.0.94"
+__version__ = "1.0.95"
 
 
 class Elemental:
@@ -60,13 +60,11 @@ class Elemental:
         def before_request():
             path = request.full_path
 
-            if 'static' in path:
-                if context.cms_core_context.DEBUG and ('static/admin' in path or 'static/presenter' in path):
-                    path_parts = path.strip('?').split('/')
-                    index = path_parts.index('static')
-                    local_path = pathlib.Path(__file__).resolve().parent
-                    return send_from_directory(local_path, '/'.join(path_parts[index:]), cache_timeout=360)
-                return
+            if 'static/admin' in path or 'static/presenter' in path:
+                path_parts = path.strip('?').split('/')
+                index = path_parts.index('static')
+                local_path = pathlib.Path(__file__).resolve().parent
+                return send_from_directory(local_path, '/'.join(path_parts[index:]), cache_timeout=300)
 
             if request.full_path == '/?':
                 if context.cms_core_context.LANGUAGE_MODE == 'single':
