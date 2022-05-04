@@ -1,1 +1,0 @@
-python %VIRTUAL_ENV%\Scripts\elemental-cms %*
