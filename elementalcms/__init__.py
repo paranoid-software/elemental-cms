@@ -14,7 +14,7 @@ from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 from elementalcms.identity import identity
 
-__version__ = "1.0.95"
+__version__ = "1.0.96"
 
 
 class Elemental:
@@ -109,11 +109,11 @@ class Elemental:
 
         @app.context_processor
         def render_snippet_processor():
-            def render_snippet(name):
+            def render_snippet(name, page_spec):
                 get_me_result = GetMe(context.cms_db_context).execute(name)
                 if get_me_result.is_failure():
                     raise Exception(f'There are no snippets under the name {name}')
-                content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}')
+                content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}', page=page_spec)
                 return Markup(content)
             return dict(render_snippet=render_snippet)
 
