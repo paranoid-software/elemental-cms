@@ -35,7 +35,7 @@ class Static(click.Group):
 
     @staticmethod
     @command(name='collect')
-    @argument('pattern')
+    @argument('pattern', type=click.STRING)
     @click.option("--ignore-internals",
                   is_flag=True,
                   show_default=True,
@@ -46,14 +46,15 @@ class Static(click.Group):
         """Collect static resources.
 
         You must use a search PATTERN to identify the files to be collected.
+        Remember to wrap your patter inside double quotes.
 
         Samples (assuming static is our local static folder):
 
         \b
-        static/*.*
-        static/*.txt
-        static/*.svg
-        static/**/images
+        "static/*.*"
+        "static/*.txt"
+        "static/*.svg"
+        "static/**/images/*"
         """
         Collect(ctx).exec(pattern, ignore_internals)
 
