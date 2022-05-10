@@ -14,7 +14,7 @@ from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 from elementalcms.identity import identity
 
-__version__ = "1.0.96"
+__version__ = "1.0.97"
 
 
 class Elemental:
