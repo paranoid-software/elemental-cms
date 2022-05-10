@@ -8,13 +8,13 @@ LONG_DESCRIPTION = (HERE / "pypi.md").read_text()
 
 
 REQUIREMENTS = [
-    'Flask==2.0.2',
+    'Flask>=2.0.2',
     'pycountry==20.7.3',
-    'pymongo==3.12.1',
+    'pymongo>=3.12.1',
     'cloup==0.12.1',
     'deepdiff==5.6.0',
     'Flask-Babel==2.0.0',
-    'google-cloud-storage==2.3.0',
+    'google-cloud-storage>=2.3.0',
 ]
 
 
@@ -40,8 +40,8 @@ setuptools.setup(
     version=get_version("elementalcms/__init__.py"),
     author="Paranoid Software",
     author_email="info@paranoid.software",
-    license="MIT",
-    description="Flask and MongoDB CMS for developers first.",
+    license="MPL-2.0",
+    description="Flask + MongoDB Web CMS for Developers.",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url='https://github.com/paranoid-software/elemental-cms',

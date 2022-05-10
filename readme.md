@@ -1,6 +1,6 @@
 # elemental CMS
 
-Elemental is a Flask and MongoDB based CMS intended mainly for developers.
+Elemental is a Flask + MongoDB Web CMS intended for use by Developers mainly.
 
 The main interaction with the tool takes place through its CLI:
 
@@ -29,7 +29,7 @@ pip install elemental-cms
 
 The CLI includes an "init" command which will create a basic structure on the working directory.
 
-Before we can issue an "init" command we must create a config file and a "settings" folder with the following information:
+Before we can issue the "init" command we have to create a config file inside a "settings" folder with the following content:
 
 ```json
 {
@@ -68,13 +68,13 @@ Before we can issue an "init" command we must create a config file and a "settin
 }
 ```
 
-After we create our config file under the name we prefer like for example default.json, we can issue the init command as shown below: 
+After we create the config file under the name for example default.json, we can issue the "init" command as shown below: 
 
 ```shell
 elemental-cms init -c settings/default.json
 ```
 
-Executing this command will create and update our .elemental metadata file setting the "configFilePath" property to "settings/default.json", and will update the folder structure which will ends like this:
+Executing this command will create and update our .elemental metadata file setting the "configFilePath" property to "settings/default.json", and it will update the folder structure which will ends looking like this:
 
 ```lang-none
 workdir
@@ -95,7 +95,7 @@ workdir
 
 ## Creating your first page
 
-To create a new page we start by issuing the pages CLI command like this:
+To create a new page we start by issuing the "pages create" CLI command:
 
 ```shell
 elemental-cms pages create -p home en
@@ -105,9 +105,7 @@ This will create the page content file and the page spec file under the workspac
 
 ### Spec file
 
-The spec file has the page metadata which can be then be pushed to the database in order to make the page available in the CMS.
-
-The structure of the spec file can be seen below:
+The spec file will have the page metadata. The structure of the file will look like this:
 
 ```json
 {
@@ -132,21 +130,21 @@ The structure of the spec file can be seen below:
 
 ### Content file
 
-The content file will have the HTML for the page. After the create command execution it will have a simple html like the following:
+The content file will have the HTML for the page.
 
 ```html
-<div>This a new page.</div>
+<div></div>
 ```
 
 ## Pushing a page
 
-In order to push a page we must use the pages push command which can be called like this:
+In order to push a page we must use the "pages push" command:
 
 ```shell
 elemental-cms pages push -p home en
 ```
 
-This will send the metadata and content to the database and create a "draft" version of the page.
+This will save the metadata and content into the database creating a "draft" version of the page.
 
 ## Publishing a page
 
@@ -158,9 +156,9 @@ elemental-cms pages publish -p home en
 
 ## Running the app
 
-Until now, we have created a multilanguage page and successfully published it, but we are missing our application entry point.
+We have created a multilanguage page and successfully published it, but we are missing our application entry point.
 
-Since this framework is based on Flask we must create a simple  entry point as we will do it for any Flask application; a simple boilerplate can be found down below:
+Since this framework is based on Flask we can create an entry point just like we will do it for any other Flask application; a simple boilerplate can be found down below:
 
 ```python
 import json
