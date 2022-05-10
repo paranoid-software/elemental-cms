@@ -60,14 +60,15 @@ class Media(click.Group):
         """Push media file(s) to GCS.
 
         You must use a search PATTERN to identify the files to be pushed.
+        Remember to wrap your patter inside double quotes.
 
         Samples (assuming media is our local media folder):
 
         \b
-        media/*.*
-        media/*.txt
-        media/*.svg
-        media/**/images
+        "media/*.*"
+        "media/*.txt"
+        "media/*.svg"
+        "media/**/images/*"
         """
         Push(ctx).exec(pattern)
 

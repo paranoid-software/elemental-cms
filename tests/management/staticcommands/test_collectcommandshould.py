@@ -1,3 +1,5 @@
+import re
+
 from assertpy import assert_that
 from click.testing import CliRunner
 from elementalcms.management import cli
@@ -28,3 +30,20 @@ class TestCollectCommandShould:
                     # noinspection PyTypeChecker
                     result = runner.invoke(cli, ['static', 'collect', 'static/*', '--ignore-internals'])
                     assert_that(result.output).contains('Collect command excecuted successfully.')
+
+    def test_updload_specific_folder_filest(self, default_elemental_fixture, default_settings_fixture):
+        with EphemeralGcsContext(initial_state=[
+            GcsState(default_settings_fixture['cmsCoreContext']['STATIC_BUCKET'])
+        ]) as bucket_name:
+            default_settings_fixture['cmsCoreContext']['STATIC_BUCKET'] = bucket_name
+            runner = CliRunner()
+            with runner.isolated_filesystem():
+                with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture, [
+                    ('static/collect-test.txt', 'Hi stranger, I am a static file.'),
+                    ('static/app/styles/home.css', ''),
+                    ('static/app/styles/home.css.map', ''),
+                    ('static/app/styles/home.sass', '')
+                ]):
+                    # noinspection PyTypeChecker
+                    result = runner.invoke(cli, ['static', 'collect', 'static/app/styles/*.*', '--ignore-internals'])
+                    assert_that(re.findall('Uploading', result.output)).is_length(3)
