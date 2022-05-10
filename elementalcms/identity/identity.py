@@ -2,7 +2,7 @@ import secrets
 from functools import wraps
 from http import HTTPStatus
 
-from flask import Blueprint, session, request, Response
+from flask import Blueprint, session, request, Response, current_app
 
 identity = Blueprint('identity', __name__)
 
@@ -18,7 +18,7 @@ def gateway_token_required(verifying_user_identity=False):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            if verifying_user_identity and 'userIdentity' not in session:
+            if verifying_user_identity and current_app.config['USER_IDENTITY_SESSION_KEY'] not in session:
                 return Response(status=HTTPStatus.UNAUTHORIZED)
             session_gateway_token = session.get('gatewayToken', None)
             if session_gateway_token is None:
@@ -38,12 +38,12 @@ def gateway_token_required(verifying_user_identity=False):
 def set_user_identity():
     if not request.data:
         return Response(status=HTTPStatus.BAD_REQUEST)
-    session['userIdentity'] = request.json
+    session[current_app.config['USER_IDENTITY_SESSION_KEY']] = request.json
     return {}, HTTPStatus.CREATED
 
 
 @identity.route('/identity/', methods=['DELETE'])
 @gateway_token_required()
 def remove_user_identity():
-    session.pop('userIdentity')
+    session.pop(current_app.config['USER_IDENTITY_SESSION_KEY'])
     return {}, HTTPStatus.OK

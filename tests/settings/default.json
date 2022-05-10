@@ -22,7 +22,8 @@
     "MEDIA_BUCKET": "media-files-bucket",
     "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
     "PAGES_FOLDER": "workspace/pages",
-    "SNIPPETS_FOLDER": "workspace/snippets"
+    "SNIPPETS_FOLDER": "workspace/snippets",
+    "USER_IDENTITY_SESSION_KEY": "userIdentity"
   },
   "cmsDbContext": {
     "id": "vanilla-mongodb",
