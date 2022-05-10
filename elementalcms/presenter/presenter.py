@@ -59,7 +59,7 @@ def index(lang_code: str = None):
 
     requires_user_identity = result.value().get('requiresUserIdentity', False)
     redirect_users_to = result.value().get('redirectUsersTo', '').strip() or None
-    has_user_identity = session.get('userIdentity', None)
+    has_user_identity = session.get(current_app.config['USER_IDENTITY_SESSION_KEY'], None)
 
     if redirect_users_to and has_user_identity:
         if draft == '1':
@@ -105,7 +105,7 @@ def render(slug: str, lang_code: str = None):
 
     requires_user_identity = result.value().get('requiresUserIdentity', False)
     redirect_users_to = result.value().get('redirectUsersTo', '').strip() or None
-    has_user_identity = session.get('userIdentity', None)
+    has_user_identity = session.get(current_app.config['USER_IDENTITY_SESSION_KEY'], None)
 
     if redirect_users_to and has_user_identity:
         if draft == '1':
