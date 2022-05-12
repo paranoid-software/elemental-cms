@@ -1,9 +1,11 @@
+import ctypes
+import json
 import os
+import secrets
 import pathlib
-from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for
+from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for, abort
 from flask_babel import Babel
 from markupsafe import Markup
-
 from elementalcms.core import ElementalContext
 from elementalcms.extends import Applet, ActionsMapper
 
@@ -12,7 +14,6 @@ from elementalcms.services.snippets import GetMe
 
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
-from elementalcms.identity import identity
 
 __version__ = "1.0.98"
 
@@ -37,8 +38,6 @@ class Elemental:
         app.register_blueprint(admin)
         presenter.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
         app.register_blueprint(presenter)
-
-        app.register_blueprint(identity)
 
         app.register_blueprint(Blueprint('media', __name__, static_url_path='/media', static_folder=os.path.join(app.root_path, 'media')))
 
@@ -123,3 +122,11 @@ class Elemental:
             if context.cms_core_context.LANGUAGE_MODE == 'multi':
                 code = session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
             return dict(lang_code=code)
+
+        @app.context_processor
+        def gateway_token_processor():
+            if context.cms_core_context.USER_IDENTITY_SESSION_KEY not in session:
+                return dict(gateway_token='')
+            payload = json.dumps(session[context.cms_core_context.USER_IDENTITY_SESSION_KEY])
+            token = ctypes.c_uint64(hash(payload)).value.to_bytes(8, "big").hex()
+            return dict(gateway_token=token)
