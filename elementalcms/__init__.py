@@ -122,11 +122,3 @@ class Elemental:
             if context.cms_core_context.LANGUAGE_MODE == 'multi':
                 code = session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
             return dict(lang_code=code)
-
-        @app.context_processor
-        def gateway_token_processor():
-            if context.cms_core_context.USER_IDENTITY_SESSION_KEY not in session:
-                return dict(gateway_token='')
-            payload = json.dumps(session[context.cms_core_context.USER_IDENTITY_SESSION_KEY])
-            token = ctypes.c_uint64(hash(payload)).value.to_bytes(8, "big").hex()
-            return dict(gateway_token=token)
