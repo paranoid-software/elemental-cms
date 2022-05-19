@@ -1,9 +1,10 @@
 import os
 import pathlib
+from typing import Callable
+
 from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for
 from flask_babel import Babel
 from markupsafe import Markup
-
 from elementalcms.core import ElementalContext
 from elementalcms.extends import Applet, ActionsMapper
 
@@ -12,14 +13,26 @@ from elementalcms.services.snippets import GetMe
 
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
-from elementalcms.identity import identity
 
-__version__ = "1.0.98"
+__version__ = "1.0.99"
 
 
 class Elemental:
 
-    def __init__(self, app: Flask, context: ElementalContext, applets: [Applet] = None):
+    __applets = {}
+
+    def get_view_for(self, applet_name, controller_name, action_name):
+        if applet_name not in self.__applets:
+            raise Exception(f'{applet_name} does not exist.')
+        if f'{controller_name}.{action_name}' not in self.__applets[applet_name]:
+            raise Exception(f'Invalid controller and/or action.')
+        return self.__applets[applet_name][f'{controller_name}.{action_name}']
+
+    def __init__(self,
+                 app: Flask,
+                 context: ElementalContext,
+                 before_present: Callable = None,
+                 applets: [Applet] = None):
 
         app.config.from_object(context.cms_core_context)
 
@@ -36,14 +49,25 @@ class Elemental:
         admin.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
         app.register_blueprint(admin)
         presenter.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
+
+        if before_present:
+            @presenter.url_value_preprocessor
+            def before_present_wrapper(endpoint, values):
+                before_present(endpoint, values)
+
         app.register_blueprint(presenter)
 
-        app.register_blueprint(identity)
-
-        app.register_blueprint(Blueprint('media', __name__, static_url_path='/media', static_folder=os.path.join(app.root_path, 'media')))
+        app.register_blueprint(Blueprint('media',
+                                         __name__,
+                                         static_url_path='/media',
+                                         static_folder=os.path.join(app.root_path, 'media')))
 
         for applet in applets or []:
-            ActionsMapper(app).register_actions(applet.get_controllers())
+            self.__applets[applet.name] = {}
+            for controller in applet.get_controllers():
+                views = ActionsMapper(app).register_actions([controller])
+                for view in views:
+                    self.__applets[applet.name][f'{controller.__class__.__name__}.{view.__name__}'] = view
 
         # Session support using MongoDB
         app.session_interface = MongoSessionInterface(context.cms_db_context)

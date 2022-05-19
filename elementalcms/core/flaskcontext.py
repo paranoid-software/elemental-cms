@@ -3,7 +3,7 @@ class FlaskContext(object):
     def __init__(self, settings: dict):
         self.DEBUG = settings.get('DEBUG', True)
         self.ENV = settings.get('ENV', 'development')
-        self.SECRET = settings.get('SECRET', '2+2==10')
+        self.SECRET_KEY = settings.get('SECRET_KEY', '2+2==10')
         self.SITE_NAME = settings.get('SITE_NAME', 'My Elemental CMS')
         self.GOOGLE_SITE_VERIFICATION_TOKEN = settings.get('GOOGLE_SITE_VERIFICATION_TOKEN', None)
         self.COMPANY = settings.get('COMPANY', 'Paranoid Software')

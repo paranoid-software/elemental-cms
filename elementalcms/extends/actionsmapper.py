@@ -41,4 +41,4 @@ class ActionsMapper:
     def __build_endpoint(view, controller_name, fn_name):
         if view.endpoint is not None:
             return view.endpoint
-        return '({}) [{}.{}]'.format(view.method, controller_name, fn_name)
+        return f'{controller_name}.{fn_name}'

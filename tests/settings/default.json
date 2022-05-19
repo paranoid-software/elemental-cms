@@ -2,7 +2,7 @@
   "cmsCoreContext": {
     "DEBUG": true,
     "ENV": "development",
-    "SECRET": "my-secret",
+    "SECRET_KEY": "my-secret",
     "SITE_NAME": "My Elemental Site",
     "GOOGLE_SITE_VERIFICATION_TOKEN": "my-token",
     "COMPANY": "My Company",

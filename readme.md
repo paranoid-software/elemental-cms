@@ -36,7 +36,7 @@ Before we can issue the "init" command we have to create a config file inside a 
   "cmsCoreContext": {
     "DEBUG": true,
     "ENV": "development",
-    "SECRET": "the-secret",
+    "SECRET_KEY": "the-secret",
     "SITE_NAME": "Elemental CMS",
     "COMPANY": "Your company name",
     "CANONICAL_URL": "https://elemental.cms",

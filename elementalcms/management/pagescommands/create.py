@@ -37,8 +37,6 @@ class Create:
             'title': f'{name} page',
             'description': '',
             'isHome': False,
-            'requiresUserIdentity': False,
-            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
