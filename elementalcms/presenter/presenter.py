@@ -57,32 +57,6 @@ def index(lang_code: str = None):
     if result.is_failure():
         abort(404)
 
-    requires_user_identity = result.value().get('requiresUserIdentity', False)
-    redirect_users_to = result.value().get('redirectUsersTo', '').strip() or None
-    has_user_identity = session.get(current_app.config['USER_IDENTITY_SESSION_KEY'], None)
-
-    if redirect_users_to and has_user_identity:
-        if draft == '1':
-            if redirect_users_to == 'index':
-                return redirect(url_for('presenter.index',
-                                        lang_code=None if lang_mode == 'single' else lang_code,
-                                        draft=1),
-                                301)
-            return redirect(url_for('presenter.render',
-                                    lang_code=None if lang_mode == 'single' else lang_code,
-                                    slug=redirect_users_to,
-                                    draft=1))
-        if redirect_users_to == 'index':
-            return redirect(url_for('presenter.index',
-                                    lang_code=None if lang_mode == 'single' else lang_code),
-                            301)
-        return redirect(url_for('presenter.render',
-                                lang_code=None if lang_mode == 'single' else lang_code,
-                                slug=redirect_users_to))
-
-    if requires_user_identity and not has_user_identity:
-        abort(401)
-
     session['langCode'] = lang_code
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
@@ -102,30 +76,6 @@ def render(slug: str, lang_code: str = None):
                                                                                 draft=(draft == '1'))
     if result.is_failure():
         abort(404)
-
-    requires_user_identity = result.value().get('requiresUserIdentity', False)
-    redirect_users_to = result.value().get('redirectUsersTo', '').strip() or None
-    has_user_identity = session.get(current_app.config['USER_IDENTITY_SESSION_KEY'], None)
-
-    if redirect_users_to and has_user_identity:
-        if draft == '1':
-            if redirect_users_to == 'index':
-                return redirect(url_for('presenter.index',
-                                        lang_code=None if lang_mode == 'single' else lang_code,
-                                        draft=1))
-            return redirect(url_for('presenter.render',
-                                    lang_code=None if lang_mode == 'single' else lang_code,
-                                    slug=redirect_users_to,
-                                    draft=1))
-        if redirect_users_to == 'index':
-            return redirect(url_for('presenter.index',
-                                    lang_code=None if lang_mode == 'single' else lang_code))
-        return redirect(url_for('presenter.render',
-                                lang_code=None if lang_mode == 'single' else lang_code,
-                                slug=redirect_users_to))
-
-    if requires_user_identity and not has_user_identity:
-        abort(401)
 
     session['langCode'] = lang_code
     return render_template('presenter/index.html',
