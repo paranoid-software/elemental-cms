@@ -33,7 +33,7 @@ class MongoSessionInterface(SessionInterface):
         if self.get_expiration_time(app, session):
             expiration = self.get_expiration_time(app, session)
         else:
-            expiration = datetime.utcnow() + timedelta(minutes=app.config['CMS_DB_CONTEXT'].get('SESSION_TIMEOUT_IN_MINUTES', 60))
+            expiration = datetime.utcnow() + timedelta(minutes=app.config.get('SESSION_TIMEOUT_IN_MINUTES', 60))
         UpsertMe(self.db_context).execute({
                                               'sid': session.sid,
                                               'data': session,
