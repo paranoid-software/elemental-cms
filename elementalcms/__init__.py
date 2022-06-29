@@ -14,7 +14,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.0.99"
+__version__ = "1.1.0"
 
 
 class Elemental:
@@ -70,7 +70,8 @@ class Elemental:
                     self.__applets[applet.name][f'{controller.__class__.__name__}.{view.__name__}'] = view
 
         # Session support using MongoDB
-        app.session_interface = MongoSessionInterface(context.cms_db_context)
+        if context.cms_core_context.SESSION_STORAGE_ENABLED:
+            app.session_interface = MongoSessionInterface(context.cms_db_context)
 
         babel = Babel(app)
 

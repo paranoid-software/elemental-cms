@@ -23,3 +23,5 @@ class FlaskContext(object):
         self.SNIPPETS_FOLDER = settings.get('SNIPPETS_FOLDER', 'workspace/snippets')
         self.GOOGLE_SERVICE_ACCOUNT_INFO = settings.get('GOOGLE_SERVICE_ACCOUNT_INFO', {})
         self.USER_IDENTITY_SESSION_KEY = settings.get('USER_IDENTITY_SESSION_KEY', 'userIdentity')
+        self.SESSION_STORAGE_ENABLED = settings.get('SESSION_STORAGE_ENABLED', True)
+        self.SESSION_TIMEOUT_IN_MINUTES = settings.get('SESSION_TIMEOUT_IN_MINUTES', 60)

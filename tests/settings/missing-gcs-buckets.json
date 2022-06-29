@@ -21,7 +21,9 @@
     "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
     "PAGES_FOLDER": "workspace/pages",
     "SNIPPETS_FOLDER": "workspace/snippets",
-    "USER_IDENTITY_SESSION_KEY": "userIdentity"
+    "USER_IDENTITY_SESSION_KEY": "userIdentity",
+    "SESSION_STORAGE_ENABLED": true,
+    "SESSION_TIMEOUT_IN_MINUTES": 60
   },
   "cmsDbContext": {
     "id": "vanilla-mongodb",
