@@ -107,8 +107,8 @@ def get_page_model(page_spec):
         'name': page_spec['name'],
         'description': page_spec['description'],
         'content': content,
-        'styles': ''.join(styles),
-        'scripts': ''.join(scripts)
+        'styles': '\n'.join(list(dict.fromkeys(styles).keys())),
+        'scripts': '\n'.join(list(dict.fromkeys(scripts).keys()))
     }
 
 
