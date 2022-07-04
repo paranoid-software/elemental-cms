@@ -107,6 +107,7 @@ def get_page_model(page_spec):
         'name': page_spec['name'],
         'description': page_spec['description'],
         'content': content,
+        'base_template': page_spec.get('baseTemplate', 'base.html'),
         'styles': '\n'.join(list(dict.fromkeys(styles).keys())),
         'scripts': '\n'.join(list(dict.fromkeys(scripts).keys()))
     }
@@ -115,20 +116,30 @@ def get_page_model(page_spec):
 def get_styles(deps):
     styles = []
     for dep in deps:
+
+        props = []
+        for key in dep['meta'].keys():
+            props.append(f'{key}=\"{dep["meta"][key]}\"')
+
         if 'http' in dep['url']:
-            styles.append(f'<link rel="stylesheet" type="text/css" href="{dep["url"]}">')
+            styles.append(f'<link rel="stylesheet" type="text/css" href="{dep["url"]}" {" ".join(props)}>')
             continue
         href = f'{current_app.config["STATIC_URL"]}/{current_app.config["APP_NAME"]}/{dep["url"]}'
-        styles.append(f'<link rel="stylesheet" type="text/css" href="{href}">')
+        styles.append(f'<link rel="stylesheet" type="text/css" href="{href}" {" ".join(props)}>')
     return styles
 
 
 def get_scripts(deps):
     scripts = []
     for dep in deps:
+
+        props = []
+        for key in dep['meta'].keys():
+            props.append(f'{key}=\"{dep["meta"][key]}\"')
+
         if dep['url'].startswith('http'):
-            scripts.append(f'<script src="{dep["url"]}" type="{dep["type"]}"></script>')
+            scripts.append(f'<script src="{dep["url"]}" type="{dep["type"]}" {" ".join(props)}></script>')
             continue
         src = f'{current_app.config["STATIC_URL"]}/{current_app.config["APP_NAME"]}/{dep["url"]}'
-        scripts.append(f'<script src="{src}" type="{dep["type"]}"></script>')
+        scripts.append(f'<script src="{src}" type="{dep["type"]}" {" ".join(props)}></script>')
     return scripts
