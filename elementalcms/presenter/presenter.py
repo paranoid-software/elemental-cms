@@ -118,7 +118,7 @@ def get_styles(deps):
     for dep in deps:
 
         props = []
-        for key in dep['meta'].keys():
+        for key in dep.get('meta', {}).keys():
             props.append(f'{key}=\"{dep["meta"][key]}\"')
 
         if 'http' in dep['url']:
@@ -134,7 +134,7 @@ def get_scripts(deps):
     for dep in deps:
 
         props = []
-        for key in dep['meta'].keys():
+        for key in dep.get('meta', {}).keys():
             props.append(f'{key}=\"{dep["meta"][key]}\"')
 
         if dep['url'].startswith('http'):
