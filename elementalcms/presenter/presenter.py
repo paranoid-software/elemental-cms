@@ -57,7 +57,9 @@ def index(lang_code: str = None):
     if result.is_failure():
         abort(404)
 
-    session['langCode'] = lang_code
+    if 'langCode' not in session or session['langCode'] != lang_mode:
+        session['langCode'] = lang_code
+
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
 
@@ -77,7 +79,9 @@ def render(slug: str, lang_code: str = None):
     if result.is_failure():
         abort(404)
 
-    session['langCode'] = lang_code
+    if 'langCode' not in session or session['langCode'] != lang_mode:
+        session['langCode'] = lang_code
+
     return render_template('presenter/index.html',
                            page=get_page_model(result.value()))
 

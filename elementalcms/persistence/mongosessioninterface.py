@@ -15,30 +15,25 @@ class MongoSessionInterface(SessionInterface):
 
     def open_session(self, app, request):
         sid = request.cookies.get(app.session_cookie_name)
-        if sid:
-            get_me_result = GetMe(self.db_context).execute(sid)
-            if not get_me_result.is_failure():
-                stored_session = get_me_result.value()
-                if stored_session.get('expiration') > datetime.utcnow():
-                    return MongoSession(initial=stored_session['data'],
-                                        sid=stored_session['sid'])
-        sid = str(uuid4())
+        if sid is None:
+            print(f'puta: {request.path}')
+            # New cookie, new session
+            sid = str(uuid4())
+            return MongoSession(sid=sid)
         return MongoSession(sid=sid)
 
     def save_session(self, app, session: MongoSession, response):
         domain = self.get_cookie_domain(app)
         if not session:
-            response.delete_cookie(app.session_cookie_name, domain=domain)
+            # I do not understand this line ...
+            # response.delete_cookie(app.session_cookie_name, domain=domain)
             return
-        if self.get_expiration_time(app, session):
-            expiration = self.get_expiration_time(app, session)
-        else:
-            expiration = datetime.utcnow() + timedelta(minutes=app.config.get('SESSION_TIMEOUT_IN_MINUTES', 60))
+        expiration = datetime.utcnow() + timedelta(minutes=app.config.get('SESSION_TIMEOUT_IN_MINUTES', 60))
         UpsertMe(self.db_context).execute({
                                               'sid': session.sid,
                                               'data': session,
                                               'expiration': expiration
                                           })
         response.set_cookie(app.session_cookie_name, session.sid,
-                            expires=self.get_expiration_time(app, session),
+                            expires=expiration,
                             httponly=True, domain=domain)
