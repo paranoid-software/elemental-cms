@@ -2,6 +2,7 @@ from elementalcms.persistence.repositories import SessionsRepository
 from elementalcms.services import UseCaseResult, Success, Failure
 from elementalcms.core import MongoDbContext
 import json
+from deepdiff import DeepDiff
 
 
 class UpsertMe:
@@ -19,7 +20,8 @@ class UpsertMe:
         if find_result['total'] > 1:
             return Failure({'duplicatedSession': True})
         current = find_result['items'][0]
-        if json.dumps(value.get('data')) != json.dumps(current.get('data')):
+        diff = DeepDiff(dict(**value.get('data')), current.get('data'))
+        if len(diff.keys()) >0 :
             replace_one_result = repo.replace_one(current['_id'], value, True)
             return Success(replace_one_result)
         if (value.get('expiration') - current.get('expiration')).total_seconds() > 30:
