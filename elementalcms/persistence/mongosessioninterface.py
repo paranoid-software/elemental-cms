@@ -1,3 +1,4 @@
+from bson import ObjectId
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -16,9 +17,8 @@ class MongoSessionInterface(SessionInterface):
     def open_session(self, app, request):
         sid = request.cookies.get(app.session_cookie_name)
         if sid is None:
-            print(f'puta: {request.path}')
             # New cookie, new session
-            sid = str(uuid4())
+            sid = str(ObjectId())
             return MongoSession(sid=sid)
         get_me_result = GetMe(self.db_context).execute(sid)
         if not get_me_result.is_failure():
@@ -39,10 +39,11 @@ class MongoSessionInterface(SessionInterface):
             return
         expiration = datetime.utcnow() + timedelta(minutes=app.config.get('SESSION_TIMEOUT_IN_MINUTES', 60))
         UpsertMe(self.db_context).execute({
-                                              'sid': session.sid,
-                                              'data': session,
-                                              'expiration': expiration
-                                          })
+            '_id': ObjectId(session.sid),
+            'sid': session.sid,
+            'data': session,
+            'expiration': expiration
+        })
         response.set_cookie(app.session_cookie_name, session.sid,
                             expires=expiration,
                             httponly=True, domain=domain)
