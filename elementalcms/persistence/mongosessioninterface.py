@@ -20,6 +20,15 @@ class MongoSessionInterface(SessionInterface):
             # New cookie, new session
             sid = str(uuid4())
             return MongoSession(sid=sid)
+        get_me_result = GetMe(self.db_context).execute(sid)
+        if not get_me_result.is_failure():
+            stored_session = get_me_result.value()
+            if stored_session.get('expiration') > datetime.utcnow():
+                return MongoSession(initial=stored_session['data'],
+                                    sid=stored_session['sid'])
+            print('Mongo TTL did not work.')
+            return MongoSession(sid=sid)
+        print('Mongo record do not exist.')
         return MongoSession(sid=sid)
 
     def save_session(self, app, session: MongoSession, response):
