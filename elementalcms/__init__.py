@@ -14,7 +14,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.6"
+__version__ = "1.1.7"
 
 
 class Elemental:
@@ -35,6 +35,9 @@ class Elemental:
                  applets: [Applet] = None):
 
         app.config.from_object(context.cms_core_context)
+
+        # WTF_CSRF_TIME_LIMIT = SESSION_TIMEOUT_IN_MINUTES
+        app.config['WTF_CSRF_TIME_LIMIT'] = 60 * context.cms_core_context.SESSION_TIMEOUT_IN_MINUTES
 
         # Passing DB Context to Blueprints
         app.config['CMS_DB_CONTEXT'] = context.cms_db_context
