@@ -45,11 +45,11 @@ class Pull:
             html_content = page.pop('content')
             folder_path = f'{root_folder_path}/{lang}'
             os.makedirs(folder_path, exist_ok=True)
-            spec_filepath = f'{folder_path}/{name}.json'
+            spec_filepath = f'{folder_path}/{name.replace("/", "_")}.json'
             spec_file = open(spec_filepath, mode='w', encoding='utf-8')
             spec_file.write(json_util.dumps(page, indent=4))
             spec_file.close()
-            content_filepath = f'{folder_path}/{name}.html'
+            content_filepath = f'{folder_path}/{name.replace("/", "_")}.html'
             content_file = open(content_filepath, mode='w', encoding='utf-8')
             content_file.write(html_content)
             content_file.close()
@@ -65,10 +65,10 @@ class Pull:
         backups_folder_path = f'{root_folder_path}/{lang}/.bak'
         os.makedirs(backups_folder_path, exist_ok=True)
         sufix = round(time.time())
-        spec_filepath = f'{folder_path}/{name}.json'
-        content_filepath = f'{folder_path}/{name}.html'
-        spec_backup_filepath = f'{backups_folder_path}/{name}-local-{sufix}.json'
-        content_backup_filepath = f'{backups_folder_path}/{name}-local-{sufix}.html'
+        spec_filepath = f'{folder_path}/{name.replace("/", "_")}.json'
+        content_filepath = f'{folder_path}/{name.replace("/", "_")}.html'
+        spec_backup_filepath = f'{backups_folder_path}/{name.replace("/", "_")}-local-{sufix}.json'
+        content_backup_filepath = f'{backups_folder_path}/{name.replace("/", "_")}-local-{sufix}.html'
         if os.path.exists(spec_filepath):
             copyfile(spec_filepath, spec_backup_filepath)
         if os.path.exists(content_filepath):

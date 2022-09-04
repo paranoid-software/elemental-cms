@@ -25,8 +25,8 @@ class Create:
         folder_path = f'{root_folder_path}/{lang}'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
-        spec_filepath = f'{folder_path}/{name}.json'
-        content_filepath = f'{folder_path}/{name}.html'
+        spec_filepath = f'{folder_path}/{name.replace("/", "_")}.json'
+        content_filepath = f'{folder_path}/{name.replace("/", "_")}.html'
         if os.path.exists(spec_filepath):
             click.echo(f'{name} ({lang}) already exist.')
             return

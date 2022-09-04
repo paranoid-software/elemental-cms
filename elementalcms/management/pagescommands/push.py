@@ -41,8 +41,8 @@ class Push:
                 click.echo(f'"{lang}" language not supported.')
                 continue
             folder_path = f'{root_folder_path}/{lang}'
-            spec_filepath = f'{folder_path}/{name}.json'
-            content_filepath = f'{folder_path}/{name}.html'
+            spec_filepath = f'{folder_path}/{name.replace("/", "_")}.json'
+            content_filepath = f'{folder_path}/{name.replace("/", "_")}.html'
             if not os.path.exists(spec_filepath):
                 click.echo(f'There is no spec file for page {name} ({lang})')
                 continue
@@ -87,11 +87,11 @@ class Push:
         os.makedirs(backups_folder_path, exist_ok=True)
         html_content = page.pop('content', '')
         sufix = round(time.time())
-        spec_backup_filepath = f'{backups_folder_path}/{page["name"]}-draft-{sufix}.json'
+        spec_backup_filepath = f'{backups_folder_path}/{page["name"].replace("/", "_")}-draft-{sufix}.json'
         spec_backup_file = open(spec_backup_filepath, mode='w', encoding='utf-8')
         spec_backup_file.write(json_util.dumps(page, indent=4))
         spec_backup_file.close()
-        content_backup_filepath = f'{backups_folder_path}/{page["name"]}-draft-{sufix}.html'
+        content_backup_filepath = f'{backups_folder_path}/{page["name"].replace("/", "_")}-draft-{sufix}.html'
         content_backup_file = open(content_backup_filepath, mode='w', encoding='utf-8')
         content_backup_file.write(html_content)
         content_backup_file.close()

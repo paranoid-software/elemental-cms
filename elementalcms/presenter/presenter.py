@@ -64,7 +64,7 @@ def index(lang_code: str = None):
                            page=get_page_model(result.value()))
 
 
-@presenter.route('/<slug>/', methods=['GET'])
+@presenter.route('/<path:slug>/', methods=['GET'])
 def render(slug: str, lang_code: str = None):
 
     draft = request.args.get('draft')
