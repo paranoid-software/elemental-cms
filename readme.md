@@ -27,9 +27,9 @@ Once we have our project folder created and our virtual environment on place we 
 pip install elemental-cms
 ```
 
-The CLI includes an "init" command which will create a basic structure on the working directory.
+The CLI includes an "init" command which will create a basic working directory structure.
 
-Before we can issue the "init" command we have to create a config file inside a "settings" folder with the following content:
+Before we can issue the "init" command we have to create a config file inside a "settings" folder with at least the following content:
 
 ```json
 {
@@ -170,7 +170,7 @@ from flask import Flask
 
 www = Flask(__name__, template_folder='templates', static_folder='static')
 
-CONFIG_FILE_NAME = os.environ.get('CONFIG_FILE_NAME', 'settings/debug.json')
+CONFIG_FILE_NAME = os.environ.get('CONFIG_FILE_NAME', 'settings/default.json')
 
 with open(CONFIG_FILE_NAME) as config_file:
     settings = json.load(config_file)

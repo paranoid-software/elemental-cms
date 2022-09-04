@@ -23,10 +23,20 @@ class TestRemoveCommandShould:
                     'description': '',
                     'isHome': True,
                     'content': '<div>New Home</div>',
-                    'requiresUserIdentity': False,
-                    'redirectUsersTo': '',
                     'cssDeps': [],
                     'jsDeps': [],
+                    'createdAt': datetime.datetime.utcnow(),
+                    'lastModifiedAt': datetime.datetime.utcnow()
+                }, {
+                    "_id": ObjectId(),
+                    "name": "home/child",
+                    "language": "en",
+                    "title": "home/child page",
+                    "description": "",
+                    'content': '<div>I am a child page</div>',
+                    "isHome": False,
+                    "cssDeps": [],
+                    "jsDeps": [],
                     'createdAt': datetime.datetime.utcnow(),
                     'lastModifiedAt': datetime.datetime.utcnow()
                 }]
@@ -41,8 +51,6 @@ class TestRemoveCommandShould:
             'description': '',
             'isHome': True,
             'content': '<div>Home</div>',
-            'requiresUserIdentity': False,
-            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
@@ -55,8 +63,6 @@ class TestRemoveCommandShould:
             'description': '',
             'content': '<div>Inicio</div>',
             'isHome': True,
-            'requiresUserIdentity': False,
-            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
             'createdAt': datetime.datetime.utcnow(),
@@ -69,10 +75,20 @@ class TestRemoveCommandShould:
             'description': '',
             'content': '<div>Privacy policy</div>',
             'isHome': True,
-            'requiresUserIdentity': False,
-            'redirectUsersTo': '',
             'cssDeps': [],
             'jsDeps': [],
+            'createdAt': datetime.datetime.utcnow(),
+            'lastModifiedAt': datetime.datetime.utcnow()
+        }, {
+            "_id": ObjectId(),
+            "name": "home/child",
+            "language": "en",
+            "title": "home/child page",
+            "description": "",
+            'content': '<div>I am a child page</div>',
+            "isHome": False,
+            "cssDeps": [],
+            "jsDeps": [],
             'createdAt': datetime.datetime.utcnow(),
             'lastModifiedAt': datetime.datetime.utcnow()
         }]
@@ -164,7 +180,7 @@ class TestRemoveCommandShould:
                     result = runner.invoke(cli,
                                            ['pages',
                                             'remove',
-                                            '-p', 'home', 'en'],
+                                            '-p', 'home/child', 'en'],
                                            standalone_mode=False)
 
                     assert_that(result.return_value[0]).exists()

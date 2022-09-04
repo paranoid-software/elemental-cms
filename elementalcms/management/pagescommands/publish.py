@@ -48,11 +48,11 @@ class Publish:
         os.makedirs(backups_folder_path, exist_ok=True)
         html_content = page.pop('content', '')
         sufix = round(time.time())
-        spec_backup_filepath = f'{backups_folder_path}/{page["name"]}-{sufix}.json'
+        spec_backup_filepath = f'{backups_folder_path}/{page["name"].replace("/", "_")}-{sufix}.json'
         spec_backup_file = open(spec_backup_filepath, mode='w', encoding='utf-8')
         spec_backup_file.write(json_util.dumps(page, indent=4))
         spec_backup_file.close()
-        content_backup_filepath = f'{backups_folder_path}/{page["name"]}-{sufix}.html'
+        content_backup_filepath = f'{backups_folder_path}/{page["name"].replace("/", "_")}-{sufix}.html'
         content_backup_file = open(content_backup_filepath, mode='w', encoding='utf-8')
         content_backup_file.write(html_content)
         content_backup_file.close()
