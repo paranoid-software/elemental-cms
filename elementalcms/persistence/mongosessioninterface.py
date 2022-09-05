@@ -16,7 +16,7 @@ class MongoSessionInterface(SessionInterface):
 
     def open_session(self, app, request):
         sid = request.cookies.get(app.session_cookie_name)
-        if sid is None:
+        if sid is None or not ObjectId.is_valid(sid):
             # New cookie, new session
             sid = str(ObjectId())
             return MongoSession(sid=sid)
