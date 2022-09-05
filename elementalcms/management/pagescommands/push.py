@@ -25,7 +25,7 @@ class Push:
                 for file in f:
                     if '.json' not in file:
                         continue
-                    pages_tuples.append((file.split('.')[0], r.split('/')[-1]))
+                    pages_tuples.append((file.split('.')[0].replace('_', '/'), r.split('/')[-1]))
             if len(pages_tuples) == 0:
                 click.echo('There are no pages to push.')
                 return

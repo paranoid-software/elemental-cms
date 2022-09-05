@@ -6,7 +6,7 @@ import click
 from bson import json_util
 
 from elementalcms.core import ElementalContext
-from elementalcms.services.pages import GetMe, RemoveOne
+from elementalcms.services.pages import GetMeForLanguage, RemoveOne
 
 
 class Remove:
@@ -19,14 +19,14 @@ class Remove:
         name = page_tuple[0]
         lang = page_tuple[1]
 
-        get_page_result = GetMe(self.context.cms_db_context).execute(name, lang, False, False)
+        get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
         page = get_page_result.value()
 
         if page is not None:
             click.echo(f'{name} ({lang}) has to be unpublished first, in order to be removed.')
             return None
 
-        get_draft_result = GetMe(self.context.cms_db_context).execute(name, lang, True, False)
+        get_draft_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, True, False)
         draft = get_draft_result.value()
 
         if draft is None:

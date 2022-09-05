@@ -5,7 +5,7 @@ from bson import json_util
 from flask import render_template, Blueprint, g, abort, current_app, request, redirect, session
 
 from elementalcms.services import UseCaseResult
-from elementalcms.services.pages import GetMe
+from elementalcms.services.pages import GetMeForLanguage
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 
@@ -51,9 +51,9 @@ def index(slug: str, lang_code: str = None):
     if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
-    result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
-                                                                                lang_code,
-                                                                                True)
+    result: UseCaseResult = GetMeForLanguage(current_app.config['CMS_DB_CONTEXT']).execute(slug,
+                                                                                           lang_code,
+                                                                                           True)
     if result.is_failure():
         abort(404)
 

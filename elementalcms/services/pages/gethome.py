@@ -9,22 +9,25 @@ class GetHome:
     def __init__(self, db_context: MongoDbContext):
         self.__db_context = db_context
 
-    def execute(self, language, draft=False, add_gloabl_deps=True) -> UseCaseResult:
+    def execute(self, draft=False, add_gloabl_deps=True) -> UseCaseResult:
         if draft:
             repo = DraftsRepository(self.__db_context)
         else:
             repo = PagesRepository(self.__db_context)
-        result = repo.find({'isHome': True, 'language': language}, page=0, page_size=10)
+        result = repo.find({'isHome': True}, page=0, page_size=10)
         if result['total'] == 0:
             return NoResult()
-        page = result['items'][0]
+        pages = {}
         if add_gloabl_deps:
             global_deps = self.get_all_global_deps()
             css_deps = [d for d in global_deps if d['type'] == 'text/css']
-            page['cssDeps'] = css_deps + page['cssDeps']
             js_deps = [d for d in global_deps if d['type'] == 'application/javascript']
-            page['jsDeps'] = js_deps + page['jsDeps']
-        return Success(page)
+            for page in result['items']:
+                if page['language'] not in pages:
+                    pages[page['language']] = page
+                pages[page['language']]['cssDeps'] = css_deps + pages[page['language']]['cssDeps']
+                pages[page['language']]['jsDeps'] = js_deps + pages[page['language']]['jsDeps']
+        return Success(pages)
 
     def get_all_global_deps(self):
         repo = GlobalDepsRepository(self.__db_context)
