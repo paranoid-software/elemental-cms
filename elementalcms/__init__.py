@@ -15,7 +15,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.11"
+__version__ = "1.1.12"
 
 
 class Elemental:
@@ -169,8 +169,9 @@ class Elemental:
                         continue
                     items.append({
                         'sortKey': f'/{page_name}',
-                        'name': item['name'],
-                        'title': item['title']
+                        'name': item.get('name'),
+                        'title': item.get('title'),
+                        'shortTitle': item.get('shortTitle')
                     })
                 items.sort(key=lambda i: i['sortKey'])
                 return items
