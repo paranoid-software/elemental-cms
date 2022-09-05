@@ -6,7 +6,7 @@ from deepdiff import DeepDiff
 import click
 from bson import json_util
 from elementalcms.core import ElementalContext
-from elementalcms.services.pages import GetMe, UpdateOne
+from elementalcms.services.pages import GetMeForLanguage, UpdateOne
 
 
 class Publish:
@@ -18,14 +18,14 @@ class Publish:
         name = page_tuple[0]
         lang = page_tuple[1]
 
-        get_draft_result = GetMe(self.context.cms_db_context).execute(name, lang, True, False)
+        get_draft_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, True, False)
         draft = get_draft_result.value()
 
         if draft is None:
             click.echo(f'{name} ({lang}) does not have a draft version.')
             return
 
-        get_page_result = GetMe(self.context.cms_db_context).execute(name, lang, False, False)
+        get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
         page = get_page_result.value()
 
         backup_filepaths = None

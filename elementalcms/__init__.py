@@ -9,12 +9,13 @@ from elementalcms.core import ElementalContext
 from elementalcms.extends import Applet, ActionsMapper
 
 from elementalcms.persistence import MongoSessionInterface
+from elementalcms.services.pages import GetAll
 from elementalcms.services.snippets import GetMe
 
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.10"
+__version__ = "1.1.11"
 
 
 class Elemental:
@@ -147,7 +148,31 @@ class Elemental:
 
         @app.context_processor
         def lang_code_processor():
-            code = ''
-            if context.cms_core_context.LANGUAGE_MODE == 'multi':
-                code = session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
-            return dict(lang_code=code)
+            def lang_code():
+                code = ''
+                if context.cms_core_context.LANGUAGE_MODE == 'multi':
+                    code = session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
+                return code
+            return dict(lang_code=lang_code())
+
+        @app.context_processor
+        def nav_tree_processor():
+            def nav_tree(language: str, parent=''):
+                drafts = 'draft' in request.args
+                get_result = GetAll(context.cms_db_context).execute(drafts)
+                items = []
+                for item in [n for n in get_result.value() if n['language'] == language]:
+                    page_name = ''
+                    if not item['isHome']:
+                        page_name = item['name']
+                    if parent not in page_name:
+                        continue
+                    items.append({
+                        'sortKey': f'/{page_name}',
+                        'name': item['name'],
+                        'title': item['title']
+                    })
+                items.sort(key=lambda i: i['sortKey'])
+                return items
+
+            return dict(nav_tree=nav_tree)

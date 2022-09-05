@@ -1,7 +1,7 @@
 import re
 import pycountry
 from flask import render_template, Blueprint, request, g, current_app, redirect, abort, session, \
-    render_template_string, url_for
+    render_template_string
 
 from elementalcms.services import UseCaseResult
 from elementalcms.services.pages import GetHome, GetMe
@@ -52,16 +52,26 @@ def index(lang_code: str = None):
     if lang_code is None and lang_mode == 'single':
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
-    result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(lang_code,
-                                                                                  draft=(draft == '1'))
+    result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(draft=(draft == '1'))
+
     if result.is_failure():
         abort(404)
 
-    if 'langCode' not in session or session['langCode'] != lang_mode:
-        session['langCode'] = lang_code
+    if lang_code in result.value():
 
-    return render_template('presenter/index.html',
-                           page=get_page_model(result.value()))
+        lang_code_fallback = result.value()[lang_code].get('languageRedirectionCode', None)
+
+        if lang_code_fallback is not None and lang_code_fallback in result.value():
+            return redirect(request.full_path.replace(lang_code,
+                                                      lang_code_fallback))
+
+        if 'langCode' not in session or session['langCode'] != lang_code:
+            session['langCode'] = lang_code
+
+        return render_template('presenter/index.html',
+                               page=get_page_model(result.value()[lang_code]))
+
+    abort(404)
 
 
 @presenter.route('/<path:slug>', methods=['GET'])
@@ -75,16 +85,25 @@ def render(slug: str, lang_code: str = None):
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
-                                                                                lang_code,
                                                                                 draft=(draft == '1'))
     if result.is_failure():
         abort(404)
 
-    if 'langCode' not in session or session['langCode'] != lang_mode:
-        session['langCode'] = lang_code
+    if lang_code in result.value():
 
-    return render_template('presenter/index.html',
-                           page=get_page_model(result.value()))
+        lang_code_fallback = result.value()[lang_code].get('languageRedirectionCode', None)
+
+        if lang_code_fallback is not None and lang_code_fallback in result.value():
+            return redirect(request.full_path.replace(lang_code,
+                                                      lang_code_fallback))
+
+        if 'langCode' not in session or session['langCode'] != lang_code:
+            session['langCode'] = lang_code
+
+        return render_template('presenter/index.html',
+                               page=get_page_model(result.value()[lang_code]))
+
+    abort(404)
 
 
 def get_page_model(page_spec):

@@ -6,7 +6,7 @@ from typing import Tuple, Optional
 import click
 from bson import json_util
 from elementalcms.core import ElementalContext
-from elementalcms.services.pages import GetMe, GetAll
+from elementalcms.services.pages import GetMeForLanguage, GetAll
 
 
 class Pull:
@@ -33,7 +33,7 @@ class Pull:
         for page_tuple in pages_tuples:
             name = page_tuple[0]
             lang = page_tuple[1]
-            get_me_result = GetMe(self.context.cms_db_context).execute(name, lang, drafts, False)
+            get_me_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, drafts, False)
             page = get_me_result.value()
             if page is None:
                 if drafts:
