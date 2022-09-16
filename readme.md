@@ -10,7 +10,7 @@ elemental-cms
 
 ## Work in progress
 
-- <a href="https://paranoid-software.getoutline.com/share/a300ec8e-4bc6-47c0-aba0-fbe1f80f1623" target="_blank">Documentation</a>
+- <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Documentation</a>
 - Media files management module test clasess.
 - Static files management module test clasess.
 - Pages management module review and refactor.
