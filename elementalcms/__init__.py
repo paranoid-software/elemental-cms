@@ -15,7 +15,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.12"
+__version__ = "1.1.13"
 
 
 class Elemental:
@@ -161,7 +161,7 @@ class Elemental:
                 drafts = 'draft' in request.args
                 get_result = GetAll(context.cms_db_context).execute(drafts)
                 items = []
-                for item in [n for n in get_result.value() if n['language'] == language]:
+                for item in [n for n in get_result.value() if n['language'] == (language or context.cms_core_context.DEFAULT_LANGUAGE)]:
                     page_name = ''
                     if not item['isHome']:
                         page_name = item['name']

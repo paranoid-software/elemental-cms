@@ -17,7 +17,7 @@ def before_request():
     if lang_code is None and current_app.config['LANGUAGE_MODE'] == 'single':
         return
     if lang_code is None:
-        abort(404)
+        return redirect(f'/{session.get("langCode", current_app.config["DEFAULT_LANGUAGE"])}/{request.full_path}')
     if lang_code in current_app.config['LANGUAGES']:
         return
     return redirect(request.full_path.replace(lang_code,
