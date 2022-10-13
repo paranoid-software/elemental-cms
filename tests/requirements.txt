@@ -1,0 +1,4 @@
+pytest
+from_root
+assertpy
+dataclasses-serialization

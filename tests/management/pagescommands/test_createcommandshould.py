@@ -34,7 +34,7 @@ class TestCreateCommandShould:
 
     def test_create_page_spec_file(self, default_elemental_fixture, default_settings_fixture):
         runner = CliRunner()
-        with runner.isolated_filesystem(temp_dir='/Users/anibal/tt'):
+        with runner.isolated_filesystem():
             with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
                 # noinspection PyTypeChecker
                 runner.invoke(cli, ['pages',
