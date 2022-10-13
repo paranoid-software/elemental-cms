@@ -34,13 +34,13 @@ def cli(ctx: Context):
             click.echo('Initialization meta appears to be wrong, please run init command again.')
             return
 
-    config_file_path = os.environ.get('CONFIG_FILE_PATH', init_metadata['configFilePath'])
+    config_filepath = init_metadata['configFilePath']
 
-    if not os.path.exists(config_file_path):
-        click.echo(f'Init meta reference {config_file_path} file which does not exist.')
+    if not os.path.exists(config_filepath):
+        click.echo(f'Init meta reference {config_filepath} file which does not exist.')
         exit(1)
 
-    with open(config_file_path) as config_file_content:
+    with open(config_filepath) as config_file_content:
         config_file = json.load(config_file_content)
 
         if 'cmsCoreContext' not in config_file:
@@ -64,22 +64,22 @@ def version():
 @cli.command('init')
 @click.option('--with-config-file',
               '-c',
-              'config_file_path',
+              'config_filepath',
               nargs=1,
               required=True,
               help='Path for the config file that will be used to create the context for every following '
                    'command.')
-def init(config_file_path):
+def init(config_filepath):
 
-    if not os.path.exists(config_file_path):
-        click.echo(f'{config_file_path} does not exist.')
+    if not os.path.exists(config_filepath):
+        click.echo(f'{config_filepath} does not exist.')
         return
 
     init_metadata = {
-        'configFilePath': config_file_path
+        'configFilePath': config_filepath
     }
 
-    with open(config_file_path) as config_file_content:
+    with open(config_filepath) as config_file_content:
         config_file = json.load(config_file_content)
 
         if 'cmsCoreContext' not in config_file:
