@@ -1,27 +1,35 @@
 # elemental CMS
 
-Elemental is a Flask + MongoDB Web CMS intended for use by Developers.
+Elemental is a Flask and MongoDB web CMS intended for developers.
 
-Our main goal is to allow developers to create and mantain web portals or web applications using theirs preferred programming IDE like VSCode, PyCharm, Visual Studio, etc.
+Our main goal is to allow developers to create and maintain web portals or web applications using their preferred programming IDE like VS Code, PyCharm, Visual Studio, etc.
 
-The main interaction with the tool takes place through its CLI, a self documented command line tool called "elemental-cms" which help us to perform deployment tasks directly from the terminal.
+The main interaction with the tool takes place through its CLI, a self documented command line tool called "elemental-cms" which helps us perform deployment tasks directly from the terminal.
 
-It relays on MongoDB to store the metadata, pages content, snippets content, dependencies information, and user sessions data.
+It relies on MongoDB to store the metadata, pages' content, snippets' content, dependencies information, and user session data.
 
 ## Work in progress
 
-- <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Official Documentation</a>
-- Media files management module test clasess.
-- Static files management module test clasess.
-- Pages management module review and refactor.
+- <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Official documentation</a> construction
+- Media files management module test classes
+- Static files management module test classes
+- Pages management module review and refactor
+- paranoid.software landing page
+- Samples review and update
 
 ## To Do
 
-- TBD
+- Testing on Windows OS environment
+- Resources names validation
+- Configurations schema review
+- Test coverage review
+- Support for --all option in every push and pull command
+- Support for detailed comparison between local and remote resources versions
+- Support for extra options on MongoDB connection
 
 ## Setup
 
-Once we have our project folder created and our virtual environment on place we proceed to install Elemental CMS using pip.
+Once we have our project folder created and our virtual environment in place, we proceed to install Elemental CMS using pip.
 
 ```shell
 pip install elemental-cms
@@ -29,7 +37,7 @@ pip install elemental-cms
 
 The CLI includes an "init" command which will create a basic working directory structure.
 
-Before we can issue the "init" command we have to create a config file inside a "settings" folder with at least the following content:
+Before we can issue the "init" command, we have to create a config file inside a "settings" folder with at least the following content:
 
 ```json
 {
@@ -55,15 +63,20 @@ Before we can issue the "init" command we have to create a config file inside a 
     "MEDIA_BUCKET": "media-files-bucket",
     "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
     "PAGES_FOLDER": "workspace/pages",
-    "SNIPPETS_FOLDER": "workspace/snippets"
+    "SNIPPETS_FOLDER": "workspace/snippets",
+    "USER_IDENTITY_SESSION_KEY": "userIdentity",
+    "SESSION_STORAGE_ENABLED": true,
+    "SESSION_TIMEOUT_IN_MINUTES": 360
   },
   "cmsDbContext": {
     "id": "your-id",
     "hostName": "127.0.0.1",
     "portNumber": 27017,
     "databaseName": "elemental_playground",
+    "authSource": "admin",
     "username": "username",
-    "password": ""
+    "password": "",
+    "directConnection": true
   }
 }
 ```
@@ -95,7 +108,7 @@ workdir
 
 ## Creating your first page
 
-To create a new page we start by issuing the "pages create" CLI command:
+To create a new page, we start by issuing the "pages create" CLI command:
 
 ```shell
 elemental-cms pages create -p home en
@@ -138,13 +151,13 @@ The content file will have the HTML for the page.
 
 ## Pushing a page
 
-In order to push a page we must use the "pages push" command:
+In order to push a page, we must use the "pages push" command:
 
 ```shell
 elemental-cms pages push -p home en
 ```
 
-This will save the metadata and content into the database creating a "draft" version of the page.
+This will save the metadata and content into the database, creating a "draft" version of the page.
 
 ## Publishing a page
 
