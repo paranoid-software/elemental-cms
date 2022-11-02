@@ -1,6 +1,6 @@
 # elemental CMS
 
-Elemental is a Flask + MongoDB Web CMS intended for use by Developers mainly.
+Elemental is a Flask + MongoDB Web CMS intended for use by Developers in first place.
 
 The main interaction with the tool takes place through its CLI:
 
@@ -10,7 +10,7 @@ elemental-cms
 
 ## Work in progress
 
-- <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Documentation</a>
+- <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Official Documentation</a>
 - Media files management module test clasess.
 - Static files management module test clasess.
 - Pages management module review and refactor.
