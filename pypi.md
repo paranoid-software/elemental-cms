@@ -18,4 +18,10 @@ pip install elemental-cms
 
 This will install all the dependencies required for elemental-cms to work, like pymongo, flask, flask-babel, etc.
 
+Running elemental-cms command for the first time:
+
+![Running CLI](https://github.com/paranoid-software/elemental-cms/blob/develop/.docs-assets/run-elemental.gif?raw=true)
+
+## Documentation
+
 More details about the tool can be found [here](https://paranoid.software/en/elemental-cms/docs) on the official documentation portal.
