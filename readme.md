@@ -1,12 +1,12 @@
 # elemental CMS
 
-Elemental is a Flask + MongoDB Web CMS intended for use by Developers in first place.
+Elemental is a Flask + MongoDB Web CMS intended for use by Developers.
 
-The main interaction with the tool takes place through its CLI:
+Our main goal is to allow developers to create and mantain web portals or web applications using theirs preferred programming IDE like VSCode, PyCharm, Visual Studio, etc.
 
-```shell
-elemental-cms
-```
+The main interaction with the tool takes place through its CLI, a self documented command line tool called "elemental-cms" which help us to perform deployment tasks directly from the terminal.
+
+It relays on MongoDB to store the metadata, pages content, snippets content, dependencies information, and user sessions data.
 
 ## Work in progress
 
