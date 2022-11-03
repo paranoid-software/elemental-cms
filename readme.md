@@ -19,7 +19,6 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## To Do
 
-- Testing on Windows OS environment
 - Resources names validation
 - Configurations schema review
 - Test coverage review
@@ -27,7 +26,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 - Support for detailed comparison between local and remote resources versions
 - Support for extra options on MongoDB connection
 
-## Setup
+## Setup <a id="setup">#</a>
 
 Once we have our project folder created and our virtual environment in place, we proceed to install Elemental CMS using pip.
 
@@ -70,30 +69,30 @@ Before we can issue the "init" command, we have to create a config file inside a
   },
   "cmsDbContext": {
     "id": "your-id",
-    "hostName": "127.0.0.1",
+    "hostName": "your-host-name",
     "portNumber": 27017,
     "databaseName": "elemental_playground",
     "authSource": "admin",
-    "username": "username",
-    "password": "",
+    "username": "your-username",
+    "password": "your-pwd",
     "directConnection": true
   }
 }
 ```
 
-After we create the config file under the name for example default.json, we can issue the "init" command as shown below: 
+After we create the config file under the name for example local.cli.json, we can issue the "init" command as shown below: 
 
 ```shell
-elemental-cms init -c settings/default.json
+elemental-cms init -c settings/local.cli.json
 ```
 
-Executing this command will create and update our .elemental metadata file setting the "configFilePath" property to "settings/default.json", and it will update the folder structure which will ends looking like this:
+Executing this command will create and update our .elemental metadata file setting the "configFilePath" property to "settings/local.cli.json", and it will update the folder structure which will ends looking like this:
 
 ```lang-none
 workdir
 └───media    
 └───settings
-    └───default.json
+    └───local.cli.json
 └───static
     └───app
 └───templates
@@ -105,6 +104,8 @@ workdir
     └───snippets
 └───.elemental
 ```
+
+> Be aware of that in Windows OS using Visual Studio 2019 after running the init command (and any other command that modify the folders and files structure), the created files and folders will not be added to the project automaticaly.
 
 ## Creating your first page
 
@@ -183,7 +184,7 @@ from flask import Flask
 
 www = Flask(__name__, template_folder='templates', static_folder='static')
 
-CONFIG_FILE_NAME = os.environ.get('CONFIG_FILE_NAME', 'settings/default.json')
+CONFIG_FILE_NAME = os.environ.get('CONFIG_FILE_NAME', 'settings/local.clis.json')
 
 with open(CONFIG_FILE_NAME) as config_file:
     settings = json.load(config_file)
@@ -197,3 +198,30 @@ Elemental(www, elemental_context)
 if __name__ == '__main__':
     www.run(host='0.0.0.0', port=8000)
 ```
+
+## Windows OS + Visual Studio 2019
+
+In Visual Studio 2019 we have some minor challenges to get started due to "problems" related with the operative system security policies more than with the tool.
+
+- We start by creating a Python project and adding a virtual environment
+- Then visual studio offers developer terminals in at least 2 flavors:
+  - **Developer PowerShell** where the environment do not get activated by default, so we must activate it by running the command:
+
+```shell
+.\.venv\Scripts\Activate.ps1
+```
+
+> Depending on your security policies this command will or will not ork. When it does not work it will show an error telling you something like: "Activate.ps1 cannot be loaded because running scripts is disabled on
+this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170."
+
+> To overcome this situation we must enable running scripts at least to the current user, following the official Microsoft documentation.
+
+  - **Developer Command Promt** were the environment do not get activated by default, so we must activate it by running the command:
+
+```shell
+.venv\Scripts\activate
+```
+
+> In both cases we assume you create the virtual environment under the name **.venv**
+
+Resolving this minor setbacks we can go back to the <a href="#setup">Setup</a> step and follow the getting started guide normaly.
