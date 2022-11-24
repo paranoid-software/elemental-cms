@@ -148,7 +148,7 @@ def get_styles(deps):
         if 'http' in dep['url']:
             styles.append(f'<link rel="stylesheet" type="text/css" href="{dep["url"]}" {" ".join(props)}>')
             continue
-        href = f'{current_app.config["STATIC_URL"]}/{current_app.config["APP_NAME"]}/{dep["url"]}'
+        href = f'{current_app.config["STATIC_URL"]}/{dep["url"]}'
         styles.append(f'<link rel="stylesheet" type="text/css" href="{href}" {" ".join(props)}>')
     return styles
 
@@ -164,6 +164,6 @@ def get_scripts(deps):
         if dep['url'].startswith('http'):
             scripts.append(f'<script src="{dep["url"]}" type="{dep["type"]}" {" ".join(props)}></script>')
             continue
-        src = f'{current_app.config["STATIC_URL"]}/{current_app.config["APP_NAME"]}/{dep["url"]}'
+        src = f'{current_app.config["STATIC_URL"]}/{dep["url"]}'
         scripts.append(f'<script src="{src}" type="{dep["type"]}" {" ".join(props)}></script>')
     return scripts

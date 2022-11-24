@@ -106,7 +106,6 @@ def init(config_filepath):
 
     for path in [context.cms_core_context.MEDIA_FOLDER,
                  context.cms_core_context.STATIC_FOLDER,
-                 os.path.join(context.cms_core_context.STATIC_FOLDER, context.cms_core_context.APP_NAME),
                  'templates',
                  'translations',
                  context.cms_core_context.GLOBAL_DEPS_FOLDER.replace('/', os.path.sep),

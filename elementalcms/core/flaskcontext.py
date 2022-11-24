@@ -11,7 +11,6 @@ class FlaskContext(object):
         self.LANGUAGES = settings.get('LANGUAGES', ['en', 'es'])
         self.DEFAULT_LANGUAGE = settings.get('DEFAULT_LANGUAGE', 'es')
         self.LANGUAGE_MODE = settings.get('LANGUAGE_MODE', 'multi')
-        self.APP_NAME = settings.get('APP_NAME', 'app')
         self.STATIC_FOLDER = settings.get('STATIC_FOLDER', 'static').strip() or 'static'
         self.MEDIA_FOLDER = settings.get('MEDIA_FOLDER', 'media').strip() or 'media'
         self.STATIC_BUCKET = settings.get('STATIC_BUCKET', '').strip() or None
