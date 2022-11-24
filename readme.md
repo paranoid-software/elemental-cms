@@ -53,7 +53,6 @@ Before we can issue the "init" command, we have to create a config file inside a
     ],
     "DEFAULT_LANGUAGE": "en",
     "LANGUAGE_MODE": "multi",
-    "APP_NAME": "app",
     "STATIC_FOLDER": "static",
     "MEDIA_FOLDER": "media",
     "STATIC_URL": "/static",
