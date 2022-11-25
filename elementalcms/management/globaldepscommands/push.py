@@ -25,7 +25,7 @@ class Push:
                 for file in f:
                     if '.json' not in file:
                         continue
-                    deps_tuples.append((file.split('.')[0], r.split('/')[-1].replace('_', '/')))
+                    deps_tuples.append((file.split('.json')[0], r.split('/')[-1].replace('_', '/')))
             if len(deps_tuples) == 0:
                 click.echo('There are no global dependencies to push.')
                 return

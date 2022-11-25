@@ -25,7 +25,7 @@ class Push:
                 for file in f:
                     if '.json' not in file:
                         continue
-                    snippets_tuples.append((file.split('.')[0]))
+                    snippets_tuples.append((file.split('.json')[0]))
             if len(snippets_tuples) == 0:
                 click.echo('There are no snippets to push.')
                 return
