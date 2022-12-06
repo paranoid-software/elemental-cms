@@ -15,7 +15,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.18"
+__version__ = "1.1.19"
 
 
 class Elemental:
@@ -139,10 +139,18 @@ class Elemental:
         @app.context_processor
         def render_snippet_processor():
             def render_snippet(name, page_spec):
-                get_me_result = GetMe(context.cms_db_context).execute(name)
-                if get_me_result.is_failure():
-                    raise Exception(f'There are no snippets under the name {name}')
-                content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}', page=page_spec)
+                if context.cms_core_context.DESIGN_MODE_ENABLED:
+                    snippet_content_filename = context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.html'
+                    snippet_spec_filename = context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.json'
+                    if not os.path.exists(snippet_content_filename) or not os.path.exists(snippet_spec_filename):
+                        raise Exception(f'There are no local snippets under the name {name}')
+                    with open(context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.html') as f:
+                        content = render_template_string(f'<!--{name}-->\n{f.read()}', page=page_spec)
+                else:
+                    get_me_result = GetMe(context.cms_db_context).execute(name)
+                    if get_me_result.is_failure():
+                        raise Exception(f'There are no snippets under the name {name}')
+                    content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}', page=page_spec)
                 return Markup(content)
             return dict(render_snippet=render_snippet)
 
