@@ -62,8 +62,8 @@ def index(lang_code: str = None):
         lang_code_fallback = result.value()[lang_code].get('languageRedirectionCode', None)
 
         if lang_code_fallback is not None and lang_code_fallback in result.value():
-            return redirect(request.full_path.replace(lang_code,
-                                                      lang_code_fallback))
+            return redirect(request.full_path.replace(f'/{lang_code}/',
+                                                      f'/{lang_code_fallback}/'))
 
         if 'langCode' not in session or session['langCode'] != lang_code:
             session['langCode'] = lang_code
@@ -94,8 +94,8 @@ def render(slug: str, lang_code: str = None):
         lang_code_fallback = result.value()[lang_code].get('languageRedirectionCode', None)
 
         if lang_code_fallback is not None and lang_code_fallback in result.value():
-            return redirect(request.full_path.replace(lang_code,
-                                                      lang_code_fallback))
+            return redirect(request.full_path.replace(f'/{lang_code}/',
+                                                      f'/{lang_code_fallback}/'))
 
         if 'langCode' not in session or session['langCode'] != lang_code:
             session['langCode'] = lang_code

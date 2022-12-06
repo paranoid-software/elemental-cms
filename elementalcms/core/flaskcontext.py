@@ -24,3 +24,4 @@ class FlaskContext(object):
         self.USER_IDENTITY_SESSION_KEY = settings.get('USER_IDENTITY_SESSION_KEY', 'userIdentity')
         self.SESSION_STORAGE_ENABLED = settings.get('SESSION_STORAGE_ENABLED', True)
         self.SESSION_TIMEOUT_IN_MINUTES = settings.get('SESSION_TIMEOUT_IN_MINUTES', 60)
+        self.DESIGN_MODE_ENABLED = settings.get('DESIGN_MODE_ENABLED', False)
