@@ -15,7 +15,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.19"
+__version__ = "1.1.20"
 
 
 class Elemental:
@@ -93,7 +93,7 @@ class Elemental:
                 path_parts = path.strip('?').split('/')
                 index = path_parts.index('static')
                 local_path = pathlib.Path(__file__).resolve().parent
-                return send_from_directory(local_path, '/'.join(path_parts[index:]), cache_timeout=300)
+                return send_from_directory(local_path, '/'.join(path_parts[index:]))
 
             if request.full_path == '/?':
                 if context.cms_core_context.LANGUAGE_MODE == 'single':

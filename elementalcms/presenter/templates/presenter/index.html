@@ -1,5 +1,6 @@
 {% extends page.base_template %}
 {% block styles %}
+    <link rel="stylesheet" type="text/css" href="{{ elemental_url_for_static('presenter/styles/default.css') }}" >
     {{ page.styles | safe }}
 {% endblock %}
 {% block scripts %}
@@ -7,4 +8,7 @@
 {% endblock %}
 {% block content %}
     {{ page.content | safe }}
+    {% if is_design_mode_enabled %}
+        <div class="c-design-mode-enabled-label">DESIGN MODE ENABLED</div>
+    {% endif %}
 {% endblock %}
