@@ -52,7 +52,13 @@ def index(lang_code: str = None):
     if lang_code is None and lang_mode == 'single':
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
-    result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(draft=(draft == '1'))
+    design_mode_opts = None
+    if current_app.config['DESIGN_MODE_ENABLED']:
+        design_mode_opts = dict(pages_folder=current_app.config['PAGES_FOLDER'],
+                                languages=current_app.config['LANGUAGES'])
+
+    result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(draft=(draft == '1'),
+                                                                                  design_mode_opts=design_mode_opts)
 
     if result.is_failure():
         abort(404)
@@ -69,7 +75,8 @@ def index(lang_code: str = None):
             session['langCode'] = lang_code
 
         return render_template('presenter/index.html',
-                               page=get_page_model(result.value()[lang_code]))
+                               page=get_page_model(result.value()[lang_code]),
+                               is_design_mode_enabled=current_app.config['DESIGN_MODE_ENABLED'])
 
     abort(404)
 
@@ -84,8 +91,13 @@ def render(slug: str, lang_code: str = None):
     if lang_code is None and lang_mode == 'single':
         lang_code = session.get('langCode', current_app.config['DEFAULT_LANGUAGE'])
 
+    design_mode_opts = None
+    if current_app.config['DESIGN_MODE_ENABLED']:
+        design_mode_opts = dict(pages_folder=current_app.config['PAGES_FOLDER'],
+                                languages=current_app.config['LANGUAGES'])
+
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
-                                                                                draft=(draft == '1'))
+                                                                                design_mode_opts=design_mode_opts)
     if result.is_failure():
         abort(404)
 
@@ -101,7 +113,8 @@ def render(slug: str, lang_code: str = None):
             session['langCode'] = lang_code
 
         return render_template('presenter/index.html',
-                               page=get_page_model(result.value()[lang_code]))
+                               page=get_page_model(result.value()[lang_code]),
+                               is_design_mode_enabled=current_app.config['DESIGN_MODE_ENABLED'])
 
     abort(404)
 
