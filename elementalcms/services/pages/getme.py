@@ -28,9 +28,9 @@ class GetMe:
             languages = design_mode_opts.get('languages')
             pages_folder = design_mode_opts.get('pages_folder')
             for lang in languages:
-                with open(f'{pages_folder}/{lang}/{name}.html') as html_file:
+                with open(f'{pages_folder}/{lang}/{name.replace("/", "_")}.html') as html_file:
                     html_content = html_file.read()
-                with open(f'{pages_folder}/{lang}/{name}.json') as spec_file:
+                with open(f'{pages_folder}/{lang}/{name.replace("/", "_")}.json') as spec_file:
                     spec_content = spec_file.read()
                 spec = json.loads(spec_content)
                 spec['content'] = html_content
