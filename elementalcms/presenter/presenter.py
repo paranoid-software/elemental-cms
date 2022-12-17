@@ -55,6 +55,7 @@ def index(lang_code: str = None):
     design_mode_opts = None
     if current_app.config['DESIGN_MODE_ENABLED']:
         design_mode_opts = dict(pages_folder=current_app.config['PAGES_FOLDER'],
+                                global_deps_folder=current_app.config['GLOBAL_DEPS_FOLDER'],
                                 languages=current_app.config['LANGUAGES'])
 
     result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(draft=(draft == '1'),
@@ -94,9 +95,11 @@ def render(slug: str, lang_code: str = None):
     design_mode_opts = None
     if current_app.config['DESIGN_MODE_ENABLED']:
         design_mode_opts = dict(pages_folder=current_app.config['PAGES_FOLDER'],
+                                global_deps_folder=current_app.config['GLOBAL_DEPS_FOLDER'],
                                 languages=current_app.config['LANGUAGES'])
 
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
+                                                                                draft=(draft == '1'),
                                                                                 design_mode_opts=design_mode_opts)
     if result.is_failure():
         abort(404)

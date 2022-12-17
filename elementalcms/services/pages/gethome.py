@@ -54,7 +54,7 @@ class GetHome:
 
         pages = {}
         if add_gloabl_deps:
-            global_deps = self.get_all_global_deps()
+            global_deps = self.get_all_global_deps() if design_mode_opts is None else self.get_all_local_global_deps(design_mode_opts.get('global_deps_folder'))
             css_deps = [d for d in global_deps if d['type'] == 'text/css']
             js_deps = [d for d in global_deps if d['type'] == 'application/javascript']
             for page in result['items']:
@@ -79,3 +79,15 @@ class GetHome:
                 break
             page += 1
         return all_deps
+
+    @staticmethod
+    def get_all_local_global_deps(global_deps_folder: str):
+        js_deps = []
+        for filename in os.listdir(f'{global_deps_folder}/application_javascript/'):
+            with open(f'{global_deps_folder}/application_javascript/{filename}') as f:
+                js_deps.append(json.loads(f.read()))
+        css_deps = []
+        for filename in os.listdir(f'{global_deps_folder}/text_css/'):
+            with open(f'{global_deps_folder}/text_css/{filename}') as f:
+                css_deps.append(json.loads(f.read()))
+        return sorted(js_deps, key=lambda x: x['order']) + sorted(css_deps, key=lambda x: x['order'])
