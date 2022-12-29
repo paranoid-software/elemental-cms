@@ -70,11 +70,13 @@ class GetMe:
     @staticmethod
     def get_all_local_global_deps(global_deps_folder: str):
         js_deps = []
-        for filename in os.listdir(f'{global_deps_folder}/application_javascript/'):
-            with open(f'{global_deps_folder}/application_javascript/{filename}') as f:
-                js_deps.append(json.loads(f.read()))
+        if os.path.exists(f'{global_deps_folder}/application_javascript/'):
+            for filename in os.listdir(f'{global_deps_folder}/application_javascript/'):
+                with open(f'{global_deps_folder}/application_javascript/{filename}') as f:
+                    js_deps.append(json.loads(f.read()))
         css_deps = []
-        for filename in os.listdir(f'{global_deps_folder}/text_css/'):
-            with open(f'{global_deps_folder}/text_css/{filename}') as f:
-                css_deps.append(json.loads(f.read()))
+        if os.path.exists(f'{global_deps_folder}/text_css/'):
+            for filename in os.listdir(f'{global_deps_folder}/text_css/'):
+                with open(f'{global_deps_folder}/text_css/{filename}') as f:
+                    css_deps.append(json.loads(f.read()))
         return sorted(js_deps, key=lambda x: x['order']) + sorted(css_deps, key=lambda x: x['order'])
