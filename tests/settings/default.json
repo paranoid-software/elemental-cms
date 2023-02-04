@@ -28,10 +28,7 @@
   },
   "cmsDbContext": {
     "id": "vanilla-mongodb",
-    "hostName": "localhost",
-    "portNumber": 27017,
-    "databaseName": "",
-    "username": "root",
-    "password": "pwd"
+    "connectionString": "mongodb://root:pwd@localhost:27017/admin?directConnection=true",
+    "databaseName": ""
   }
 }

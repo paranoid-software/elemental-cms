@@ -47,7 +47,7 @@ class TestListCommandShould:
         }]
 
     def test_display_empty_repository_feedback(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -65,7 +65,7 @@ class TestListCommandShould:
                     assert_that(result.output).contains('There are no global dependencies to list.')
 
     def test_display_current_global_dependencies_list(self, default_elemental_fixture, default_settings_fixture, deps):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[

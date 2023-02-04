@@ -20,7 +20,7 @@ class TestInitCommandShould:
             assert_that(result.output).contains('settings/default.json does not exist.')
 
     def test_create_default_folder_structure(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
                                    ]) as (db_name, reader):
@@ -32,7 +32,6 @@ class TestInitCommandShould:
                     runner.invoke(cli, ['init', '-c', 'settings/default.json'])
                     [assert_that(folder).exists() for folder in ['media',
                                                                  'static',
-                                                                 os.path.join('static', 'app'),
                                                                  'templates',
                                                                  'workspace',
                                                                  os.path.join('workspace', 'global_deps'),
@@ -41,7 +40,7 @@ class TestInitCommandShould:
                                                                  '.elemental']]
 
     def test_display_success_feedback(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
                                    ]) as (db_name, reader):
