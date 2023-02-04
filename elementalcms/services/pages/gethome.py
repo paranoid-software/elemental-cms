@@ -42,9 +42,15 @@ class GetHome:
 
             items = []
             for lang in languages:
-                with open(f'{pages_folder}/{lang}/{home_filename}.html') as html_file:
+                html_filepath = f'{pages_folder}/{lang}/{home_filename}.html'
+                spec_filepath = f'{pages_folder}/{lang}/{home_filename}.json'
+                if not os.path.exists(html_filepath):
+                    continue
+                if not os.path.exists(spec_filepath):
+                    continue
+                with open(html_filepath) as html_file:
                     html_content = html_file.read()
-                with open(f'{pages_folder}/{lang}/{home_filename}.json') as spec_file:
+                with open(spec_filepath) as spec_file:
                     spec_content = spec_file.read()
                 spec = json.loads(spec_content)
                 spec['content'] = html_content
