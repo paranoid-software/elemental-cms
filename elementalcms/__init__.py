@@ -15,7 +15,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.25"
+__version__ = "1.1.26"
 
 
 class Elemental:
@@ -166,21 +166,42 @@ class Elemental:
         @app.context_processor
         def nav_tree_processor():
             def nav_tree(language: str, parent=''):
-                drafts = 'draft' in request.args
-                get_result = GetAll(context.cms_db_context).execute(drafts)
                 items = []
-                for item in [n for n in get_result.value() if n['language'] == (language or context.cms_core_context.DEFAULT_LANGUAGE)]:
-                    page_name = ''
-                    if not item['isHome']:
-                        page_name = item['name']
-                    if parent not in page_name:
-                        continue
-                    items.append({
-                        'sortKey': f'/{page_name}',
-                        'name': item.get('name'),
-                        'title': item.get('title'),
-                        'shortTitle': item.get('shortTitle')
-                    })
+                if context.cms_core_context.DESIGN_MODE_ENABLED:
+                    pages_folder = f'{context.cms_core_context.PAGES_FOLDER}/{language or context.cms_core_context.DEFAULT_LANGUAGE}'
+                    print(pages_folder)
+                    if os.path.exists(pages_folder):
+                        for filename in os.listdir(pages_folder):
+                            if not filename.endswith('.json'):
+                                continue
+                            with open(f'{pages_folder}/{filename}') as f:
+                                item = json.loads(f.read())
+                                page_name = ''
+                                if not item['isHome']:
+                                    page_name = item['name']
+                                if parent not in page_name:
+                                    continue
+                                items.append({
+                                    'sortKey': f'/{page_name}',
+                                    'name': item.get('name'),
+                                    'title': item.get('title'),
+                                    'shortTitle': item.get('shortTitle')
+                                })
+                else:
+                    drafts = 'draft' in request.args
+                    get_result = GetAll(context.cms_db_context).execute(drafts)
+                    for item in [n for n in get_result.value() if n['language'] == (language or context.cms_core_context.DEFAULT_LANGUAGE)]:
+                        page_name = ''
+                        if not item['isHome']:
+                            page_name = item['name']
+                        if parent not in page_name:
+                            continue
+                        items.append({
+                            'sortKey': f'/{page_name}',
+                            'name': item.get('name'),
+                            'title': item.get('title'),
+                            'shortTitle': item.get('shortTitle')
+                        })
                 items.sort(key=lambda i: i['sortKey'])
                 return items
 
