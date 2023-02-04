@@ -103,7 +103,7 @@ class TestPushCommandShould:
                 assert_that(result.output).contains('There is no spec file for my-missing-css-dep (text/css).')
 
     def test_display_1_invalid_spec_feedback_message(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -120,7 +120,7 @@ class TestPushCommandShould:
                     assert_that(re.findall('Invalid spec', result.output)).is_length(1)
 
     def test_display_1_missing_id_feedback_message(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -137,7 +137,7 @@ class TestPushCommandShould:
                     assert_that(re.findall('Missing spec _id', result.output)).is_length(1)
 
     def test_display_1_invalid_id_feedback_message(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -154,7 +154,7 @@ class TestPushCommandShould:
                     assert_that(re.findall('Invalid spec _id', result.output)).is_length(1)
 
     def test_display_1_missing_name_feedback_message(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -171,7 +171,7 @@ class TestPushCommandShould:
                     assert_that(re.findall('Missing spec name', result.output)).is_length(1)
 
     def test_display_1_invalid_name_feedback_message(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -188,7 +188,7 @@ class TestPushCommandShould:
                     assert_that(re.findall('Invalid spec name', result.output)).is_length(1)
 
     def test_display_1_success_feedback_message(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -205,7 +205,7 @@ class TestPushCommandShould:
                     assert_that(re.findall('pushed successfully', result.output)).is_length(1)
 
     def test_create_backup_file_for_pushed_dependency(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',

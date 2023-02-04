@@ -37,7 +37,7 @@ class TestPullCommandShould:
         }]
 
     def test_display_2_unsuccessful_pull_operations_feedback_message(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
                                    ]) as (db_name, reader):
@@ -53,7 +53,7 @@ class TestPullCommandShould:
                     assert_that(re.findall('does not exist', result.output)).is_length(2)
 
     def test_create_spec_file_for_pulled_dependencies(self, deps, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
@@ -74,7 +74,7 @@ class TestPullCommandShould:
                     assert_that(f'{folder_path}/{_type.replace("/", "_")}/{name}.json').exists()
 
     def test_create_backup_file_for_pulled_dependency(self, default_elemental_fixture, default_settings_fixture, deps):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',
@@ -106,7 +106,7 @@ class TestPullCommandShould:
                     assert_that(result.return_value[0]).exists()
 
     def test_display_1_successful_pull_operation_feedback_message(self, default_elemental_fixture, default_settings_fixture, deps):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='global_deps',

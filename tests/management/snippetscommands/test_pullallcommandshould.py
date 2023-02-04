@@ -34,7 +34,7 @@ class TestPullAllCommandShould:
         }]
 
     def test_display_empty_repository_feedback(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -53,7 +53,7 @@ class TestPullAllCommandShould:
                     assert_that(result.output).contains('There are no snippets to pull.')
 
     def test_create_spec_for_pulled_snippets(self, default_elemental_fixture, default_settings_fixture, snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[

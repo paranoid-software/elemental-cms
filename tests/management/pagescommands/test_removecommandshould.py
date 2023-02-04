@@ -94,7 +94,7 @@ class TestRemoveCommandShould:
         }]
 
     def test_fail_when_draft_version_is_missing(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -110,7 +110,7 @@ class TestRemoveCommandShould:
                     assert_that(result.output).contains('home (en) does not have a draft version.')
 
     def test_fail_when_page_is_already_released(self, default_elemental_fixture, default_settings_fixture, pages):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -128,7 +128,7 @@ class TestRemoveCommandShould:
                     assert_that(result.output).contains('home (en) has to be unpublished first, in order to be removed.')
 
     def test_display_success_feedback_message(self, default_elemental_fixture, default_settings_fixture, drafts):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -146,7 +146,7 @@ class TestRemoveCommandShould:
                     assert_that(result.output).contains('home (en) removed successfully.')
 
     def test_remove_page_from_repository(self, default_elemental_fixture, default_settings_fixture, drafts):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -165,7 +165,7 @@ class TestRemoveCommandShould:
                     assert_that(reader.find_one('drafts', {'_id': drafts[0].get('_id')})).is_none()
 
     def test_create_backup_file_for_removed_page(self, default_elemental_fixture, default_settings_fixture, drafts):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='drafts',

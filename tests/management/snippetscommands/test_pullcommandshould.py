@@ -36,7 +36,7 @@ class TestPullCommandShould:
         }]
 
     def test_display_2_unsuccessful_pull_operations_feedback_message(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
                                    ]) as (db_name, reader):
@@ -52,7 +52,7 @@ class TestPullCommandShould:
                     assert_that(re.findall('does not exist', result.output)).is_length(2)
 
     def test_create_spec_for_pulled_snippets(self, default_elemental_fixture, default_settings_fixture, snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -73,7 +73,7 @@ class TestPullCommandShould:
                     [assert_that(f'{folder_path}/{snippet["name"]}.json').exists() for snippet in snippets]
 
     def test_create_backup_file_for_pulled_snippet(self, default_elemental_fixture, default_settings_fixture, snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='snippets',
@@ -104,7 +104,7 @@ class TestPullCommandShould:
                                                                   default_elemental_fixture,
                                                                   default_settings_fixture,
                                                                   snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='snippets',

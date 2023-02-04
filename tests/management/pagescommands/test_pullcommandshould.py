@@ -54,7 +54,7 @@ class TestPullCommandShould:
         }]
 
     def test_create_spec_for_pulled_pages(self, default_elemental_fixture, default_settings_fixture, pages):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -75,7 +75,7 @@ class TestPullCommandShould:
                     [assert_that(f'{folder_path}/{page["language"]}/{page["name"]}.json').exists() for page in pages[:2]]
 
     def test_create_backup_file_for_pulled_page(self, default_elemental_fixture, default_settings_fixture, pages):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='pages',
@@ -107,7 +107,7 @@ class TestPullCommandShould:
                                                                   default_elemental_fixture,
                                                                   default_settings_fixture,
                                                                   pages):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='pages',

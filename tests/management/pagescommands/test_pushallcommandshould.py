@@ -51,7 +51,7 @@ class TestPushAllCommandShould:
         }]
 
     def test_display_empty_folder_feedback(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -67,7 +67,7 @@ class TestPushAllCommandShould:
                     assert_that(result.output).contains('There are no pages to push.')
 
     def test_push_current_specs(self, default_elemental_fixture, default_settings_fixture, specs):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])

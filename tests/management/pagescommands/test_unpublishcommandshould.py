@@ -70,7 +70,7 @@ class TestUnpublishCommandShould:
         }]
 
     def test_fail_when_page_is_missing(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[])
@@ -86,7 +86,7 @@ class TestUnpublishCommandShould:
                     assert_that(result.output).contains('home (en) is not published yet.')
 
     def test_display_success_feedback_message(self, default_elemental_fixture, default_settings_fixture, pages):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -108,7 +108,7 @@ class TestUnpublishCommandShould:
                                                      default_settings_fixture,
                                                      drafts,
                                                      pages):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData('drafts', drafts),

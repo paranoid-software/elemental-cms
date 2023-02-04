@@ -34,7 +34,7 @@ class TestRemoveCommandShould:
         }]
 
     def test_fail_when_snippet_does_not_exist(self, default_elemental_fixture, default_settings_fixture):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[])
                                    ]) as (db_name, reader):
@@ -52,7 +52,7 @@ class TestRemoveCommandShould:
                     assert_that(result.output).contains('Snippet nav-bar does not exist')
 
     def test_display_success_feedback_message(self, default_elemental_fixture, default_settings_fixture, snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -72,7 +72,7 @@ class TestRemoveCommandShould:
                     assert_that(result.output).contains('Snippet nav-bar removed successfully.')
 
     def test_remove_snippet_from_repository(self, default_elemental_fixture, default_settings_fixture, snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental',
                                                     data=[
@@ -91,7 +91,7 @@ class TestRemoveCommandShould:
                     assert_that(reader.find_one('snippets', {'_id': snippets[0].get('_id')})).is_none()
 
     def test_create_backup_file_for_removed_snippet(self, default_elemental_fixture, default_settings_fixture, snippets):
-        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).get_connection_string(),
+        with EphemeralMongoContext(MongoDbContext(default_settings_fixture['cmsDbContext']).connection_string,
                                    initial_state=[
                                        MongoDbState(db_name='elemental', data=[
                                            MongoDbStateData(coll_name='snippets',
