@@ -2,7 +2,6 @@ import json
 import os
 import pathlib
 from typing import Callable
-from urllib.parse import quote
 
 from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for
 from flask_babel import Babel
@@ -17,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.28"
+__version__ = "1.1.29"
 
 
 class Elemental:
@@ -205,7 +204,7 @@ class Elemental:
                             'title': item.get('title'),
                             'shortTitle': item.get('shortTitle')
                         })
-                items.sort(key=lambda i: (i['sortKey'], i['subSortKey']))
+                items.sort(key=lambda elem: (elem['sortKey'], elem['subSortKey']))
 
                 tree_meta = {}
                 for item in items:
@@ -214,7 +213,7 @@ class Elemental:
                     for i, part in enumerate(parts):
                         if part not in sub:
                             if i == len(parts) - 1:
-                                sub[part] = {'meta': item }
+                                sub[part] = {'_meta': item}
                             else:
                                 sub[part] = {}
                         sub = sub[part]
