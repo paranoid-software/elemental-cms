@@ -2,6 +2,7 @@ import json
 import os
 import pathlib
 from typing import Callable
+from urllib.parse import quote
 
 from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for
 from flask_babel import Babel
@@ -16,7 +17,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.27"
+__version__ = "1.1.28"
 
 
 class Elemental:
@@ -166,11 +167,10 @@ class Elemental:
 
         @app.context_processor
         def nav_tree_processor():
-            def nav_tree(language: str, parent=''):
+            def nav_tree(language: str, root=''):
                 items = []
                 if context.cms_core_context.DESIGN_MODE_ENABLED:
                     pages_folder = f'{context.cms_core_context.PAGES_FOLDER}/{language or context.cms_core_context.DEFAULT_LANGUAGE}'
-                    print(pages_folder)
                     if os.path.exists(pages_folder):
                         for filename in os.listdir(pages_folder):
                             if not filename.endswith('.json'):
@@ -180,10 +180,11 @@ class Elemental:
                                 page_name = ''
                                 if not item['isHome']:
                                     page_name = item['name']
-                                if parent not in page_name:
+                                if root not in page_name:
                                     continue
                                 items.append({
-                                    'sortKey': f'/{page_name}',
+                                    'sortKey': '/'.join(page_name.split("/")[:-1]),
+                                    'subSortKey': item.get('navTreePosition', 0),
                                     'name': item.get('name'),
                                     'title': item.get('title'),
                                     'shortTitle': item.get('shortTitle')
@@ -195,15 +196,29 @@ class Elemental:
                         page_name = ''
                         if not item['isHome']:
                             page_name = item['name']
-                        if parent not in page_name:
+                        if root not in page_name:
                             continue
                         items.append({
-                            'sortKey': f'/{page_name}',
+                            'sortKey': '/'.join(page_name.split("/")[:-1]),
+                            'subSortKey': item.get('navTreePosition', 0),
                             'name': item.get('name'),
                             'title': item.get('title'),
                             'shortTitle': item.get('shortTitle')
                         })
-                items.sort(key=lambda i: i['sortKey'])
-                return items
+                items.sort(key=lambda i: (i['sortKey'], i['subSortKey']))
+
+                tree_meta = {}
+                for item in items:
+                    parts = item.get('name').split('/')
+                    sub = tree_meta
+                    for i, part in enumerate(parts):
+                        if part not in sub:
+                            if i == len(parts) - 1:
+                                sub[part] = {'meta': item }
+                            else:
+                                sub[part] = {}
+                        sub = sub[part]
+
+                return tree_meta
 
             return dict(nav_tree=nav_tree)
