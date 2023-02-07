@@ -16,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.29"
+__version__ = "1.1.30"
 
 
 class Elemental:
@@ -88,6 +88,7 @@ class Elemental:
 
         @app.before_request
         def before_request():
+
             path = request.full_path
 
             if 'static/admin' in path or 'static/presenter' in path:
@@ -95,6 +96,14 @@ class Elemental:
                 index = path_parts.index('static')
                 local_path = pathlib.Path(__file__).resolve().parent
                 return send_from_directory(local_path, '/'.join(path_parts[index:]))
+
+            if path.startswith('/media/'):
+                if context.cms_core_context.MEDIA_URL.startswith('http'):
+                    return redirect(f'{context.cms_core_context.MEDIA_URL}/{request.full_path.replace("/media/", "")}')
+
+            if path.startswith('/static/'):
+                if context.cms_core_context.STATIC_URL.startswith('http'):
+                    return redirect(f'{context.cms_core_context.STATIC_URL}/{request.full_path.replace("/static/", "")}')
 
             if request.full_path == '/?':
                 if context.cms_core_context.LANGUAGE_MODE == 'single':

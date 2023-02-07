@@ -161,7 +161,7 @@ def get_styles(deps):
         for key in dep.get('meta', {}).keys():
             props.append(f'{key}=\"{dep["meta"][key]}\"')
 
-        if 'http' in dep['url']:
+        if dep['url'].startswith('http'):
             styles.append(f'<link rel="stylesheet" type="text/css" href="{dep["url"]}" {" ".join(props)}>')
             continue
         href = f'{current_app.config["STATIC_URL"]}/{dep["url"]}'
