@@ -43,7 +43,7 @@ class Push:
             if not os.path.exists(content_filepath):
                 click.echo(f'There is no content file for {name} snippet.')
                 return
-            with open(spec_filepath) as spec_file:
+            with open(spec_filepath, encoding='utf-8') as spec_file:
                 try:
                     snippet = json_util.loads(spec_file.read())
                 except Exception as e:
@@ -61,7 +61,7 @@ class Push:
                 if snippet['name'] != name:
                     click.echo(f'Invalid spec name for: {name}.')
                     return
-                with open(content_filepath) as content_file:
+                with open(content_filepath, encoding='utf-8') as content_file:
                     snippet['content'] = content_file.read()
                     _id = snippet['_id']
                     backup_filepaths = self.build_backups(_id)

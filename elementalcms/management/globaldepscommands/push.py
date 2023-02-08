@@ -48,7 +48,7 @@ class Push:
             if not os.path.exists(spec_filepath):
                 click.echo(f'There is no spec file for {name} ({_type}).')
                 continue
-            with open(spec_filepath) as spec_file:
+            with open(spec_filepath, encoding='utf-8') as spec_file:
                 try:
                     dep = json_util.loads(spec_file.read())
                 except Exception as e:

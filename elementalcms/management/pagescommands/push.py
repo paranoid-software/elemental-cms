@@ -49,7 +49,7 @@ class Push:
             if not os.path.exists(content_filepath):
                 click.echo(f'There is no content file for page {name} ({lang})')
                 continue
-            with open(spec_filepath) as spec_file:
+            with open(spec_filepath, encoding='utf-8') as spec_file:
                 try:
                     page = json_util.loads(spec_file.read())
                 except Exception as e:
@@ -67,7 +67,7 @@ class Push:
                 if page['name'] != name:
                     click.echo(f'Invalid spec name for: {name} ({lang})')
                     continue
-                with open(content_filepath) as content_file:
+                with open(content_filepath, encoding='utf-8') as content_file:
                     _id = page['_id']
                     page['content'] = content_file.read()
                     backup_filepaths = self.build_draft_backups(_id)
