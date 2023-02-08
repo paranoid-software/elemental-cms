@@ -35,9 +35,9 @@ class GetMe:
                     continue
                 if not os.path.exists(spec_filepath):
                     continue
-                with open(html_filepath) as html_file:
+                with open(html_filepath, encoding='utf-8') as html_file:
                     html_content = html_file.read()
-                with open(spec_filepath) as spec_file:
+                with open(spec_filepath, encoding='utf-8') as spec_file:
                     spec_content = spec_file.read()
                 spec = json.loads(spec_content)
                 spec['content'] = html_content
@@ -78,11 +78,11 @@ class GetMe:
         js_deps = []
         if os.path.exists(f'{global_deps_folder}/application_javascript/'):
             for filename in os.listdir(f'{global_deps_folder}/application_javascript/'):
-                with open(f'{global_deps_folder}/application_javascript/{filename}') as f:
+                with open(f'{global_deps_folder}/application_javascript/{filename}', encoding='utf-8') as f:
                     js_deps.append(json.loads(f.read()))
         css_deps = []
         if os.path.exists(f'{global_deps_folder}/text_css/'):
             for filename in os.listdir(f'{global_deps_folder}/text_css/'):
-                with open(f'{global_deps_folder}/text_css/{filename}') as f:
+                with open(f'{global_deps_folder}/text_css/{filename}', encoding='utf-8') as f:
                     css_deps.append(json.loads(f.read()))
         return sorted(js_deps, key=lambda x: x['order']) + sorted(css_deps, key=lambda x: x['order'])

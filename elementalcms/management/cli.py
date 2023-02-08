@@ -28,7 +28,7 @@ def cli(ctx: Context):
         click.echo('It appears the CMS is not initialized, please run init command.')
         exit(1)
 
-    with open('.elemental') as init_file_content:
+    with open('.elemental', encoding='utf-8') as init_file_content:
         init_metadata = json.load(init_file_content)
         if 'configFilePath' not in init_metadata:
             click.echo('Initialization meta appears to be wrong, please run init command again.')
@@ -40,7 +40,7 @@ def cli(ctx: Context):
         click.echo(f'Init meta reference {config_filepath} file which does not exist.')
         exit(1)
 
-    with open(config_filepath) as config_file_content:
+    with open(config_filepath, encoding='utf-8') as config_file_content:
         config_file = json.load(config_file_content)
 
         if 'cmsCoreContext' not in config_file:
@@ -79,7 +79,7 @@ def init(config_filepath):
         'configFilePath': config_filepath
     }
 
-    with open(config_filepath) as config_file_content:
+    with open(config_filepath, encoding='utf-8') as config_file_content:
         config_file = json.load(config_file_content)
 
         if 'cmsCoreContext' not in config_file:

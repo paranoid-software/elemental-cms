@@ -16,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.30"
+__version__ = "1.1.31"
 
 
 class Elemental:
@@ -154,7 +154,7 @@ class Elemental:
                     snippet_spec_filename = context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.json'
                     if not os.path.exists(snippet_content_filename) or not os.path.exists(snippet_spec_filename):
                         raise Exception(f'There are no local snippets under the name {name}')
-                    with open(context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.html') as f:
+                    with open(context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.html', encoding='utf-8') as f:
                         content = render_template_string(f'<!--{name}-->\n{f.read()}', page=page_spec)
                 else:
                     get_me_result = GetMe(context.cms_db_context).execute(name)
@@ -183,7 +183,7 @@ class Elemental:
                         for filename in os.listdir(pages_folder):
                             if not filename.endswith('.json'):
                                 continue
-                            with open(f'{pages_folder}/{filename}') as f:
+                            with open(f'{pages_folder}/{filename}', encoding='utf-8') as f:
                                 item = json.loads(f.read())
                                 page_name = ''
                                 if not item['isHome']:
