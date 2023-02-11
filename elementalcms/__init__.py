@@ -16,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.31"
+__version__ = "1.1.32"
 
 
 class Elemental:
@@ -226,7 +226,12 @@ class Elemental:
                             else:
                                 sub[part] = {}
                         sub = sub[part]
+                if root == '':
+                    return tree_meta
 
-                return tree_meta
+                partial_tree_meta = tree_meta.copy()
+                for key in root.split('/')[:-1]:
+                    partial_tree_meta = partial_tree_meta[key]
+                return partial_tree_meta
 
             return dict(nav_tree=nav_tree)
