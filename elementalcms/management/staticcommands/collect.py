@@ -48,7 +48,15 @@ class Collect:
                 blob = bucket.blob(destination_blob_name)
                 blob.cache_control = 'private, max-age=180'
                 try:
-                    blob.upload_from_filename(source_file_name)
+                    if file.endswith('.css') or file.endswith('.js'):
+                        blob.content_encoding = 'gzip'
+                        import gzip
+                        with open(source_file_name, "r") as uncompressed:
+                            uncompressed_content = uncompressed.read()
+                        compresed = gzip.compress(uncompressed_content.encode())
+                        blob.upload_from_string(compresed, content_type="text/css" if '.css' in file else 'application/javascript')
+                    else:
+                        blob.upload_from_filename(source_file_name)
                 except Exception as e:
                     print(e)
                 click.echo(f'Uploading {source_file_name} to {destination_blob_name}')
@@ -64,5 +72,13 @@ class Collect:
             destination_blob_name = file.replace(source_folder, '', 1).lstrip('/')
             blob = bucket.blob(destination_blob_name)
             blob.cache_control = 'private, max-age=180'
-            blob.upload_from_filename(file)
+            if file.endswith('.css') or file.endswith('.js'):
+                blob.content_encoding = 'gzip'
+                import gzip
+                with open(file, "r") as uncompressed:
+                    uncompressed_content = uncompressed.read()
+                compresed = gzip.compress(uncompressed_content.encode())
+                blob.upload_from_string(compresed, content_type="text/css" if '.css' in file else 'application/javascript')
+            else:
+                blob.upload_from_filename(file)
             click.echo(f'Uploading {file} to {destination_blob_name}')
