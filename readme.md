@@ -53,17 +53,19 @@ Before we can issue the "init" command, we have to create a config file inside a
     "LANGUAGE_MODE": "multi",
     "STATIC_FOLDER": "static",
     "MEDIA_FOLDER": "media",
-    "STATIC_URL": "/static",
-    "MEDIA_URL": "/media",
+    "STATIC_URL": "https://storage.googleapis.com/static-files-bucket",
+    "MEDIA_URL": "https://storage.googleapis.com/media-files-bucket",
     "STATIC_BUCKET": "static-files-bucket",
     "MEDIA_BUCKET": "media-files-bucket",
     "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
     "PAGES_FOLDER": "workspace/pages",
     "SNIPPETS_FOLDER": "workspace/snippets",
+    "GOOGLE_SERVICE_ACCOUNT_INFO": {
+      "type": "service_account",
+    },
     "USER_IDENTITY_SESSION_KEY": "userIdentity",
     "SESSION_STORAGE_ENABLED": true,
-    "SESSION_TIMEOUT_IN_MINUTES": 360,
-    "DESIGN_MODE_ENABLED": false
+    "SESSION_TIMEOUT_IN_MINUTES": 360
   },
   "cmsDbContext": {
     "id": "your-id",
@@ -87,7 +89,6 @@ workdir
 └───settings
     └───local.cli.json
 └───static
-    └───app
 └───templates
     └───base.html
 └───translations
@@ -177,9 +178,9 @@ from flask import Flask
 
 www = Flask(__name__, template_folder='templates', static_folder='static')
 
-CONFIG_FILE_NAME = os.environ.get('CONFIG_FILEPATH', 'settings/local.cli.json')
+CONFIG_FILEPATH = os.environ.get('CONFIG_FILEPATH', 'settings/local.cli.json')
 
-with open(CONFIG_FILE_NAME) as config_file:
+with open(CONFIG_FILEPATH) as config_file:
     settings = json.load(config_file)
     cms_core_context = FlaskContext(settings['cmsCoreContext'])
     cms_db_context = MongoDbContext(settings['cmsDbContext'])
@@ -191,6 +192,45 @@ Elemental(www, elemental_context)
 if __name__ == '__main__':
     www.run(host='0.0.0.0', port=8000)
 ```
+
+Note that in order to run the app locally we need another setting file with some little modifications. Like the one shown below:
+
+```json
+{
+  "cmsCoreContext": {
+    "DEBUG": true,
+    "ENV": "development",
+    "SECRET_KEY": "the-secret",
+    "SITE_NAME": "Elemental CMS",
+    "COMPANY": "Your company name",
+    "CANONICAL_URL": "https://elemental.cms",
+    "LANGUAGES": [
+      "en",
+      "es"
+    ],
+    "DEFAULT_LANGUAGE": "en",
+    "LANGUAGE_MODE": "multi",
+    "STATIC_FOLDER": "static",
+    "MEDIA_FOLDER": "media",
+    "STATIC_URL": "/static",
+    "MEDIA_URL": "/media",
+    "GLOBAL_DEPS_FOLDER": "workspace/global_deps",
+    "PAGES_FOLDER": "workspace/pages",
+    "SNIPPETS_FOLDER": "workspace/snippets",
+    "USER_IDENTITY_SESSION_KEY": "userIdentity",
+    "SESSION_STORAGE_ENABLED": true,
+    "SESSION_TIMEOUT_IN_MINUTES": 360,
+    "DESIGN_MODE_ENABLED": true
+  },
+  "cmsDbContext": {
+    "id": "your-id",
+    "connectionString": "mongodb://your-username:your-pwd@your-host-name:27017/admin?directConnection=true",
+    "databaseName": "elemental_playground"
+  }
+}
+```
+
+In this file we do not need buckets information, sinces static and media resoruces will be served locally. We do not need a Google Service Account niether because that info is needed only by the cli tool to send local files to GCS.
 
 ## Windows OS + Visual Studio 2019
 
