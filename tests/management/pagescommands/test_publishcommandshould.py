@@ -141,5 +141,5 @@ class TestPublishCommandShould:
                                             '-p', 'home', 'en'],
                                            standalone_mode=False)
 
-                    assert_that(result.return_value[0]).exists()
-                    assert_that(result.return_value[1]).exists()
+                    assert_that(result.return_value[0][0]).exists()
+                    assert_that(result.return_value[0][1]).exists()

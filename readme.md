@@ -11,10 +11,9 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 ## Work in progress
 
 - <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Official documentation</a> construction
-- Media files management module test classes
-- Static files management module test classes
+- Media files management on GCS module test classes
+- Static files management on GCS module test classes
 - Pages management module review and refactor
-- paranoid.software landing page
 - Samples review and update
 
 ## To Do
@@ -22,9 +21,8 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 - Resources names validation
 - Configurations schema review
 - Test coverage review
-- Support for --all option in every push and pull command
 - Support for detailed comparison between local and remote resources versions
-- Support for extra options on MongoDB connection
+- Support for sample settings file generation
 
 ## Setup <a id="setup">#</a>
 
