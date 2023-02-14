@@ -55,7 +55,7 @@ class Pages(click.Group):
             '-p',
             nargs=2,
             multiple=True,
-            help='Name and language for the page to be pushed. For example: push -p home en -p home es')
+            help='Name and language for the page(s) to be pushed. For example: push -p home en -p home es')
     @constraint(RequireExactly(1), ['all', 'page'])
     @pass_context
     def push(ctx, **params) -> [Tuple]:
@@ -65,24 +65,26 @@ class Pages(click.Group):
 
     @staticmethod
     @command(name='publish',
-             help='Publish one especific localized page.')
+             help='Publish one or more pages.')
     @option('--page',
             '-p',
             nargs=2,
             required=True,
-            help='Page name and language. For example: publish -p home es')
+            multiple=True,
+            help='Name and language for the page(s) to be published. For example: publish -p home en -p home es')
     @pass_context
     def publish(ctx, page) -> [Tuple]:
         return Publish(ctx).exec(page)
 
     @staticmethod
     @command(name='unpublish',
-             help='Unpublish one especific page localized page.')
+             help='Unpublish one or more pages.')
     @option('--page',
             '-p',
             nargs=2,
             required=True,
-            help='Page name and language. For example: unpublish -p sign-in en')
+            multiple=True,
+            help='Name and language for the page(s) to be unpublished. For example: unpublish -p home en -p home es')
     @pass_context
     def unpublish(ctx, page) -> [Tuple]:
         return Unpublish(ctx).exec(page)

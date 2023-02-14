@@ -91,11 +91,15 @@ class GetHome:
         js_deps = []
         if os.path.exists(f'{global_deps_folder}/application_javascript/'):
             for filename in os.listdir(f'{global_deps_folder}/application_javascript/'):
+                if filename == '.bak':
+                    continue
                 with open(f'{global_deps_folder}/application_javascript/{filename}', encoding='utf-8') as f:
                     js_deps.append(json.loads(f.read()))
         css_deps = []
         if os.path.exists(f'{global_deps_folder}/text_css/'):
             for filename in os.listdir(f'{global_deps_folder}/text_css/'):
+                if filename == '.bak':
+                    continue
                 with open(f'{global_deps_folder}/text_css/{filename}', encoding='utf-8') as f:
                     css_deps.append(json.loads(f.read()))
         return sorted(js_deps, key=lambda x: x['order']) + sorted(css_deps, key=lambda x: x['order'])

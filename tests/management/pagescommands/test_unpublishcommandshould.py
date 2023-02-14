@@ -123,8 +123,11 @@ class TestUnpublishCommandShould:
                     result = runner.invoke(cli,
                                            ['pages',
                                             'unpublish',
-                                            '-p', 'home', 'en'],
+                                            '-p', 'home', 'en',
+                                            '-p', 'home', 'es'],
                                            standalone_mode=False)
 
-                    assert_that(result.return_value[0]).exists()
-                    assert_that(result.return_value[1]).exists()
+                    assert_that(result.return_value[0][0]).exists()
+                    assert_that(result.return_value[0][1]).exists()
+                    assert_that(result.return_value[1][0]).exists()
+                    assert_that(result.return_value[1][1]).exists()

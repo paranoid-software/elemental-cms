@@ -12,29 +12,34 @@ class Unpublish:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self, page_tuple) -> Optional[Tuple]:
+    def exec(self, pages_tuples) -> [Tuple]:
 
-        name = page_tuple[0]
-        lang = page_tuple[1]
+        backups_filepaths = []
+        for page_tuple in pages_tuples:
 
-        get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
-        page = get_page_result.value()
+            name = page_tuple[0]
+            lang = page_tuple[1]
 
-        if page is None:
-            click.echo(f'{name} ({lang}) is not published yet.')
-            return None
+            get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
+            page = get_page_result.value()
 
-        _id = page['_id']
+            if page is None:
+                click.echo(f'{name} ({lang}) is not published yet.')
+                return None
 
-        get_draft_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, True, False)
-        draft = get_draft_result.value()
+            _id = page['_id']
 
-        if draft is None:
-            UpdateOne(self.context.cms_db_context).execute(_id, page, True)
+            get_draft_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, True, False)
+            draft = get_draft_result.value()
 
-        RemoveOne(self.context.cms_db_context).execute(_id)
-        click.echo(f'{name} ({lang}) unpublished successfully.')
-        return self.build_page_backup(page)
+            if draft is None:
+                UpdateOne(self.context.cms_db_context).execute(_id, page, True)
+
+            RemoveOne(self.context.cms_db_context).execute(_id)
+            click.echo(f'{name} ({lang}) unpublished successfully.')
+            backups_filepaths.append(self.build_page_backup(page))
+
+        return backups_filepaths
 
     def build_page_backup(self, page) -> Tuple:
         click.echo('Building backups...')

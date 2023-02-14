@@ -13,34 +13,36 @@ class Publish:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self, page_tuple) -> Optional[Tuple]:
+    def exec(self, pages_tuples) -> [Tuple]:
 
-        name = page_tuple[0]
-        lang = page_tuple[1]
+        backups_filepaths = []
+        for page_tuple in pages_tuples:
 
-        get_draft_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, True, False)
-        draft = get_draft_result.value()
+            name = page_tuple[0]
+            lang = page_tuple[1]
 
-        if draft is None:
-            click.echo(f'{name} ({lang}) does not have a draft version.')
-            return
+            get_draft_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, True, False)
+            draft = get_draft_result.value()
 
-        get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
-        page = get_page_result.value()
-
-        backup_filepaths = None
-        if page is not None:
-            if DeepDiff(draft, page) == {}:
-                click.echo(f'{name} ({lang}) is already published.')
+            if draft is None:
+                click.echo(f'{name} ({lang}) does not have a draft version.')
                 return
-            backup_filepaths = self.build_page_backup(page)
-            _id = page['_id']
-        else:
-            _id = draft['_id']
 
-        UpdateOne(self.context.cms_db_context).execute(_id, draft)
-        click.echo(f'{name} ({lang}) published successfully.')
-        return backup_filepaths
+            get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
+            page = get_page_result.value()
+
+            if page is not None:
+                if DeepDiff(draft, page) == {}:
+                    click.echo(f'{name} ({lang}) is already published.')
+                    return
+                backups_filepaths.append(self.build_page_backup(page))
+                _id = page['_id']
+            else:
+                _id = draft['_id']
+
+            UpdateOne(self.context.cms_db_context).execute(_id, draft)
+            click.echo(f'{name} ({lang}) published successfully.')
+        return backups_filepaths
 
     def build_page_backup(self, page) -> Optional[Tuple]:
         click.echo('Building backups...')
