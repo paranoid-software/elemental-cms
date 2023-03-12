@@ -50,7 +50,7 @@ class List:
 
         for obj in objects:
             obj_name_parts = obj.name.split('/')
-            if obj_name_parts[0] == 'admin':
+            if obj_name_parts[0] == '_admin' or obj_name_parts[0] == '_presenter':
                 continue
             folder_path = f'{"/".join(obj_name_parts[:-1])}/'
             folders.add(folder_path if folder_path == '/' else folder_path[:-1])
