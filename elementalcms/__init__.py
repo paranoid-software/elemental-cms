@@ -16,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.36"
+__version__ = "1.1.37"
 
 
 class Elemental:
@@ -105,18 +105,16 @@ class Elemental:
                 if context.cms_core_context.STATIC_URL.startswith('http'):
                     return redirect(f'{context.cms_core_context.STATIC_URL}/{request.full_path.replace("/static/", "")}')
 
-            if request.full_path == '/?':
+            if request.full_path.startswith('/?'):
                 if context.cms_core_context.LANGUAGE_MODE == 'single':
                     return
-                return redirect(url_for('presenter.index',
-                                        lang_code=session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE)))
-
-            if request.full_path == '/?draft=1':
-                if context.cms_core_context.LANGUAGE_MODE == 'single':
-                    return
+                if len(request.args.keys()) == 0:
+                    return redirect(url_for('presenter.index',
+                                            lang_code=session.get("langCode",
+                                                                  context.cms_core_context.DEFAULT_LANGUAGE)))
                 return redirect(url_for('presenter.index',
                                         lang_code=session.get("langCode", context.cms_core_context.DEFAULT_LANGUAGE),
-                                        draft=1))
+                                        **request.args.to_dict()))
 
         @app.context_processor
         def elemental_url_for_static_processor():
