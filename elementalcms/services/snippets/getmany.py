@@ -27,6 +27,8 @@ class GetMany:
                     if filename.endswith('.html'):
                         continue
                     with open(f'{snippets_folder}/{filename}', encoding='utf-8') as f:
-                        items.append(json.loads(f.read()))
+                        item = json.loads(f.read())
+                        if item.get('name') in names:
+                            items.append(item)
             result = dict(items=items, total=len(items))
         return Success(result['items'])
