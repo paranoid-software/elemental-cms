@@ -56,6 +56,7 @@ def index(lang_code: str = None):
     if current_app.config['DESIGN_MODE_ENABLED']:
         design_mode_opts = dict(pages_folder=current_app.config['PAGES_FOLDER'],
                                 global_deps_folder=current_app.config['GLOBAL_DEPS_FOLDER'],
+                                snippets_folder=current_app.config['SNIPPETS_FOLDER'],
                                 languages=current_app.config['LANGUAGES'])
 
     result: UseCaseResult = GetHome(current_app.config['CMS_DB_CONTEXT']).execute(draft=(draft == '1'),
@@ -76,7 +77,7 @@ def index(lang_code: str = None):
             session['langCode'] = lang_code
 
         return render_template('presenter/index.html',
-                               page=get_page_model(result.value()[lang_code]),
+                               page=get_page_model(result.value()[lang_code], design_mode_opts),
                                is_design_mode_enabled=current_app.config['DESIGN_MODE_ENABLED'])
 
     abort(404)
@@ -96,6 +97,7 @@ def render(slug: str, lang_code: str = None):
     if current_app.config['DESIGN_MODE_ENABLED']:
         design_mode_opts = dict(pages_folder=current_app.config['PAGES_FOLDER'],
                                 global_deps_folder=current_app.config['GLOBAL_DEPS_FOLDER'],
+                                snippets_folder=current_app.config['SNIPPETS_FOLDER'],
                                 languages=current_app.config['LANGUAGES'])
 
     result: UseCaseResult = GetMe(current_app.config['CMS_DB_CONTEXT']).execute(slug,
@@ -116,13 +118,13 @@ def render(slug: str, lang_code: str = None):
             session['langCode'] = lang_code
 
         return render_template('presenter/index.html',
-                               page=get_page_model(result.value()[lang_code]),
+                               page=get_page_model(result.value()[lang_code], design_mode_opts),
                                is_design_mode_enabled=current_app.config['DESIGN_MODE_ENABLED'])
 
     abort(404)
 
 
-def get_page_model(page_spec):
+def get_page_model(page_spec, design_mode_opts=None):
 
     styles = get_styles(page_spec['cssDeps'])
 
@@ -130,7 +132,7 @@ def get_page_model(page_spec):
     content = render_template_string(page_spec['content'], page=page_spec)
 
     snippets_names = re.findall("<!--(.*)-->", content)
-    get_many_snippets_result = GetMany(current_app.config['CMS_DB_CONTEXT']).execute(snippets_names)
+    get_many_snippets_result = GetMany(current_app.config['CMS_DB_CONTEXT']).execute(snippets_names, design_mode_opts)
     snippets = [] if get_many_snippets_result.is_failure() else get_many_snippets_result.value()
 
     snippets_styles = []
