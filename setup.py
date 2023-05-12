@@ -8,7 +8,7 @@ LONG_DESCRIPTION = (HERE / "pypi.md").read_text()
 
 
 REQUIREMENTS = [
-    'Flask>=2.0.2',
+    'Flask==2.2.2',  # 'Flask' object has no attribute 'session_cookie_name'
     'pycountry==20.7.3',
     'pymongo>=3.12.1',
     'cloup==0.12.1',
