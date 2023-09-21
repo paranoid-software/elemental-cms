@@ -44,6 +44,10 @@ class MongoSessionInterface(SessionInterface):
             'data': session,
             'expiration': expiration
         })
-        response.set_cookie(app.session_cookie_name, session.sid,
+        response.set_cookie(app.config["SESSION_COOKIE_NAME"],
+                            session.sid,
+                            secure=True,
                             expires=expiration,
-                            httponly=True, domain=domain)
+                            httponly=True,
+                            samesite='Strict',
+                            domain=domain)
