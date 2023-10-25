@@ -46,8 +46,8 @@ class MongoSessionInterface(SessionInterface):
         })
         response.set_cookie(app.config["SESSION_COOKIE_NAME"],
                             session.sid,
-                            secure=True,
+                            secure=app.config.get('SESSION_COOKIE_SECURE', True),
                             expires=expiration,
-                            httponly=True,
-                            samesite='Strict',
+                            httponly=app.config.get('SESSION_HTTP_ONLY', True),
+                            samesite=app.config.get('SESSION_SAME_SITE', 'Lax'),
                             domain=domain)
