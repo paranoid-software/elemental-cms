@@ -16,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.40"
+__version__ = "1.1.41"
 
 
 class Elemental:

@@ -62,7 +62,7 @@ class GetHome:
         if add_gloabl_deps:
             global_deps = self.get_all_global_deps() if design_mode_opts is None else self.get_all_local_global_deps(design_mode_opts.get('global_deps_folder'))
             css_deps = [d for d in global_deps if d['type'] == 'text/css']
-            js_deps = [d for d in global_deps if d['type'] == 'application/javascript']
+            js_deps = [d for d in global_deps if d['type'] == 'application/javascript' or d['type'] == 'module']
             for page in result['items']:
                 if page['language'] not in pages:
                     pages[page['language']] = page
@@ -94,6 +94,12 @@ class GetHome:
                 if filename == '.bak':
                     continue
                 with open(f'{global_deps_folder}/application_javascript/{filename}', encoding='utf-8') as f:
+                    js_deps.append(json.loads(f.read()))
+        if os.path.exists(f'{global_deps_folder}/module/'):
+            for filename in os.listdir(f'{global_deps_folder}/module/'):
+                if filename == '.bak':
+                    continue
+                with open(f'{global_deps_folder}/module/{filename}', encoding='utf-8') as f:
                     js_deps.append(json.loads(f.read()))
         css_deps = []
         if os.path.exists(f'{global_deps_folder}/text_css/'):
