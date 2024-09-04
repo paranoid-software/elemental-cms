@@ -3,7 +3,7 @@ import os
 import pathlib
 from typing import Callable
 
-from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for
+from flask import Flask, Blueprint, request, send_from_directory, redirect, g, render_template_string, session, url_for, current_app
 from flask_babel import Babel
 from markupsafe import Markup
 from elementalcms.core import ElementalContext
@@ -16,7 +16,7 @@ from elementalcms.services.snippets import GetMe
 from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.41"
+__version__ = "1.1.42"
 
 
 class Elemental:
@@ -77,6 +77,11 @@ class Elemental:
         # Session support using MongoDB
         if context.cms_core_context.SESSION_STORAGE_ENABLED:
             app.session_interface = MongoSessionInterface(context.cms_db_context)
+        else:
+            app.config['SESSION_COOKIE_HTTPONLY'] = app.config.get('SESSION_HTTP_ONLY', True)
+            app.config['SESSION_COOKIE_SECURE'] = app.config.get('SESSION_COOKIE_SECURE', True)
+            app.config['SESSION_COOKIE_SAMESITE'] = app.config.get('SESSION_SAME_SITE', 'Lax')
+
 
         babel = Babel(app)
 
@@ -146,20 +151,66 @@ class Elemental:
 
         @app.context_processor
         def render_snippet_processor():
-            def render_snippet(name, page_spec):
+
+            def build_css_tags(deps):
+                tags = []
+                for dep in deps:
+
+                    props = []
+                    for key in dep.get('meta', {}).keys():
+                        props.append(f'{key}=\"{dep["meta"][key]}\"')
+
+                    if dep['url'].startswith('http'):
+                        tags.append(f'<link rel="stylesheet" type="text/css" href="{dep["url"]}" {" ".join(props)}>')
+                        continue
+                    href = f'{current_app.config["STATIC_URL"]}/{dep["url"]}'
+                    tags.append(f'<link rel="stylesheet" type="text/css" href="{href}" {" ".join(props)}>')
+                return tags
+
+            def build_js_tags(deps):
+                tags = []
+                for dep in deps:
+
+                    props = []
+                    for key in dep.get('meta', {}).keys():
+                        props.append(f'{key}=\"{dep["meta"][key]}\"')
+
+                    if dep['url'].startswith('http'):
+                        tags.append(f'<script src="{dep["url"]}" type="{dep["type"]}" {" ".join(props)}></script>')
+                        continue
+                    src = f'{current_app.config["STATIC_URL"]}/{dep["url"]}'
+                    tags.append(f'<script src="{src}" type="{dep["type"]}" {" ".join(props)}></script>')
+                return tags
+
+            def render_snippet(name, page_spec, inject_inline_deps=False):
+                css_tags = ''
+                js_tags = ''
                 if context.cms_core_context.DESIGN_MODE_ENABLED:
                     snippet_content_filename = context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.html'
                     snippet_spec_filename = context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.json'
                     if not os.path.exists(snippet_content_filename) or not os.path.exists(snippet_spec_filename):
                         raise Exception(f'There are no local snippets under the name {name}')
-                    with open(context.cms_core_context.SNIPPETS_FOLDER + f'/{name}.html', encoding='utf-8') as f:
+                    with open(snippet_content_filename, encoding='utf-8') as f:
+                        if inject_inline_deps:
+                            with open(snippet_spec_filename, encoding='utf-8') as j:
+                                specs = json.load(j)
+                                css_deps = specs.get('cssDeps', [])
+                                js_deps = specs.get('jsDeps', [])
+                                css_tags = '\n'.join(build_css_tags(css_deps))
+                                js_tags = '\n'.join(build_js_tags(js_deps))
                         content = render_template_string(f'<!--{name}-->\n{f.read()}', page=page_spec)
                 else:
                     get_me_result = GetMe(context.cms_db_context).execute(name)
                     if get_me_result.is_failure():
                         raise Exception(f'There are no snippets under the name {name}')
-                    content = render_template_string(f'<!--{name}-->\n{get_me_result.value()["content"]}', page=page_spec)
-                return Markup(content)
+                    specs = get_me_result.value()
+                    if inject_inline_deps:
+                        css_deps = specs.get('cssDeps', [])
+                        js_deps = specs.get('jsDeps', [])
+                        css_tags = '\n'.join(build_css_tags(css_deps))
+                        js_tags = '\n'.join(build_js_tags(js_deps))
+                    content = render_template_string(f'<!--{name}-->\n{specs["content"]}', page=page_spec)
+                return Markup(css_tags +  content + js_tags)
             return dict(render_snippet=render_snippet)
 
         @app.context_processor
