@@ -65,7 +65,8 @@ Before we can issue the "init" command, we have to create a config file inside a
     },
     "USER_IDENTITY_SESSION_KEY": "userIdentity",
     "SESSION_STORAGE_ENABLED": true,
-    "SESSION_TIMEOUT_IN_MINUTES": 360
+    "SESSION_TIMEOUT_IN_MINUTES": 360,
+    "DESIGN_MODE_ENABLED": true
   },
   "cmsDbContext": {
     "id": "your-id",
