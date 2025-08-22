@@ -34,6 +34,183 @@ For version history and changes, see our [CHANGELOG](CHANGELOG.md).
 - Support for detailed comparison between local and remote resources versions
 - Support for sample settings file generation
 
+## Configuration Guide
+
+Elemental CMS uses a JSON configuration file that defines how the CMS operates. There are two main contexts:
+
+### Core Context (`cmsCoreContext`)
+
+#### Basic Settings
+- `DEBUG`: Enable/disable debug mode (default: false)
+- `ENV`: Environment name (e.g., "development", "production")
+- `SECRET_KEY`: Flask secret key for session encryption
+- `SITE_NAME`: Your site's name, used in templates
+- `COMPANY`: Your company name
+- `CANONICAL_URL`: Base URL for your site
+
+#### Language Settings
+- `LANGUAGES`: List of supported language codes (e.g., ["en", "es"])
+- `DEFAULT_LANGUAGE`: Default language code (e.g., "en")
+- `LANGUAGE_MODE`: Either "single" or "multi" for language handling
+  - "single": No language prefixes in URLs
+  - "multi": URLs prefixed with language code (e.g., /en/about)
+
+#### File Storage Settings
+- `STATIC_FOLDER`: Local folder for static files (default: "static")
+- `MEDIA_FOLDER`: Local folder for media files (default: "media")
+- `STATIC_URL`: URL for static files
+  - Local: "/static"
+  - Cloud: "https://storage.googleapis.com/your-bucket"
+- `MEDIA_URL`: URL for media files
+  - Local: "/media"
+  - Cloud: "https://storage.googleapis.com/your-bucket"
+
+#### Cloud Storage (Optional)
+- `STATIC_BUCKET`: GCS bucket name for static files
+- `MEDIA_BUCKET`: GCS bucket name for media files
+- `GOOGLE_SERVICE_ACCOUNT_INFO`: GCS service account credentials
+  - Required only when using Google Cloud Storage
+  - Used by CLI for file operations
+
+#### Workspace Settings
+- `GLOBAL_DEPS_FOLDER`: Folder for global dependencies (default: "workspace/global_deps")
+- `PAGES_FOLDER`: Folder for page files (default: "workspace/pages")
+- `SNIPPETS_FOLDER`: Folder for snippet files (default: "workspace/snippets")
+
+#### Session Settings
+- `USER_IDENTITY_SESSION_KEY`: Session key for user identity (default: "userIdentity")
+- `SESSION_STORAGE_ENABLED`: Enable MongoDB session storage (default: true)
+- `SESSION_TIMEOUT_IN_MINUTES`: Session timeout in minutes (default: 360)
+
+#### Development Settings
+- `DESIGN_MODE_ENABLED`: Enable local file-based content editing (default: false)
+  - When true: Content is read from local files
+  - When false: Content is read from MongoDB
+
+### Database Context (`cmsDbContext`)
+- `id`: Unique identifier for your MongoDB connection
+- `connectionString`: MongoDB connection string
+  - Format: "mongodb://username:password@hostname:port/admin?directConnection=true"
+- `databaseName`: Name of the MongoDB database to use
+
+### Understanding CLI vs Web App Settings
+
+Elemental CMS uses two separate configuration files:
+
+1. **CLI Settings** (`local.cli.json`):
+   - Used by the `elemental-cms` command-line tool
+   - Requires cloud storage configuration (`STATIC_BUCKET`, `MEDIA_BUCKET`, `GOOGLE_SERVICE_ACCOUNT_INFO`)
+   - Used for content management operations (push, pull, publish)
+   - Example operations that use CLI settings:
+     ```shell
+     elemental-cms init -c settings/local.cli.json
+     elemental-cms pages push -p home en
+     elemental-cms media push image.jpg
+     ```
+
+2. **Web App Settings** (`local.www.json`):
+   - Used by your Flask web application
+   - Focuses on serving content and handling requests
+   - Does not need cloud storage credentials
+   - Used when running your web application
+   - Example usage:
+     ```python
+     CONFIG_FILEPATH = os.environ.get('CONFIG_FILEPATH', 'settings/local.www.json')
+     ```
+
+#### Key Differences:
+
+| Setting | CLI Config | Web App Config | Notes |
+|---------|------------|----------------|-------|
+| `STATIC_BUCKET` | Required | Optional | CLI needs it for push/pull operations |
+| `MEDIA_BUCKET` | Required | Optional | CLI needs it for media management |
+| `GOOGLE_SERVICE_ACCOUNT_INFO` | Required | Not needed | Only CLI performs cloud operations |
+| `STATIC_URL` | Cloud URL | Can be local | Web app can serve files locally |
+| `MEDIA_URL` | Cloud URL | Can be local | Web app can serve files locally |
+| `DESIGN_MODE_ENABLED` | Not used | Optional | Only affects web app behavior |
+
+#### Example Workflow:
+1. Use CLI config (`local.cli.json`) to manage content:
+   ```shell
+   # Push content to cloud storage
+   elemental-cms push --all
+   ```
+
+2. Use Web config (`local.www.json`) to serve content:
+   ```python
+   # Web app serves content from local or cloud
+   Elemental(www, elemental_context)
+   ```
+
+### Configuration Examples
+
+#### Local Development
+
+CLI Config (`local.cli.json`):
+```json
+{
+  "cmsCoreContext": {
+    "DEBUG": true,
+    "ENV": "development",
+    "STATIC_URL": "https://storage.googleapis.com/static-bucket",
+    "MEDIA_URL": "https://storage.googleapis.com/media-bucket",
+    "STATIC_BUCKET": "static-bucket",
+    "MEDIA_BUCKET": "media-bucket",
+    "GOOGLE_SERVICE_ACCOUNT_INFO": {
+      "type": "service_account",
+      "project_id": "your-project"
+    },
+    "DESIGN_MODE_ENABLED": false
+  }
+}
+```
+
+Web App Config (`local.www.json`):
+```json
+{
+  "cmsCoreContext": {
+    "DEBUG": true,
+    "ENV": "development",
+    "STATIC_URL": "/static",
+    "MEDIA_URL": "/media",
+    "DESIGN_MODE_ENABLED": true
+  }
+}
+```
+
+#### Production Environment
+
+CLI Config (`production.cli.json`):
+```json
+{
+  "cmsCoreContext": {
+    "DEBUG": false,
+    "ENV": "production",
+    "STATIC_URL": "https://storage.googleapis.com/static-bucket",
+    "MEDIA_URL": "https://storage.googleapis.com/media-bucket",
+    "STATIC_BUCKET": "static-bucket",
+    "MEDIA_BUCKET": "media-bucket",
+    "GOOGLE_SERVICE_ACCOUNT_INFO": {
+      "type": "service_account",
+      "project_id": "your-project"
+    }
+  }
+}
+```
+
+Web App Config (`production.www.json`):
+```json
+{
+  "cmsCoreContext": {
+    "DEBUG": false,
+    "ENV": "production",
+    "STATIC_URL": "https://storage.googleapis.com/static-bucket",
+    "MEDIA_URL": "https://storage.googleapis.com/media-bucket",
+    "DESIGN_MODE_ENABLED": false
+  }
+}
+```
+
 ## Setup <a id="setup">#</a>
 
 Once we have our project folder created and our virtual environment in place, we proceed to install Elemental CMS using pip.

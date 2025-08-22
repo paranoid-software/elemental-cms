@@ -66,15 +66,20 @@ class Pages(click.Group):
     @staticmethod
     @command(name='publish',
              help='Publish one or more pages.')
+    @option('--all',
+            is_flag=True,
+            help='Publish all pages that have draft versions.')
     @option('--page',
             '-p',
             nargs=2,
-            required=True,
             multiple=True,
             help='Name and language for the page(s) to be published. For example: publish -p home en -p home es')
+    @constraint(RequireExactly(1), ['all', 'page'])
     @pass_context
-    def publish(ctx, page) -> [Tuple]:
-        return Publish(ctx).exec(page)
+    def publish(ctx, **params) -> [Tuple]:
+        if params['all']:
+            return Publish(ctx).exec('*')
+        return Publish(ctx).exec(params['page'])
 
     @staticmethod
     @command(name='unpublish',

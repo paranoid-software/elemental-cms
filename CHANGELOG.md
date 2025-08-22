@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.1] - 2024-01-24
+## [2.0.2] - 2025-08-22
+
+### Added
+- Added `--all` flag to `pages publish` command to publish all pages that have draft versions
+
+## [2.0.1] - 2025-08-22
 
 ### Fixed
 - Resolved dependency conflicts with Flask-Babel by using compatible versions of Flask and Werkzeug
 
-## [2.0.0] - 2024-01-24
+## [2.0.0] - 2025-08-22
 
 ### Removed
 - Admin feature and web interface removed to maintain focus on CLI-driven, developer-centric workflow
