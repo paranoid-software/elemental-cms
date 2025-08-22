@@ -13,10 +13,9 @@ from elementalcms.persistence import MongoSessionInterface
 from elementalcms.services.pages import GetAll
 from elementalcms.services.snippets import GetMe
 
-from elementalcms.admin import admin
 from elementalcms.presenter import presenter
 
-__version__ = "1.1.42"
+__version__ = "2.0.1"
 
 
 class Elemental:
@@ -51,8 +50,6 @@ class Elemental:
         ]
         app.config['BABEL_TRANSLATION_DIRECTORIES'] = ';'.join(translations_paths)
 
-        admin.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
-        app.register_blueprint(admin)
         presenter.url_prefix = None if context.cms_core_context.LANGUAGE_MODE == 'single' else '/<lang_code>'
 
         if before_present:
@@ -96,7 +93,7 @@ class Elemental:
 
             path = request.full_path
 
-            if 'static/_admin' in path or 'static/_presenter' in path:
+            if 'static/_presenter' in path:
                 path_parts = path.strip('?').split('/')
                 index = path_parts.index('static')
                 local_path = pathlib.Path(__file__).resolve().parent

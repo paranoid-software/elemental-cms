@@ -8,13 +8,16 @@ LONG_DESCRIPTION = (HERE / "pypi.md").read_text()
 
 
 REQUIREMENTS = [
-    'Flask==2.2.2',  # 'Flask' object has no attribute 'session_cookie_name'
-    'pycountry==20.7.3',
+    'Flask==2.2.5',  # Last 2.2.x version, compatible with Flask-Babel 2.0.0
+    'Werkzeug==2.2.3',  # Compatible with Flask 2.2.5
+    'Jinja2>=3.0.0',  # Compatible with Flask 2.2.5
+    'pycountry>=20.7.3',
     'pymongo>=3.12.1',
-    'cloup==0.12.1',
-    'deepdiff==5.6.0',
-    'Flask-Babel==2.0.0',
+    'cloup>=0.13.0',
+    'deepdiff>=5.6.0',
+    'Flask-Babel==2.0.0',  # Using exact version to ensure compatibility
     'google-cloud-storage>=2.3.0',
+    'MarkupSafe>=2.1.0'
 ]
 
 

@@ -16,7 +16,11 @@ To install the tool, we can issue the following command:
 pip install elemental-cms
 ```
 
-This will install all the dependencies required for elemental-cms to work, like pymongo, flask, flask-babel, etc.
+This will install all the dependencies required for elemental-cms to work. The CMS is compatible with:
+- Flask 2.2.5
+- Werkzeug 2.2.3
+- Flask-Babel 2.0.0
+- And other dependencies as specified in setup.py
 
 ## Running elemental-cms command for the first time
 
@@ -26,4 +30,4 @@ After setup, we can start using the tool like this:
 
 ## Documentation
 
-More details about the tool can be found [here](https://paranoid.software/en/elemental-cms/docs) on the official documentation portal.
+More details about the tool can be found [here](https://paranoid.software/en/elemental-cms/docs) on the official documentation portal. For version history and changes, see our [CHANGELOG](https://github.com/paranoid-software/elemental-cms/blob/develop/CHANGELOG.md).

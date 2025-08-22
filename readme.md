@@ -8,6 +8,16 @@ The main interaction with the tool takes place through its CLI, a self documente
 
 It relies on MongoDB to store the metadata, pages' content, snippets' content, dependencies information, and user session data.
 
+## Version Compatibility
+
+Elemental CMS 2.0.1 is compatible with:
+- Flask 2.2.5
+- Werkzeug 2.2.3
+- Flask-Babel 2.0.0
+- Python 3.6+
+
+For version history and changes, see our [CHANGELOG](CHANGELOG.md).
+
 ## Work in progress
 
 - <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Official documentation</a> construction
