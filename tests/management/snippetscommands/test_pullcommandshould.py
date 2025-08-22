@@ -47,8 +47,8 @@ class TestPullCommandShould:
                     # noinspection PyTypeChecker
                     result = runner.invoke(cli, ['snippets',
                                                  'pull',
-                                                 '-s', 'snippet-one',
-                                                 '-s', 'snippet-two'])
+                                                 '-s', 'workspace/snippets/snippet-one',
+                                                 '-s', 'folder1/snippet-two'])
                     assert_that(re.findall('does not exist', result.output)).is_length(2)
 
     def test_create_spec_for_pulled_snippets(self, default_elemental_fixture, default_settings_fixture, snippets):
@@ -118,5 +118,5 @@ class TestPullCommandShould:
                     # noinspection PyTypeChecker
                     result = runner.invoke(cli, ['snippets',
                                                  'pull',
-                                                 '-s', 'footer'])
+                                                 '-s', 'workspace/snippets/footer'])
                     assert_that(re.findall('pulled successfully', result.output)).is_length(1)

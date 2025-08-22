@@ -32,7 +32,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             required=True,
-            help='Snippet name. It must be unique, lowercased and it can not contains special characters.')
+            help='Snippet name. Must be: lowercase, start with a letter, and contain only letters, numbers and hyphens (e.g., nav-bar, footer-2).')
     @pass_context
     def create(ctx, snippet):
         Create(ctx).exec(snippet)

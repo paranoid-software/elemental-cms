@@ -12,8 +12,18 @@ class Create:
         self.context: ElementalContext = ctx.obj['elemental_context']
 
     def exec(self, name):
+        # Validate naming constraints
+        if not name.islower():
+            click.echo('Snippet name must be lowercase')
+            return
 
-        # TODO: Validate naming constraints
+        if name[0].isdigit():
+            click.echo('Snippet name cannot start with a number')
+            return
+
+        if not all(c.isalnum() or c == '-' for c in name):
+            click.echo('Snippet name can only contain letters, numbers and hyphens')
+            return
 
         folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
         if not os.path.exists(folder_path):

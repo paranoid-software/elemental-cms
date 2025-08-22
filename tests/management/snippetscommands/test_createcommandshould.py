@@ -8,6 +8,27 @@ from tests import EphemeralElementalFileSystem
 
 class TestCreateCommandShould:
 
+    def test_fail_when_name_has_uppercase(self, default_elemental_fixture, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                result = runner.invoke(cli, ['snippets', 'create', '-s', 'Header'])
+                assert_that(result.output).contains('Snippet name must be lowercase')
+
+    def test_fail_when_name_starts_with_number(self, default_elemental_fixture, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                result = runner.invoke(cli, ['snippets', 'create', '-s', '1header'])
+                assert_that(result.output).contains('Snippet name cannot start with a number')
+
+    def test_fail_when_name_has_invalid_chars(self, default_elemental_fixture, default_settings_fixture):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture):
+                result = runner.invoke(cli, ['snippets', 'create', '-s', 'header@nav'])
+                assert_that(result.output).contains('Snippet name can only contain letters, numbers and hyphens')
+
     def test_fail_when_spec_file_already_exist(self, default_elemental_fixture, default_settings_fixture):
         runner = CliRunner()
         with runner.isolated_filesystem():
