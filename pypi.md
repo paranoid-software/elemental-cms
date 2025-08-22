@@ -16,7 +16,7 @@ To install the tool, we can issue the following command:
 pip install elemental-cms
 ```
 
-This will install all the dependencies required for elemental-cms to work. The CMS is compatible with:
+This will install all the dependencies required for elemental-cms to work. Version 2.0.4 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0

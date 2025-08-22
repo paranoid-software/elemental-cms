@@ -22,7 +22,7 @@ class Snippets(click.Group):
 
     @staticmethod
     @command(name='list',
-             help='Display snippets list.')
+             help='Display snippets list. An asterisk (*) indicates snippets that: have local changes, are missing local files, or exist locally but not in the database.')
     @pass_context
     def list(ctx):
         List(ctx).exec()

@@ -10,7 +10,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## Version Compatibility
 
-Elemental CMS 2.0.2 is compatible with:
+Elemental CMS 2.0.4 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
@@ -310,7 +310,7 @@ This will create two files in your SNIPPETS_FOLDER:
 
 ### Managing Snippets
 ```shell
-# List all snippets
+# List all snippets (shows * for snippets that: have local changes, are missing local files, or exist locally but not in the database)
 elemental-cms snippets list
 
 # Push a snippet to CMS
