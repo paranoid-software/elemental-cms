@@ -6,14 +6,25 @@ from deepdiff import DeepDiff
 import click
 from bson import json_util
 from elementalcms.core import ElementalContext
-from elementalcms.services.pages import GetMeForLanguage, UpdateOne
+from elementalcms.services.pages import GetMeForLanguage, UpdateOne, GetAll
 
 
 class Publish:
     def __init__(self, ctx):
         self.context: ElementalContext = ctx.obj['elemental_context']
 
-    def exec(self, pages_tuples) -> [Tuple]:
+    def exec(self, pages) -> [Tuple]:
+        if isinstance(pages, str):
+            get_all_result = GetAll(self.context.cms_db_context).execute(True)  # Get all drafts
+            if get_all_result.is_failure():
+                click.echo('There are no draft pages to publish.')
+                return []
+            pages_tuples = [(item['name'], item['language']) for item in get_all_result.value()]
+            if len(pages_tuples) == 0:
+                click.echo('There are no draft pages to publish.')
+                return []
+        else:
+            pages_tuples = pages
 
         backups_filepaths = []
         for page_tuple in pages_tuples:
