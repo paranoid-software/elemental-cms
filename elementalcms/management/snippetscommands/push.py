@@ -30,11 +30,14 @@ class Push:
                 click.echo('There are no snippets to push.')
                 return
         else:
-            snippets_tuples = snippets
-            # TODO: Support file names with paths
+            # Strip SNIPPETS_FOLDER from provided paths if present
+            snippets_tuples = [s.replace(f'{folder_path}/', '') for s in snippets]
 
         backups_filepaths = []
         for name in snippets_tuples:
+            if '/' in name:
+                click.echo(f'Snippet {name} is not on required folder: {folder_path}.')
+                return
             spec_filepath = f'{folder_path}/{name}.json'
             content_filepath = f'{folder_path}/{name}.html'
             if not os.path.exists(spec_filepath):

@@ -23,8 +23,9 @@ class Pull:
                 click.echo('There are no snippets to pull.')
                 return []
         else:
-            snippets_tuples = snippets
-            # TODO: Support file names with paths
+            folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
+            # Strip SNIPPETS_FOLDER from provided paths if present
+            snippets_tuples = [s.replace(f'{folder_path}/', '') for s in snippets]
 
         backups_filepaths = []
         for name in snippets_tuples:

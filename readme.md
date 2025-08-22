@@ -10,7 +10,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## Version Compatibility
 
-Elemental CMS 2.0.1 is compatible with:
+Elemental CMS 2.0.2 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
@@ -288,6 +288,44 @@ workdir
 ```
 
 > Be aware of that in Windows OS using Visual Studio 2019 after running the init command (and any other command that modify the folders and files structure), the created files and folders will not be added to the project automaticaly.
+
+## Working with Snippets
+
+Snippets are reusable HTML components that can be included in your pages. They are managed through the `snippets` command.
+
+### Snippet Naming Rules
+- Must be lowercase (e.g., `header`, `nav-bar`)
+- Must start with a letter
+- Can only contain letters, numbers, and hyphens
+- Examples of valid names: `nav-bar`, `footer-2`, `main-menu`
+- Examples of invalid names: `Header` (uppercase), `1nav` (starts with number), `nav_bar` (underscore)
+
+### Creating a Snippet
+```shell
+elemental-cms snippets create -s nav-bar
+```
+
+This will create two files in your SNIPPETS_FOLDER:
+- `nav-bar.json`: Contains snippet metadata and dependencies
+- `nav-bar.html`: Contains the HTML content
+
+### Managing Snippets
+```shell
+# List all snippets
+elemental-cms snippets list
+
+# Push a snippet to CMS
+elemental-cms snippets push -s nav-bar
+
+# Push all snippets
+elemental-cms snippets push --all
+
+# Pull a snippet from CMS
+elemental-cms snippets pull -s nav-bar
+
+# Remove a snippet
+elemental-cms snippets remove -s nav-bar
+```
 
 ## Creating your first page
 

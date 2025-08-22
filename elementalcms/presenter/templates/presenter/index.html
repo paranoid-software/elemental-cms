@@ -9,6 +9,6 @@
 {% block content %}
     {{ page.content | safe }}
     {% if is_design_mode_enabled %}
-        <div class="c-design-mode-enabled-label">DESIGN MODE ENABLED</div>
+        <div class="c-design-mode-enabled-label">{{ _('DESIGN MODE') }}</div>
     {% endif %}
 {% endblock %}
