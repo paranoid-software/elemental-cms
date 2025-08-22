@@ -10,7 +10,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## Version Compatibility
 
-Elemental CMS 2.0.1 is compatible with:
+Elemental CMS 2.0.2 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
