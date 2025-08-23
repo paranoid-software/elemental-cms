@@ -14,6 +14,9 @@ class Publish:
         self.context: ElementalContext = ctx.obj['elemental_context']
 
     def exec(self, pages) -> [Tuple]:
+
+        root_folder_path = self.context.cms_core_context.PAGES_FOLDER
+        
         if isinstance(pages, str):
             get_all_result = GetAll(self.context.cms_db_context).execute(True)  # Get all drafts
             if get_all_result.is_failure():
@@ -24,7 +27,8 @@ class Publish:
                 click.echo('There are no draft pages to publish.')
                 return []
         else:
-            pages_tuples = pages
+            # Strip PAGES_FOLDER/lang from provided paths if present
+            pages_tuples = [(p[0].replace(f'{root_folder_path}/{p[1]}/', ''), p[1]) for p in pages]
 
         backups_filepaths = []
         for page_tuple in pages_tuples:

@@ -10,7 +10,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## Version Compatibility
 
-Elemental CMS 2.0.4 is compatible with:
+Elemental CMS 2.0.5 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
@@ -23,15 +23,14 @@ For version history and changes, see our [CHANGELOG](CHANGELOG.md).
 - <a href="https://paranoid.software/en/elemental-cms/docs" target="_blank">Official documentation</a> construction
 - Media files management on GCS module test classes
 - Static files management on GCS module test classes
-- Pages management module review and refactor
 - Samples review and update
 
 ## To Do
 
-- Resources names validation
+- Resources names validation for pages (similar to snippets)
 - Configurations schema review
 - Test coverage review
-- Support for detailed comparison between local and remote resources versions
+- Support for pages diff command (similar to snippets)
 - Support for sample settings file generation
 
 ## Configuration Guide
@@ -314,6 +313,9 @@ This will create two files in your SNIPPETS_FOLDER:
 # List all snippets (shows * for snippets that: have local changes, are missing local files, or exist locally but not in the database)
 elemental-cms snippets list
 
+# Compare local and database versions of a snippet
+elemental-cms snippets diff -s nav-bar
+
 # Push a snippet to CMS
 elemental-cms snippets push -s nav-bar
 
@@ -375,10 +377,21 @@ The content file will have the HTML for the page.
 In order to push a page, we must use the "pages push" command:
 
 ```shell
+# List all pages (shows * for pages that: have local changes, are missing local files, or exist locally but not in the database)
+elemental-cms pages list
+
+# Push a page to CMS
 elemental-cms pages push -p home en
 ```
 
-This will save the metadata and content into the database, creating a "draft" version of the page.
+The list command shows an asterisk (*) next to pages that:
+- Have differences between local and database versions
+- Are missing their local files
+- Exist locally but not in the database
+
+This helps you identify which pages need to be pushed or pulled.
+
+When pushing a page, it will save the metadata and content into the database, creating a "draft" version of the page.
 
 ## Publishing a page
 

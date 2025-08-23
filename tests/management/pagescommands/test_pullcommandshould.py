@@ -121,5 +121,5 @@ class TestPullCommandShould:
                     # noinspection PyTypeChecker
                     result = runner.invoke(cli, ['pages',
                                                  'pull',
-                                                 '-p', 'home', 'en'])
+                                                 '-p', 'workspace/pages/en/home', 'en'])
                     assert_that(re.findall('pulled successfully', result.output)).is_length(1)
