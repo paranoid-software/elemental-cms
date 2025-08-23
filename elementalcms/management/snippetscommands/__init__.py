@@ -3,3 +3,4 @@ from .list import List
 from .push import Push
 from .pull import Pull
 from .remove import Remove
+from .diff import Diff

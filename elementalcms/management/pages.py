@@ -55,7 +55,7 @@ class Pages(click.Group):
             '-p',
             nargs=2,
             multiple=True,
-            help='Name and language for the page(s) to be pushed. For example: push -p home en -p home es')
+            help='Name and language for the page(s) to be pushed. Can include PAGES_FOLDER path (e.g., workspace/pages/en/home). For example: push -p home en -p home es')
     @constraint(RequireExactly(1), ['all', 'page'])
     @pass_context
     def push(ctx, **params) -> [Tuple]:
@@ -73,7 +73,7 @@ class Pages(click.Group):
             '-p',
             nargs=2,
             multiple=True,
-            help='Name and language for the page(s) to be published. For example: publish -p home en -p home es')
+            help='Name and language for the page(s) to be published. Can include PAGES_FOLDER path (e.g., workspace/pages/en/home). For example: publish -p home en -p home es')
     @constraint(RequireExactly(1), ['all', 'page'])
     @pass_context
     def publish(ctx, **params) -> [Tuple]:
@@ -89,7 +89,7 @@ class Pages(click.Group):
             nargs=2,
             required=True,
             multiple=True,
-            help='Name and language for the page(s) to be unpublished. For example: unpublish -p home en -p home es')
+            help='Name and language for the page(s) to be unpublished. Can include PAGES_FOLDER path (e.g., workspace/pages/en/home). For example: unpublish -p home en -p home es')
     @pass_context
     def unpublish(ctx, page) -> [Tuple]:
         return Unpublish(ctx).exec(page)
@@ -104,7 +104,7 @@ class Pages(click.Group):
             '-p',
             nargs=2,
             multiple=True,
-            help='Name and language for the page to be pulled. For example: pull -p home en -p home es')
+            help='Name and language for the page to be pulled. Can include PAGES_FOLDER path (e.g., workspace/pages/en/home). For example: pull -p home en -p home es')
     @constraint(RequireExactly(1), ['all', 'page'])
     @option('--drafts',
             is_flag=True,
@@ -122,7 +122,7 @@ class Pages(click.Group):
             '-p',
             nargs=2,
             required=True,
-            help='Name and language for the page to be pulled. For example: remove -p home es')
+            help='Name and language for the page to be removed. Can include PAGES_FOLDER path (e.g., workspace/pages/en/home). For example: remove -p home es')
     @pass_context
     def remove(ctx, page) -> Optional[Tuple]:
         return Remove(ctx).exec(page)

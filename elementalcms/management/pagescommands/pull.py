@@ -16,6 +16,8 @@ class Pull:
 
     def exec(self, pages, drafts: bool) -> [Tuple]:
 
+        root_folder_path = self.context.cms_core_context.PAGES_FOLDER
+
         if isinstance(pages, str):
             get_all_result = GetAll(self.context.cms_db_context).execute(drafts)
             pages_tuples = [] if get_all_result.is_failure() else [(item['name'], item['language'])
@@ -24,10 +26,8 @@ class Pull:
                 click.echo('There are no pages to pull.')
                 return []
         else:
-            pages_tuples = pages
-            # TODO: Support file names with paths
-
-        root_folder_path = self.context.cms_core_context.PAGES_FOLDER
+            # Strip PAGES_FOLDER/lang from provided paths if present
+            pages_tuples = [(p[0].replace(f'{root_folder_path}/{p[1]}/', ''), p[1]) for p in pages]
 
         backups_filepaths = []
         for page_tuple in pages_tuples:

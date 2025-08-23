@@ -4,7 +4,7 @@ import click
 from cloup import constraint, option, command, pass_context
 from cloup.constraints import RequireExactly
 
-from .snippetscommands import Create, List, Push, Pull, Remove
+from .snippetscommands import Create, List, Push, Pull, Remove, Diff
 
 
 class Snippets(click.Group):
@@ -17,6 +17,7 @@ class Snippets(click.Group):
         self.add_command(self.remove)
         self.add_command(self.push)
         self.add_command(self.pull)
+        self.add_command(self.diff)
 
         # TODO: Add command to find differences between local workspace and CMS database
 
@@ -80,3 +81,13 @@ class Snippets(click.Group):
     @pass_context
     def remove(ctx, snippet) -> Tuple:
         return Remove(ctx).exec(snippet)
+
+    @staticmethod
+    @command(name='diff', help='Compare local and database versions of a snippet.')
+    @option('--snippet',
+            '-s',
+            required=True,
+            help='Name of the snippet to compare. Can include SNIPPETS_FOLDER path (e.g., workspace/snippets/nav-bar).')
+    @pass_context
+    def diff(ctx, snippet) -> Tuple:
+        return Diff(ctx).exec(snippet)
