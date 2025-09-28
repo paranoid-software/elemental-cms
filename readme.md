@@ -328,19 +328,58 @@ elemental-cms snippets pull -s nav-bar
 elemental-cms snippets remove -s nav-bar
 ```
 
-## Creating your first page
+## Working with Pages
 
-To create a new page, we start by issuing the "pages create" CLI command:
+Pages are the main content units in Elemental CMS. Each page consists of a spec file (metadata) and a content file (HTML).
 
+### Creating a Page
 ```shell
 elemental-cms pages create -p home en
 ```
 
-This will create the page content file and the page spec file under the workspace/pages/en directory.
+This creates two files in your PAGES_FOLDER/en directory:
+- `home.json`: Contains page metadata and dependencies
+- `home.html`: Contains the HTML content
 
-### Spec file
+### Managing Pages
+```shell
+# List all pages (shows * for pages that: have local changes, are missing local files, or exist locally but not in the database)
+elemental-cms pages list
 
-The spec file will have the page metadata. The structure of the file will look like this:
+# Push a page to CMS (both formats work)
+elemental-cms pages push -p home en
+elemental-cms pages push -p workspace/pages/en/home en
+
+# Push all pages
+elemental-cms pages push --all
+
+# Pull a page from CMS (both formats work)
+elemental-cms pages pull -p home en
+elemental-cms pages pull -p workspace/pages/en/home en
+
+# Pull all pages
+elemental-cms pages pull --all
+
+# Publish a page (both formats work)
+elemental-cms pages publish -p home en
+elemental-cms pages publish -p workspace/pages/en/home en
+
+# Publish all pages that have draft versions
+elemental-cms pages publish --all
+
+# Unpublish a page (both formats work)
+elemental-cms pages unpublish -p home en
+elemental-cms pages unpublish -p workspace/pages/en/home en
+
+# Remove a page (both formats work)
+elemental-cms pages remove -p home en
+elemental-cms pages remove -p workspace/pages/en/home en
+```
+
+### Page Structure
+
+#### Spec File
+The spec file (`home.json`) contains the page metadata:
 
 ```json
 {
@@ -371,34 +410,24 @@ The content file will have the HTML for the page.
 <div></div>
 ```
 
-## Pushing a page
+### Notes on Page Management
 
-In order to push a page, we must use the "pages push" command:
+1. **Draft vs Published**: When pushing a page, it creates a "draft" version in the database. Use `publish` to make it accessible through the web application.
 
-```shell
-# List all pages (shows * for pages that: have local changes, are missing local files, or exist locally but not in the database)
-elemental-cms pages list
+2. **Repository Difference Indicators**: The `list` command shows an asterisk (*) next to pages that:
+   - Have differences between local and database versions
+   - Are missing their local files
+   - Exist locally but not in the database
 
-# Push a page to CMS
-elemental-cms pages push -p home en
-```
+3. **Path Support**: Most page commands support both formats:
+   - Direct: `-p name lang` (e.g., `-p home en`)
+   - With path: `-p path lang` (e.g., `-p workspace/pages/en/home en`)
+   - Exception: `create` command only supports the direct format
 
-The list command shows an asterisk (*) next to pages that:
-- Have differences between local and database versions
-- Are missing their local files
-- Exist locally but not in the database
-
-This helps you identify which pages need to be pushed or pulled.
-
-When pushing a page, it will save the metadata and content into the database, creating a "draft" version of the page.
-
-## Publishing a page
-
-Until now the new page is stored on the "drafts" repository, in order to be accessible through the web application we must publish the page by running the following command:
-
-```shell
-elemental-cms pages publish -p home en
-```
+4. **Batch Operations**: Some commands support `--all` flag:
+   - `push --all`: Push all pages
+   - `pull --all`: Pull all pages
+   - `publish --all`: Publish all pages that have draft versions
 
 ## Running the app
 

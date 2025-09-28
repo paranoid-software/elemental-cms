@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added `snippets diff` command to compare local and database versions of a snippet, showing differences in both spec and content files in a git-like format
-- Added support for using PAGES_FOLDER path in pages push, pull, publish, unpublish and remove commands (e.g., workspace/pages/en/home)
+- Added support for using PAGES_FOLDER path in pages push, pull, publish, unpublish and remove commands (e.g., workspace/pages/en/home en)
 - Added repository difference indicators to `pages list` command: shows `*` for pages that have local changes, are missing local files, or exist locally but not in the database
 
 ## [2.0.4] - 2025-08-22
