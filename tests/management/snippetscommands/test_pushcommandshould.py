@@ -63,7 +63,7 @@ class TestPushCommandShould:
                 # noinspection PyTypeChecker
                 result = runner.invoke(cli, ['snippets',
                                              'push',
-                                             '-s', 'workspace/snippets/nav-bar'])
+                                             '-s', 'nav-bar'])
                 assert_that(result.output).contains('There is no content file for nav-bar snippet.')
 
     def test_display_2_success_feedback_messages(self, default_elemental_fixture, default_settings_fixture, specs):
@@ -108,7 +108,7 @@ class TestPushCommandShould:
                     result = runner.invoke(cli,
                                            ['snippets',
                                             'push',
-                                            '-s', 'workspace/snippets/footer'],
+                                            '-s', 'footer'],
                                            standalone_mode=False)
 
                     assert_that(result.return_value[0][0]).exists()

@@ -7,10 +7,9 @@ import click
 from bson import json_util
 from rich.console import Console
 from rich.text import Text
-from rich.panel import Panel
 
 from elementalcms.core import ElementalContext
-from elementalcms.services.snippets import GetMe
+from elementalcms.services.pages import GetMeForLanguage
 
 
 class Diff:
@@ -19,11 +18,12 @@ class Diff:
         self.context: ElementalContext = ctx.obj['elemental_context']
         self.console = Console()
 
-    def get_local_files(self, name: str) -> Tuple[str, str]:
+    def get_local_files(self, name: str, language: str) -> Tuple[str, str]:
         """Get local spec and content files. Returns (spec_json, content_html)"""
-        folder_path = self.context.cms_core_context.SNIPPETS_FOLDER
-        spec_path = f'{folder_path}/{name}.json'
-        content_path = f'{folder_path}/{name}.html'
+        folder_path = self.context.cms_core_context.PAGES_FOLDER
+        page_name_safe = name.replace("/", "_")
+        spec_path = f'{folder_path}/{language}/{page_name_safe}.json'
+        content_path = f'{folder_path}/{language}/{page_name_safe}.html'
 
         spec_json = None
         content_html = None
@@ -104,20 +104,34 @@ class Diff:
         self.console.print(diff_text)
         return True
 
-    def exec(self, snippet_name: str) -> Tuple:
-        result = GetMe(self.context.cms_db_context).execute(snippet_name)
+    def exec(self, page_tuple: Tuple[str, str], drafts: bool = False) -> Tuple:
+        page_name = page_tuple[0]
+        language = page_tuple[1]
+
+        result = GetMeForLanguage(self.context.cms_db_context).execute(page_name, language, drafts, False)
+        
         if result.is_failure():
-            click.echo(f'Snippet {snippet_name} not found in database.')
+            if drafts:
+                click.echo(f'Page {page_name} ({language}) draft version not found in database.')
+            else:
+                click.echo(f'Page {page_name} ({language}) not found in database.')
             return 1, None
 
-        db_snippet = result.value()
-        db_spec = self.format_spec(db_snippet)
-        db_content = db_snippet.get('content', '')
+        db_page = result.value()
+        if db_page is None:
+            if drafts:
+                click.echo(f'Page {page_name} ({language}) does not have a draft version.')
+            else:
+                click.echo(f'Page {page_name} ({language}) has not been published.')
+            return 1, None
 
-        local_spec_json, local_content = self.get_local_files(snippet_name)
+        db_spec = self.format_spec(db_page)
+        db_content = db_page.get('content', '')
+
+        local_spec_json, local_content = self.get_local_files(page_name, language)
         
         if local_spec_json is None and local_content is None:
-            click.echo(f'No local files found for snippet {snippet_name}.')
+            click.echo(f'No local files found for page {page_name} ({language}).')
             return 1, None
 
         local_spec = None
@@ -127,12 +141,13 @@ class Diff:
             except json.JSONDecodeError:
                 local_spec = local_spec_json  # Show raw if invalid JSON
 
-        self.console.print(f"\n[bold]Snippet: {snippet_name}[/bold]")
+        self.console.print(f"\n[bold]Page: {page_name} ({language}){' [DRAFT]' if drafts else ''}[/bold]")
 
-        has_spec_diff = self.show_diff("Spec Changes", db_spec, local_spec, "json", snippet_name)
-        has_content_diff = self.show_diff("Content Changes", db_content, local_content, "html", snippet_name)
+        has_spec_diff = self.show_diff("Spec Changes", db_spec, local_spec, "json", page_name)
+        has_content_diff = self.show_diff("Content Changes", db_content, local_content, "html", page_name)
 
         if not has_spec_diff and not has_content_diff:
             self.console.print("\n[bold green]No differences found[/bold green]")
 
         return 0, None
+

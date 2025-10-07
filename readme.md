@@ -10,7 +10,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## Version Compatibility
 
-Elemental CMS 2.0.5 is compatible with:
+Elemental CMS 2.0.6 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
@@ -30,7 +30,6 @@ For version history and changes, see our [CHANGELOG](CHANGELOG.md).
 - Resources names validation for pages (similar to snippets)
 - Configurations schema review
 - Test coverage review
-- Support for pages diff command (similar to snippets)
 - Support for sample settings file generation
 
 ## Configuration Guide
@@ -288,6 +287,39 @@ workdir
 
 > Be aware of that in Windows OS using Visual Studio 2019 after running the init command (and any other command that modify the folders and files structure), the created files and folders will not be added to the project automaticaly.
 
+## Shell Autocomplete (Optional)
+
+Elemental CMS supports shell autocomplete for commands and arguments, making it faster to work with snippets, pages, and global dependencies.
+
+The completion scripts are included in the package. To enable autocomplete, run the setup script once:
+
+```shell
+# If you cloned the repo
+./enable-completion.sh
+
+# If you installed via pip, find and run the script
+bash $(python -c "import elementalcms, os; print(os.path.join(os.path.dirname(os.path.dirname(elementalcms.__file__)), 'enable-completion.sh'))")
+
+# Then reload your shell
+source ~/.zshrc  # for Zsh
+# or
+source ~/.bashrc  # for Bash
+```
+
+Once enabled, you can use TAB completion:
+```shell
+elemental-cms snippets diff -s <TAB>    # Shows available snippet names
+elemental-cms pages push -p home <TAB>  # Shows available languages
+elemental-cms global-deps push -d bootstrap <TAB>  # Shows valid types
+```
+
+For detailed instructions and troubleshooting, see [COMPLETION.md](COMPLETION.md).
+
+To disable autocomplete:
+```shell
+./disable-completion.sh
+```
+
 ## Working with Snippets
 
 Snippets are reusable HTML components that can be included in your pages. They are managed through the `snippets` command.
@@ -329,19 +361,59 @@ elemental-cms snippets pull -s nav-bar
 elemental-cms snippets remove -s nav-bar
 ```
 
-## Creating your first page
+## Working with Pages
 
-To create a new page, we start by issuing the "pages create" CLI command:
+Pages are the main content units in Elemental CMS. Each page consists of a spec file (metadata) and a content file (HTML).
 
+### Creating a Page
 ```shell
 elemental-cms pages create -p home en
 ```
 
-This will create the page content file and the page spec file under the workspace/pages/en directory.
+This creates two files in your PAGES_FOLDER/en directory:
+- `home.json`: Contains page metadata and dependencies
+- `home.html`: Contains the HTML content
 
-### Spec file
+### Managing Pages
+```shell
+# List all pages (shows * for pages that: have local changes, are missing local files, or exist locally but not in the database)
+elemental-cms pages list
 
-The spec file will have the page metadata. The structure of the file will look like this:
+# Compare local and database versions of a page
+elemental-cms pages diff -p home en
+
+# Compare draft version
+elemental-cms pages diff -p home en --drafts
+
+# Push a page to CMS
+elemental-cms pages push -p home en
+
+# Push all pages
+elemental-cms pages push --all
+
+# Pull a page from CMS
+elemental-cms pages pull -p home en
+
+# Pull all pages
+elemental-cms pages pull --all
+
+# Publish a page
+elemental-cms pages publish -p home en
+
+# Publish all pages that have draft versions
+elemental-cms pages publish --all
+
+# Unpublish a page
+elemental-cms pages unpublish -p home en
+
+# Remove a page
+elemental-cms pages remove -p home en
+```
+
+### Page Structure
+
+#### Spec File
+The spec file (`home.json`) contains the page metadata:
 
 ```json
 {
@@ -372,34 +444,19 @@ The content file will have the HTML for the page.
 <div></div>
 ```
 
-## Pushing a page
+### Notes on Page Management
 
-In order to push a page, we must use the "pages push" command:
+1. **Draft vs Published**: When pushing a page, it creates a "draft" version in the database. Use `publish` to make it accessible through the web application.
 
-```shell
-# List all pages (shows * for pages that: have local changes, are missing local files, or exist locally but not in the database)
-elemental-cms pages list
+2. **Repository Difference Indicators**: The `list` command shows an asterisk (*) next to pages that:
+   - Have differences between local and database versions
+   - Are missing their local files
+   - Exist locally but not in the database
 
-# Push a page to CMS
-elemental-cms pages push -p home en
-```
-
-The list command shows an asterisk (*) next to pages that:
-- Have differences between local and database versions
-- Are missing their local files
-- Exist locally but not in the database
-
-This helps you identify which pages need to be pushed or pulled.
-
-When pushing a page, it will save the metadata and content into the database, creating a "draft" version of the page.
-
-## Publishing a page
-
-Until now the new page is stored on the "drafts" repository, in order to be accessible through the web application we must publish the page by running the following command:
-
-```shell
-elemental-cms pages publish -p home en
-```
+3. **Batch Operations**: Some commands support `--all` flag:
+   - `push --all`: Push all pages
+   - `pull --all`: Pull all pages
+   - `publish --all`: Publish all pages that have draft versions
 
 ## Running the app
 

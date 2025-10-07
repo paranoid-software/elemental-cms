@@ -5,3 +5,4 @@ from .push import Push
 from .pull import Pull
 from .publish import Publish
 from .unpublish import Unpublish
+from .diff import Diff

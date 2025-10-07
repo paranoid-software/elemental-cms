@@ -16,11 +16,20 @@ To install the tool, we can issue the following command:
 pip install elemental-cms
 ```
 
-This will install all the dependencies required for elemental-cms to work. Version 2.0.5 is compatible with:
+This will install all the dependencies required for elemental-cms to work. Version 2.0.6 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
 - And other dependencies as specified in setup.py
+
+## New in 2.0.6
+
+- **Shell Autocomplete**: Tab completion for snippets, pages, and global-deps commands
+- **Pages Diff Command**: Compare local and database versions of pages
+- **Snippets Diff Command**: Compare local and database versions of snippets
+- **Repository Indicators**: See which resources have local changes at a glance
+
+To enable shell autocomplete, see the [COMPLETION.md](https://github.com/paranoid-software/elemental-cms/blob/develop/COMPLETION.md) guide.
 
 ## Running elemental-cms command for the first time
 

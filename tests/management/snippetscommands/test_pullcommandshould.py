@@ -47,7 +47,7 @@ class TestPullCommandShould:
                     # noinspection PyTypeChecker
                     result = runner.invoke(cli, ['snippets',
                                                  'pull',
-                                                 '-s', 'workspace/snippets/snippet-one',
+                                                 '-s', 'snippet-one',
                                                  '-s', 'folder1/snippet-two'])
                     assert_that(re.findall('does not exist', result.output)).is_length(2)
 
@@ -118,5 +118,5 @@ class TestPullCommandShould:
                     # noinspection PyTypeChecker
                     result = runner.invoke(cli, ['snippets',
                                                  'pull',
-                                                 '-s', 'workspace/snippets/footer'])
+                                                 '-s', 'footer'])
                     assert_that(re.findall('pulled successfully', result.output)).is_length(1)
