@@ -78,7 +78,7 @@ class TestDiffCommandShould:
                 ]
                 with EphemeralElementalFileSystem(default_elemental_fixture, default_settings_fixture, files):
                     # noinspection PyTypeChecker
-                    result = runner.invoke(cli, ['snippets', 'diff', '-s', 'workspace/snippets/nav-bar'])
+                    result = runner.invoke(cli, ['snippets', 'diff', '-s', 'nav-bar'])
                     assert_that(result.output).contains('No differences found')
 
     def test_show_differences_when_files_differ(self, default_elemental_fixture, default_settings_fixture, snippet):

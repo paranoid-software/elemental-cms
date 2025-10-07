@@ -24,6 +24,8 @@ class Static(click.Group):
             '-f',
             nargs=1,
             multiple=True,
+            type=click.Path(),
+            shell_complete=click.Path(file_okay=False, dir_okay=True).shell_complete,
             help='Name of the folder to be listed. For example: list -f app/client-stack')
     @constraint(RequireExactly(1), ['all', 'folder'])
     @pass_context
@@ -35,7 +37,7 @@ class Static(click.Group):
 
     @staticmethod
     @command(name='collect')
-    @argument('pattern', type=click.STRING)
+    @argument('pattern', type=click.Path(), shell_complete=click.Path(exists=False).shell_complete)
     @click.option("--ignore-internals",
                   is_flag=True,
                   show_default=True,
@@ -60,7 +62,7 @@ class Static(click.Group):
 
     @staticmethod
     @command(name='delete')
-    @argument('file')
+    @argument('file', type=click.Path(), shell_complete=click.Path().shell_complete)
     @pass_context
     def delete(ctx, file):
         """Delete especified file from GCS."""

@@ -10,7 +10,7 @@ It relies on MongoDB to store the metadata, pages' content, snippets' content, d
 
 ## Version Compatibility
 
-Elemental CMS 2.0.5 is compatible with:
+Elemental CMS 2.0.6 is compatible with:
 - Flask 2.2.5
 - Werkzeug 2.2.3
 - Flask-Babel 2.0.0
@@ -30,7 +30,6 @@ For version history and changes, see our [CHANGELOG](CHANGELOG.md).
 - Resources names validation for pages (similar to snippets)
 - Configurations schema review
 - Test coverage review
-- Support for pages diff command (similar to snippets)
 - Support for sample settings file generation
 
 ## Configuration Guide
@@ -287,6 +286,39 @@ workdir
 
 > Be aware of that in Windows OS using Visual Studio 2019 after running the init command (and any other command that modify the folders and files structure), the created files and folders will not be added to the project automaticaly.
 
+## Shell Autocomplete (Optional)
+
+Elemental CMS supports shell autocomplete for commands and arguments, making it faster to work with snippets, pages, and global dependencies.
+
+The completion scripts are included in the package. To enable autocomplete, run the setup script once:
+
+```shell
+# If you cloned the repo
+./enable-completion.sh
+
+# If you installed via pip, find and run the script
+bash $(python -c "import elementalcms, os; print(os.path.join(os.path.dirname(os.path.dirname(elementalcms.__file__)), 'enable-completion.sh'))")
+
+# Then reload your shell
+source ~/.zshrc  # for Zsh
+# or
+source ~/.bashrc  # for Bash
+```
+
+Once enabled, you can use TAB completion:
+```shell
+elemental-cms snippets diff -s <TAB>    # Shows available snippet names
+elemental-cms pages push -p home <TAB>  # Shows available languages
+elemental-cms global-deps push -d bootstrap <TAB>  # Shows valid types
+```
+
+For detailed instructions and troubleshooting, see [COMPLETION.md](COMPLETION.md).
+
+To disable autocomplete:
+```shell
+./disable-completion.sh
+```
+
 ## Working with Snippets
 
 Snippets are reusable HTML components that can be included in your pages. They are managed through the `snippets` command.
@@ -346,34 +378,35 @@ This creates two files in your PAGES_FOLDER/en directory:
 # List all pages (shows * for pages that: have local changes, are missing local files, or exist locally but not in the database)
 elemental-cms pages list
 
-# Push a page to CMS (both formats work)
+# Compare local and database versions of a page
+elemental-cms pages diff -p home en
+
+# Compare draft version
+elemental-cms pages diff -p home en --drafts
+
+# Push a page to CMS
 elemental-cms pages push -p home en
-elemental-cms pages push -p workspace/pages/en/home en
 
 # Push all pages
 elemental-cms pages push --all
 
-# Pull a page from CMS (both formats work)
+# Pull a page from CMS
 elemental-cms pages pull -p home en
-elemental-cms pages pull -p workspace/pages/en/home en
 
 # Pull all pages
 elemental-cms pages pull --all
 
-# Publish a page (both formats work)
+# Publish a page
 elemental-cms pages publish -p home en
-elemental-cms pages publish -p workspace/pages/en/home en
 
 # Publish all pages that have draft versions
 elemental-cms pages publish --all
 
-# Unpublish a page (both formats work)
+# Unpublish a page
 elemental-cms pages unpublish -p home en
-elemental-cms pages unpublish -p workspace/pages/en/home en
 
-# Remove a page (both formats work)
+# Remove a page
 elemental-cms pages remove -p home en
-elemental-cms pages remove -p workspace/pages/en/home en
 ```
 
 ### Page Structure
@@ -419,12 +452,7 @@ The content file will have the HTML for the page.
    - Are missing their local files
    - Exist locally but not in the database
 
-3. **Path Support**: Most page commands support both formats:
-   - Direct: `-p name lang` (e.g., `-p home en`)
-   - With path: `-p path lang` (e.g., `-p workspace/pages/en/home en`)
-   - Exception: `create` command only supports the direct format
-
-4. **Batch Operations**: Some commands support `--all` flag:
+3. **Batch Operations**: Some commands support `--all` flag:
    - `push --all`: Push all pages
    - `pull --all`: Pull all pages
    - `publish --all`: Publish all pages that have draft versions

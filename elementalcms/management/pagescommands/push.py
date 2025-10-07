@@ -30,8 +30,7 @@ class Push:
                 click.echo('There are no pages to push.')
                 return
         else:
-            # Strip PAGES_FOLDER/lang from provided paths if present
-            pages_tuples = [(p[0].replace(f'{root_folder_path}/{p[1]}/', ''), p[1]) for p in pages]
+            pages_tuples = list(pages)
 
         backups_filepaths = []
         for page_tuple in pages_tuples:

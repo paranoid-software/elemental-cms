@@ -5,12 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.5] - 2025-08-23
+## [2.0.6] - 2025-10-07
 
 ### Added
 - Added `snippets diff` command to compare local and database versions of a snippet, showing differences in both spec and content files in a git-like format
-- Added support for using PAGES_FOLDER path in pages push, pull, publish, unpublish and remove commands (e.g., workspace/pages/en/home en)
+- Added `pages diff` command to compare local and database versions of a page, showing differences in both spec and content files in a git-like format
+- Added shell autocomplete support for all snippet, page, and global-deps commands
 - Added repository difference indicators to `pages list` command: shows `*` for pages that have local changes, are missing local files, or exist locally but not in the database
+- Added completion setup scripts (`enable-completion.sh`, `disable-completion.sh`) included in pip package
+- Added `COMPLETION.md` documentation for shell autocomplete setup
+
+### Changed
+- Pinned `urllib3<2.0.0` to avoid LibreSSL warnings on macOS
+
+### Removed
+- Removed PAGES_FOLDER and SNIPPETS_FOLDER path support from commands (use simple names instead)
 
 ## [2.0.4] - 2025-08-22
 
@@ -21,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added snippet name validation: must be lowercase, start with letter, and contain only letters, numbers and hyphens
-- Added support for using SNIPPETS_FOLDER path in snippet commands (e.g., workspace/snippets/header)
 - Added documentation for snippet naming rules and management
 
 ## [2.0.2] - 2025-08-22

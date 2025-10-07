@@ -1,10 +1,67 @@
 from typing import Tuple
+import os
+import json
 
 import click
 from cloup import constraint, option, command, pass_context
 from cloup.constraints import RequireExactly
 
 from .snippetscommands import Create, List, Push, Pull, Remove, Diff
+
+
+def complete_snippet_name(ctx, param, incomplete):
+    """
+    Shell completion function for snippet names (Click 8.0+ compatible).
+    Returns a list of snippet names that match the incomplete input.
+    
+    Args:
+        ctx: Click context
+        param: The parameter being completed
+        incomplete: The partial value being completed
+        
+    Returns:
+        List of matching snippet names
+    """
+    from click.shell_completion import CompletionItem
+    
+    snippets = []
+    
+    try:
+        # Try to read the .elemental file to get config
+        if not os.path.exists('.elemental'):
+            return snippets
+            
+        with open('.elemental', encoding='utf-8') as init_file:
+            init_metadata = json.load(init_file)
+            config_filepath = init_metadata.get('configFilePath')
+            
+        if not config_filepath or not os.path.exists(config_filepath):
+            return snippets
+            
+        with open(config_filepath, encoding='utf-8') as config_file:
+            config = json.load(config_file)
+            snippets_folder = config.get('cmsCoreContext', {}).get('SNIPPETS_FOLDER', 'snippets')
+        
+        # Get all snippet names from the snippets folder
+        if os.path.exists(snippets_folder):
+            files = os.listdir(snippets_folder)
+            # Extract unique snippet names (files without extensions)
+            snippet_names = set()
+            for file in files:
+                if file.endswith('.json') or file.endswith('.html'):
+                    snippet_names.add(os.path.splitext(file)[0])
+            
+            # Filter by incomplete text and return as CompletionItem objects
+            snippets = [
+                CompletionItem(name)
+                for name in sorted(snippet_names)
+                if name.startswith(incomplete)
+            ]
+    except Exception:
+        # If anything fails, just return empty list
+        pass
+    
+    return snippets
 
 
 class Snippets(click.Group):
@@ -47,6 +104,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
+            shell_complete=complete_snippet_name,
             help='Name for the snippet(s) to be pushed. For example: push -s nav-bar-plugster')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
@@ -64,6 +122,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             multiple=True,
+            shell_complete=complete_snippet_name,
             help='Name for the snippet(s) to be pulled. For example: pull -s header -s nav-bar')
     @constraint(RequireExactly(1), ['all', 'snippet'])
     @pass_context
@@ -77,6 +136,7 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             required=True,
+            shell_complete=complete_snippet_name,
             help='Name for the snippet to be removed. For example: remove -s header')
     @pass_context
     def remove(ctx, snippet) -> Tuple:
@@ -87,7 +147,8 @@ class Snippets(click.Group):
     @option('--snippet',
             '-s',
             required=True,
-            help='Name of the snippet to compare. Can include SNIPPETS_FOLDER path (e.g., workspace/snippets/nav-bar).')
+            shell_complete=complete_snippet_name,
+            help='Name of the snippet to compare.')
     @pass_context
     def diff(ctx, snippet) -> Tuple:
         return Diff(ctx).exec(snippet)

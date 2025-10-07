@@ -15,11 +15,7 @@ class Remove:
         self.context: ElementalContext = ctx.obj['elemental_context']
 
     def exec(self, page_tuple) -> Optional[Tuple]:
-
-        root_folder_path = self.context.cms_core_context.PAGES_FOLDER
-
-        # Strip PAGES_FOLDER/lang from provided paths if present
-        name = page_tuple[0].replace(f'{root_folder_path}/{page_tuple[1]}/', '')
+        name = page_tuple[0]
         lang = page_tuple[1]
 
         get_page_result = GetMeForLanguage(self.context.cms_db_context).execute(name, lang, False, False)
