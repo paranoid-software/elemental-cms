@@ -19,7 +19,8 @@ REQUIREMENTS = [
     'google-cloud-storage>=2.3.0',
     'urllib3<2.0.0',  # Pin to v1.x to avoid LibreSSL warnings on macOS
     'MarkupSafe>=2.1.0',
-    'rich>=13.0.0'  # For pretty terminal output
+    'rich<14,>=12',  # For pretty terminal output
+    'protobuf==4.24.4'
 ]
 
 
