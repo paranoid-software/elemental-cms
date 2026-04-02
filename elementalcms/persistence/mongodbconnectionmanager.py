@@ -1,21 +1,24 @@
-from dataclasses import dataclass
+import threading
 
 import pymongo.errors
 from pymongo import MongoClient
 
 from elementalcms.core import MongoDbContext
 
+_clients: dict = {}
+_lock = threading.Lock()
 
-@dataclass
+
 class MongoDbConnectionManager:
-
-    __db_client: MongoClient = None
 
     @classmethod
     def _get_db(cls, context: MongoDbContext):
-        if cls.__db_client is None:
-            cls.__db_client = MongoClient(context.connection_string)
-        return cls.__db_client.get_database(context.database_name)
+        conn_str = context.connection_string
+        if conn_str not in _clients:
+            with _lock:
+                if conn_str not in _clients:
+                    _clients[conn_str] = MongoClient(conn_str)
+        return _clients[conn_str].get_database(context.database_name)
 
     @classmethod
     def get_db_name(cls, context: MongoDbContext):
