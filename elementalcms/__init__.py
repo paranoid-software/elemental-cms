@@ -15,7 +15,7 @@ from elementalcms.services.snippets import GetMe
 
 from elementalcms.presenter import presenter
 
-__version__ = "2.0.9"
+__version__ = "2.0.10"
 
 
 class Elemental:
@@ -86,6 +86,11 @@ class Elemental:
         def get_locale():
             if not g.get('lang_code', None):
                 g.lang_code = request.accept_languages.best_match(context.cms_core_context.LANGUAGES)
+            # Single mode: a browser that asks for none of the site's languages gets the strings in
+            # the language of the page it is served, not the source strings. Returned without
+            # setting g.lang_code, which the presenter expects empty in single mode.
+            if not g.lang_code and context.cms_core_context.LANGUAGE_MODE == 'single':
+                return session.get('langCode', context.cms_core_context.DEFAULT_LANGUAGE)
             return g.lang_code
 
         @app.before_request
