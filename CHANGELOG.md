@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.10] - 2026-11-17
+
+### Fixed
+- In `single` language mode, a browser that asks for none of the site's languages now gets the translated strings in the language of the page it is served (the session's language, or `DEFAULT_LANGUAGE`) instead of the source strings. A browser that asks for one of the site's languages, and `multi` mode, behave as before.
+
 ## [2.0.6] - 2025-10-07
 
 ### Added
